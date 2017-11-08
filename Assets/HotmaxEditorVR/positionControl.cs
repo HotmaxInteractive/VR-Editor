@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class rayPointFollow : MonoBehaviour {
-
+public class positionControl : MonoBehaviour
+{
     public objectSelect objSelect;
 
-	void Update () {
-        if (Input.GetButton("Fire2"))
+    void Update()
+    {
+        if (Input.GetButton("triggerRight"))
         {
             transform.position = objSelect.endPosition;
         }

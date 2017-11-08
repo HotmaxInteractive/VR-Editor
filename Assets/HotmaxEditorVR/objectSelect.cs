@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class objectSelect : MonoBehaviour
 {
-
     public Valve.VR.InteractionSystem.Hand hand1;
     public Valve.VR.InteractionSystem.Hand hand2;
 
@@ -24,24 +23,12 @@ public class objectSelect : MonoBehaviour
 
     void Update()
     {
-
-        //Hand1
-        if (Input.GetButtonDown("Fire2"))
+        if (Input.GetButtonDown("triggerRight"))
         {
             selected(hand2.gameObject.transform.position, hand2.gameObject.transform.forward);
         }
 
-        if (Input.GetButtonUp("Fire2"))
-        {
-            laserLineRenderer.enabled = false;
-            removeDecorators();
-        }
-
-        if (Input.GetButton("Fire2"))
-        {
-            ShootLaserFromTargetPosition(hand2.gameObject.transform.position, hand2.gameObject.transform.forward, laserMaxLength);
-            laserLineRenderer.enabled = true;
-        }
+        ShootLaserFromTargetPosition(hand2.gameObject.transform.position, hand2.gameObject.transform.forward, laserMaxLength);
     }
 
     void ShootLaserFromTargetPosition(Vector3 targetPosition, Vector3 direction, float length)
@@ -59,7 +46,6 @@ public class objectSelect : MonoBehaviour
         laserLineRenderer.SetPosition(1, endPosition);
     }
 
-
     void selected(Vector3 targetPosition, Vector3 direction)
     {
         RaycastHit hit;
@@ -69,22 +55,26 @@ public class objectSelect : MonoBehaviour
             //check to see if the raycast is hitting a game object
             if (hit.collider != null && !hit.collider.name.Contains("structure"))
             {
-
                 GameObject hitObject = hit.collider.gameObject;
                 //turn off collider in selected object, we don't need it for now
                 hit.collider.enabled = false;
 
                 //Add object controllers and reference this class
-                hitObject.AddComponent<rayPointFollow>();
-                hitObject.GetComponent<rayPointFollow>().objSelect = this;
+                hitObject.AddComponent<positionControl>();
+                hitObject.GetComponent<positionControl>().objSelect = this;
 
-                hitObject.AddComponent<rotateControl>();
-                hitObject.GetComponent<rotateControl>().objSelect = this;
+                hitObject.AddComponent<rotationControl>();
+                hitObject.GetComponent<rotationControl>().objSelect = this;
 
-                
+                hitObject.AddComponent<scaleControl>();
+                hitObject.GetComponent<scaleControl>().objSelect = this;
+
+                hitObject.AddComponent<editStateController>();            
+
+                removeDecorators();              
 
                 //Add the "selectable outline"
-               hitObject.AddComponent<cakeslice.Outline>();
+                hitObject.AddComponent<cakeslice.Outline>();
             }
         }
     }
@@ -97,8 +87,10 @@ public class objectSelect : MonoBehaviour
         {
             GameObject highlightedObject = outline.transform.gameObject;
             highlightedObject.GetComponent<Collider>().enabled = true;
-            Destroy(highlightedObject.GetComponent<rayPointFollow>());
-            Destroy(highlightedObject.GetComponent<rotateControl>());
+            Destroy(highlightedObject.GetComponent<positionControl>());
+            Destroy(highlightedObject.GetComponent<rotationControl>());
+            Destroy(highlightedObject.GetComponent<scaleControl>());
+            Destroy(highlightedObject.GetComponent<editStateController>());
             Destroy(outline);
         }
     }

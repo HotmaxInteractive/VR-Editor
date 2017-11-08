@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class rotateControl : MonoBehaviour
+public class rotationControl : MonoBehaviour
 {
     public objectSelect objSelect;
     Vector3 handInitRotation;
@@ -16,9 +16,8 @@ public class rotateControl : MonoBehaviour
         //rotation of Cube = initial rotation of Cube + hand's rotational difference
         getObjectInitialRotation();
 
-        if (Input.GetButton("Fire1"))
+        if (Input.GetButton("triggerLeft"))
         {
-
             float moveDistX = objSelect.hand1.transform.eulerAngles.x - handInitRotation.x;
             float moveDistY = objSelect.hand1.transform.eulerAngles.y - handInitRotation.y;
             float moveDistZ = objSelect.hand1.transform.eulerAngles.z - handInitRotation.z;
@@ -29,7 +28,7 @@ public class rotateControl : MonoBehaviour
 
     void getObjectInitialRotation()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("triggerLeft"))
         {
             handInitRotation = objSelect.hand1.transform.eulerAngles;
             objInitRotation = transform.eulerAngles;
