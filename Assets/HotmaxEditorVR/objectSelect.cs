@@ -34,6 +34,7 @@ public class objectSelect : MonoBehaviour
         if (Input.GetButtonUp("Fire2"))
         {
             laserLineRenderer.enabled = false;
+            removeDecorators();
         }
 
         if (Input.GetButton("Fire2"))
@@ -80,20 +81,25 @@ public class objectSelect : MonoBehaviour
                 hitObject.AddComponent<rotateControl>();
                 hitObject.GetComponent<rotateControl>().objSelect = this;
 
-                //Clean up old highlighted object before adding new stuff
-                cakeslice.Outline outline = (cakeslice.Outline)FindObjectOfType(typeof(cakeslice.Outline));
-                if (outline)
-                {
-                    GameObject highlightedObject = outline.transform.gameObject;
-                    highlightedObject.GetComponent<Collider>().enabled = true;
-                    Destroy(highlightedObject.GetComponent<rayPointFollow>());
-                    Destroy(highlightedObject.GetComponent<rotateControl>());
-                    Destroy(outline);
-                }
+                
 
                 //Add the "selectable outline"
                hitObject.AddComponent<cakeslice.Outline>();
             }
+        }
+    }
+
+    void removeDecorators()
+    {
+        //Clean up old highlighted object before adding new stuff
+        cakeslice.Outline outline = (cakeslice.Outline)FindObjectOfType(typeof(cakeslice.Outline));
+        if (outline)
+        {
+            GameObject highlightedObject = outline.transform.gameObject;
+            highlightedObject.GetComponent<Collider>().enabled = true;
+            Destroy(highlightedObject.GetComponent<rayPointFollow>());
+            Destroy(highlightedObject.GetComponent<rotateControl>());
+            Destroy(outline);
         }
     }
 }

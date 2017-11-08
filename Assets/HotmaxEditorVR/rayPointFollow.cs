@@ -11,9 +11,5 @@ public class rayPointFollow : MonoBehaviour {
         {
             transform.position = objSelect.endPosition;
         }
-        if (Input.GetButtonUp("Fire2"))
-        {
-            //Destroy(this);
-        }
     }
 }
