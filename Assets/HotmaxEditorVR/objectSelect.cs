@@ -23,12 +23,13 @@ public class objectSelect : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("triggerRight"))
+        if (Input.GetKeyDown(KeyCode.JoystickButton15))
         {
             selected(hand2.gameObject.transform.position, hand2.gameObject.transform.forward);
         }
 
         ShootLaserFromTargetPosition(hand2.gameObject.transform.position, hand2.gameObject.transform.forward, laserMaxLength);
+
     }
 
     void ShootLaserFromTargetPosition(Vector3 targetPosition, Vector3 direction, float length)
@@ -69,7 +70,11 @@ public class objectSelect : MonoBehaviour
                 hitObject.AddComponent<scaleControl>();
                 hitObject.GetComponent<scaleControl>().objSelect = this;
 
-                hitObject.AddComponent<editStateController>();            
+                hitObject.AddComponent<cloneControl>();
+                hitObject.GetComponent<cloneControl>().objSelect = this;
+
+                hitObject.AddComponent<editStateController>();
+                hitObject.GetComponent<editStateController>().objSelect = this;
 
                 removeDecorators();              
 
@@ -90,6 +95,7 @@ public class objectSelect : MonoBehaviour
             Destroy(highlightedObject.GetComponent<positionControl>());
             Destroy(highlightedObject.GetComponent<rotationControl>());
             Destroy(highlightedObject.GetComponent<scaleControl>());
+            Destroy(highlightedObject.GetComponent<cloneControl>());
             Destroy(highlightedObject.GetComponent<editStateController>());
             Destroy(outline);
         }

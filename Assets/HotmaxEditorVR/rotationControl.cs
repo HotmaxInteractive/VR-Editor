@@ -7,6 +7,17 @@ public class rotationControl : MonoBehaviour
     public objectSelect objSelect;
     Vector3 handInitRotation;
     Vector3 objInitRotation;
+    editStateController stateController;
+
+    private void Start()
+    {
+        stateController = GetComponent<editStateController>();
+    }
+
+    private void OnEnable()
+    {
+        stateController.behaviorName = "Rotation";
+    }
 
     void Update()
     {
@@ -16,11 +27,11 @@ public class rotationControl : MonoBehaviour
         //rotation of Cube = initial rotation of Cube + hand's rotational difference
         getObjectInitialRotation();
 
-        if (Input.GetButton("triggerLeft"))
+        if (Input.GetKey(KeyCode.JoystickButton15))
         {
-            float moveDistX = objSelect.hand1.transform.eulerAngles.x - handInitRotation.x;
-            float moveDistY = objSelect.hand1.transform.eulerAngles.y - handInitRotation.y;
-            float moveDistZ = objSelect.hand1.transform.eulerAngles.z - handInitRotation.z;
+            float moveDistX = objSelect.hand2.transform.eulerAngles.x - handInitRotation.x;
+            float moveDistY = objSelect.hand2.transform.eulerAngles.y - handInitRotation.y;
+            float moveDistZ = objSelect.hand2.transform.eulerAngles.z - handInitRotation.z;
 
             transform.eulerAngles = new Vector3(objInitRotation.x + moveDistX, objInitRotation.y + moveDistY, objInitRotation.z + moveDistZ);
         }
@@ -28,9 +39,9 @@ public class rotationControl : MonoBehaviour
 
     void getObjectInitialRotation()
     {
-        if (Input.GetButtonDown("triggerLeft"))
+        if (Input.GetKeyDown(KeyCode.JoystickButton15))
         {
-            handInitRotation = objSelect.hand1.transform.eulerAngles;
+            handInitRotation = objSelect.hand2.transform.eulerAngles;
             objInitRotation = transform.eulerAngles;
         }
     }
