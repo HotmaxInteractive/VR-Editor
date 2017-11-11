@@ -16,25 +16,31 @@ public class cloneControl : MonoBehaviour
     private void OnEnable()
     {
         stateController.behaviorName = "Clone Object";
+        objSelect.trackedController2.PadClicked += padClicked;
+    }
+
+    private void OnDisable()
+    {
+        objSelect.trackedController2.PadClicked -= padClicked;
+    }
+
+    void padClicked(object sender, ClickedEventArgs e)
+    {
+        var clone = Instantiate(this.gameObject) as GameObject;
+
+        for (int i = 0; i < clone.GetComponent<editStateController>().components.Count; i++)
+        {
+            Destroy(clone.GetComponent<editStateController>().components[i]);
+        }
+
+        Destroy(clone.GetComponent<editStateController>());
+        Destroy(clone.GetComponent<cakeslice.Outline>());
+
+        clone.GetComponent<Collider>().enabled = true;
     }
 
     void Update()
     {
-
-        if (Input.GetKeyDown(KeyCode.JoystickButton9))
-        {
-            var clone =  Instantiate(this.gameObject) as GameObject;
-
-            for (int i = 0; i < clone.GetComponent<editStateController>().components.Count; i++)
-            {
-                Destroy(clone.GetComponent<editStateController>().components[i]);
-            }
-
-            Destroy(clone.GetComponent<editStateController>());
-            Destroy(clone.GetComponent<cakeslice.Outline>());
-
-            clone.GetComponent<Collider>().enabled = true;
-        }
 
 
     }

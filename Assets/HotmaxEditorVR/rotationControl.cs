@@ -5,44 +5,52 @@ using UnityEngine;
 public class rotationControl : MonoBehaviour
 {
     public objectSelect objSelect;
-    Vector3 handInitRotation;
-    Vector3 objInitRotation;
+    GameObject parentObject;
     editStateController stateController;
 
     private void Start()
     {
-        stateController = GetComponent<editStateController>();
+        stateController = GetComponent<editStateController>();      
+    }
+
+    void triggerClicked(object sender, ClickedEventArgs e)
+    {
+        //creating the ratcheting functionality by adding in a shell object that copies the rotation and position of the rotation control hand;
+        parentObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        parentObject.transform.rotation = objSelect.hand2.transform.rotation;
+        parentObject.transform.position = transform.position;
+        Destroy(parentObject.GetComponent<MeshRenderer>());
+        Destroy(parentObject.GetComponent<MeshFilter>());
+        Destroy(parentObject.GetComponent<BoxCollider>());
+        transform.parent = parentObject.transform;
+    }
+
+    void triggerUnclicked(object sender, ClickedEventArgs e)
+    {
+        transform.parent = null;
+        Destroy(parentObject);
+    }
+
+    private void OnDisable()
+    {
+        objSelect.trackedController2.TriggerClicked -= triggerClicked;
+        objSelect.trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
 
     private void OnEnable()
     {
         stateController.behaviorName = "Rotation";
+
+        objSelect.trackedController2.TriggerClicked += triggerClicked;
+        objSelect.trackedController2.TriggerUnclicked += triggerUnclicked;
     }
 
     void Update()
     {
-        //When having the trigger down
-        //Add to the existing rotation
-        //Add the hand's "moved amount" to the Cube
-        //rotation of Cube = initial rotation of Cube + hand's rotational difference
-        getObjectInitialRotation();
-
-        if (Input.GetKey(KeyCode.JoystickButton15))
+        if (objSelect.trackedController2.triggerPressed && transform.parent != null)
         {
-            float moveDistX = objSelect.hand2.transform.eulerAngles.x - handInitRotation.x;
-            float moveDistY = objSelect.hand2.transform.eulerAngles.y - handInitRotation.y;
-            float moveDistZ = objSelect.hand2.transform.eulerAngles.z - handInitRotation.z;
-
-            transform.eulerAngles = new Vector3(objInitRotation.x + moveDistX, objInitRotation.y + moveDistY, objInitRotation.z + moveDistZ);
+            transform.parent.rotation = objSelect.hand2.transform.rotation;
         }
-    }
 
-    void getObjectInitialRotation()
-    {
-        if (Input.GetKeyDown(KeyCode.JoystickButton15))
-        {
-            handInitRotation = objSelect.hand2.transform.eulerAngles;
-            objInitRotation = transform.eulerAngles;
-        }
     }
 }

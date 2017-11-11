@@ -1,11 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR;
 
 public class objectSelect : MonoBehaviour
 {
     public Valve.VR.InteractionSystem.Hand hand1;
     public Valve.VR.InteractionSystem.Hand hand2;
+
+    [HideInInspector]
+    public SteamVR_TrackedController trackedController1;
+    [HideInInspector]
+    public SteamVR_TrackedController trackedController2;
+
+    
 
     public Vector3 endPosition;
 
@@ -13,21 +21,58 @@ public class objectSelect : MonoBehaviour
     public float laserWidth = 0.1f;
     public float laserMaxLength = 5f;
 
+
+
     void Start()
     {
         Vector3[] initLaserPositions = new Vector3[2] { Vector3.zero, Vector3.zero };
         laserLineRenderer.SetPositions(initLaserPositions);
         laserLineRenderer.startWidth = laserWidth;
         laserLineRenderer.endWidth = laserWidth;
+
+        trackedController1 = hand1.gameObject.GetComponent<SteamVR_TrackedController>();
+        trackedController2 = hand2.gameObject.GetComponent<SteamVR_TrackedController>();
+
+        trackedController2.TriggerClicked += triggerClicked;
+
+        Invoke("getAndSetControllerIndecies", 1.2f);
+    }
+
+    private void OnDisable()
+    {
+        trackedController2.TriggerClicked -= triggerClicked;
+    }
+
+    void triggerClicked(object sender, ClickedEventArgs e)
+    {
+        selected(hand2.gameObject.transform.position, hand2.gameObject.transform.forward);
+    }
+
+
+    //TODO: this is a bug, if the controllers are turned on too late and if they arent being tracked...
+    void getAndSetControllerIndecies()
+    {
+        //testing to get the controller index
+        uint hand1ControllerIndex = hand1.controller.index;
+        uint hand2ControllerIndex = hand2.controller.index;
+
+        hand1.gameObject.GetComponent<SteamVR_TrackedController>().controllerIndex = hand1ControllerIndex;
+        hand2.gameObject.GetComponent<SteamVR_TrackedController>().controllerIndex = hand2ControllerIndex;
+
+        // convert to uint to an int 
+        hand1.gameObject.GetComponent<SteamVR_TrackedObject>().SetDeviceIndex((int)hand1ControllerIndex);
+        hand2.gameObject.GetComponent<SteamVR_TrackedObject>().SetDeviceIndex((int)hand2ControllerIndex);
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.JoystickButton15))
+        if (Input.GetAxis("gripRight") == 1f)
         {
-            selected(hand2.gameObject.transform.position, hand2.gameObject.transform.forward);
+            removeDecorators();
+            print("remove decorations");
         }
 
+        //TODO: this should be shooting the laser from the right most controller. Get this controller form the "Hand script"
         ShootLaserFromTargetPosition(hand2.gameObject.transform.position, hand2.gameObject.transform.forward, laserMaxLength);
 
     }

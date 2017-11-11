@@ -32,6 +32,8 @@ public class editStateController : MonoBehaviour
         components.Add(cloneControl);
 
         enableState(stateNumber);
+
+
     }
 
     void Update()

@@ -19,7 +19,7 @@ public class positionControl : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.JoystickButton15))
+        if (objSelect.trackedController2.triggerPressed)
         {
             transform.position = objSelect.endPosition;
 
