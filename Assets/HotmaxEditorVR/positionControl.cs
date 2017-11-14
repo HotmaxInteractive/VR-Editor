@@ -7,6 +7,9 @@ public class positionControl : MonoBehaviour
     public objectSelect objSelect;
     editStateController stateController;
 
+    Vector3 handInitPosition;
+    Vector3 objInitPosition;
+
     private void Start()
     {
         stateController = GetComponent<editStateController>();
@@ -15,43 +18,30 @@ public class positionControl : MonoBehaviour
     private void OnEnable()
     {
         stateController.behaviorName = "Position";
+
+        objSelect.trackedController2.TriggerClicked += triggerClicked;
+    }
+
+    private void OnDisable()
+    {
+        objSelect.trackedController2.TriggerClicked -= triggerClicked;
     }
 
     void Update()
     {
         if (objSelect.trackedController2.triggerPressed)
         {
-            transform.position = objSelect.endPosition;
+            float moveDistX = objSelect.hand2.transform.position.x - handInitPosition.x;
+            float moveDistY = objSelect.hand2.transform.position.y - handInitPosition.y;
+            float moveDistZ = objSelect.hand2.transform.position.z - handInitPosition.z;
 
-            //laser length will equal the distance from the hand to the raycast.point (endpoint)
-            //objSelect.laserMaxLength = Vector3.Distance(objSelect.endPosition, objSelect.hand2.transform.position);
-
-            /*
-            if (Input.GetAxis("Vertical") < 1 && Input.GetAxis("Vertical") > .001f)
-            {
-                objSelect.laserMaxLength += 1f;
-            }
-            else if(Input.GetAxis("Vertical") > -1 && Input.GetAxis("Vertical") < -.001f)
-            {
-                objSelect.laserMaxLength -= 1f;
-            }
-
-
-
-         if (Input.GetAxis("leftPadHorizontal") != 0 || Input.GetAxis("rightPadHorizontal") != 0 || Input.GetAxis("leftPadVertical") != 0 || Input.GetAxis("rightPadVertical") != 0)
-            {
-                print(Input.GetAxis("leftPadHorizontal") + "   : left pad Horz");
-                print(Input.GetAxis("rightPadHorizontal") + "   : right pad Horz");
-                print(Input.GetAxis("leftPadVertical") + "   : left pad Vert");
-                print(Input.GetAxis("rightPadVertical") + "   : right pad Vert");
-
-            }
-            */
-
-
-
-
-
+            transform.position = new Vector3(objInitPosition.x + moveDistX, objInitPosition.y + moveDistY, objInitPosition.z + moveDistZ);
         }
+    }
+
+    void triggerClicked(object sender, ClickedEventArgs e)
+    {
+        handInitPosition = objSelect.hand2.transform.position;
+        objInitPosition = transform.position;
     }
 }
