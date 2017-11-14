@@ -52,7 +52,7 @@ public class objectSelect : MonoBehaviour
     //TODO: this is a bug, if the controllers are turned on too late and if they arent being tracked...
     void getAndSetControllerIndecies()
     {
-        //testing to get the controller index
+        //get the controller index
         uint hand1ControllerIndex = hand1.controller.index;
         uint hand2ControllerIndex = hand2.controller.index;
 
