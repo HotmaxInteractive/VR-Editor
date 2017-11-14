@@ -69,7 +69,6 @@ public class objectSelect : MonoBehaviour
         if (Input.GetAxis("gripRight") == 1f)
         {
             removeDecorators();
-            print("remove decorations");
         }
 
         //TODO: this should be shooting the laser from the right most controller. Get this controller form the "Hand script"

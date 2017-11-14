@@ -118,6 +118,4 @@ public class editStateController : MonoBehaviour
 
         objSelect.hand2.GetComponent<TextMesh>().text = behaviorName;
     }
-
-
 }
