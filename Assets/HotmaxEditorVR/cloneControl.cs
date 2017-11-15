@@ -16,15 +16,15 @@ public class cloneControl : MonoBehaviour
     private void OnEnable()
     {
         stateController.behaviorName = "Clone Object";
-        objSelect.trackedController2.PadClicked += padClicked;
+        objSelect.trackedController2.TriggerClicked += triggerClicked;
     }
 
     private void OnDisable()
     {
-        objSelect.trackedController2.PadClicked -= padClicked;
+        objSelect.trackedController2.TriggerClicked -= triggerClicked;
     }
 
-    void padClicked(object sender, ClickedEventArgs e)
+    void triggerClicked(object sender, ClickedEventArgs e)
     {
         var clone = Instantiate(this.gameObject) as GameObject;
 
@@ -37,11 +37,5 @@ public class cloneControl : MonoBehaviour
         Destroy(clone.GetComponent<cakeslice.Outline>());
 
         clone.GetComponent<Collider>().enabled = true;
-    }
-
-    void Update()
-    {
-
-
     }
 }
