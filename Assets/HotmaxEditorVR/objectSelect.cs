@@ -68,7 +68,7 @@ public class objectSelect : MonoBehaviour
     {
         if (Input.GetAxis("gripRight") == 1f)
         {
-            removeDecorators();
+            //removeDecorators();
         }
 
         //TODO: this should be shooting the laser from the right most controller. Get this controller form the "Hand script"
@@ -100,6 +100,8 @@ public class objectSelect : MonoBehaviour
             //check to see if the raycast is hitting a game object
             if (hit.collider != null && !hit.collider.name.Contains("structure"))
             {
+                removeDecorators();
+
                 GameObject hitObject = hit.collider.gameObject;
                 //turn off collider in selected object, we don't need it for now
                 hit.collider.enabled = false;
@@ -119,8 +121,6 @@ public class objectSelect : MonoBehaviour
 
                 hitObject.AddComponent<editStateController>();
                 hitObject.GetComponent<editStateController>().objSelect = this;
-
-                removeDecorators();              
 
                 //Add the "selectable outline"
                 hitObject.AddComponent<cakeslice.Outline>();

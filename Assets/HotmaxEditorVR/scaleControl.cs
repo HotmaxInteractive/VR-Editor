@@ -8,9 +8,23 @@ public class scaleControl : MonoBehaviour
     editStateController stateController;
     public float scaleSize = .5f;
 
+    SteamVR_TrackedObject trackedObject;
+    SteamVR_Controller.Device device;
+    public Vector2 fingerPos;
+    float rate = 1;
+    Vector3 growRate;
+
+
+
+
+
     private void Start()
     {
+        growRate = new Vector3(rate, rate, rate);
         stateController = GetComponent<editStateController>();
+
+        trackedObject = objSelect.hand2.GetComponent<SteamVR_TrackedObject>();
+        device = SteamVR_Controller.Input((int)trackedObject.index);
     }
 
     private void OnEnable()
@@ -20,27 +34,28 @@ public class scaleControl : MonoBehaviour
 
     void Update()
     {
-
-        if (Input.GetKeyDown(KeyCode.JoystickButton9) && Input.GetAxis("rightPadHorizontal") > .25f)
+        //TODO: how is the touchPad controlling the Scale here?
+        if (device.GetPressDown(SteamVR_Controller.ButtonMask.Touchpad))
         {
-            transform.localScale = new Vector3(transform.localScale.x + scaleSize, transform.localScale.y, transform.localScale.z);
+            if(device.GetAxis().y > .3f)
+            {
+                transform.localScale += growRate;
+            }
+            if (device.GetAxis().y < -.3f)
+            {
+                transform.localScale -= growRate;
+            }
         }
 
-        if (Input.GetKeyDown(KeyCode.JoystickButton9) && Input.GetAxis("rightPadHorizontal") < -.25f)
+        if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip))
         {
-            transform.localScale = new Vector3(transform.localScale.x - scaleSize, transform.localScale.y, transform.localScale.z);
+            GetComponent<editStateController>().enabled = false;
+            //Get initial finger position
+            fingerPos.y = device.GetAxis().y;
         }
-
-        if (Input.GetKeyDown(KeyCode.JoystickButton9) && Input.GetAxis("rightPadVertical") > .25f)
+        if (device.GetPressUp(SteamVR_Controller.ButtonMask.Grip))
         {
-            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y + scaleSize, transform.localScale.z);
+            GetComponent<editStateController>().enabled = true;
         }
-
-        if (Input.GetKeyDown(KeyCode.JoystickButton9) && Input.GetAxis("rightPadVertical") < -.25f)
-        {
-            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y - scaleSize, transform.localScale.z);
-        }
-
-
     }
 }
