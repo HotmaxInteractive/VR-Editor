@@ -45,7 +45,7 @@ public class objectSelect : MonoBehaviour
 
     void triggerClicked(object sender, ClickedEventArgs e)
     {
-        selected(hand2.gameObject.transform.position, hand2.gameObject.transform.forward);
+        select(hand2.gameObject.transform.position, hand2.gameObject.transform.forward);
     }
 
 
@@ -91,7 +91,7 @@ public class objectSelect : MonoBehaviour
         laserLineRenderer.SetPosition(1, endPosition);
     }
 
-    void selected(Vector3 targetPosition, Vector3 direction)
+    void select(Vector3 targetPosition, Vector3 direction)
     {
         RaycastHit hit;
         Ray ray = new Ray(targetPosition, direction);
@@ -125,6 +125,35 @@ public class objectSelect : MonoBehaviour
                 //Add the "selectable outline"
                 hitObject.AddComponent<cakeslice.Outline>();
             }
+
+            if (hit.collider.name.Contains("spawn"))
+            {
+                if (hit.collider.name.Contains("(1)"))
+                {
+                    GameObject spawn = Instantiate(Resources.Load("(1)", typeof(GameObject))) as GameObject;
+                    spawn.transform.position = hit.collider.transform.position;
+                    spawn.transform.rotation = hit.collider.transform.rotation;
+                }
+                if (hit.collider.name.Contains("(2)"))
+                {
+                    GameObject spawn = Instantiate(Resources.Load("(2)", typeof(GameObject))) as GameObject;
+                    spawn.transform.position = hit.collider.transform.position;
+                    spawn.transform.rotation = hit.collider.transform.rotation;
+                }
+                if (hit.collider.name.Contains("(3)"))
+                {
+                    GameObject spawn = Instantiate(Resources.Load("(3)", typeof(GameObject))) as GameObject;
+                    spawn.transform.position = hit.collider.transform.position;
+                    spawn.transform.rotation = hit.collider.transform.rotation;
+                }
+                if (hit.collider.name.Contains("(4)"))
+                {
+                    GameObject spawn = Instantiate(Resources.Load("(4)", typeof(GameObject))) as GameObject;
+                    spawn.transform.position = hit.collider.transform.position;
+                    spawn.transform.rotation = hit.collider.transform.rotation;
+                }
+            }
+
         }
     }
 
