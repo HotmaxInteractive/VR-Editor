@@ -10,13 +10,10 @@ public class scaleControl : MonoBehaviour
 
     SteamVR_TrackedObject trackedObject;
     SteamVR_Controller.Device device;
+
     public Vector2 fingerPos;
     float rate = 1;
     Vector3 growRate;
-
-
-
-
 
     private void Start()
     {
@@ -25,11 +22,6 @@ public class scaleControl : MonoBehaviour
 
         trackedObject = objSelect.hand2.GetComponent<SteamVR_TrackedObject>();
         device = SteamVR_Controller.Input((int)trackedObject.index);
-    }
-
-    private void OnEnable()
-    {
-        stateController.behaviorName = "Scale";
     }
 
     void Update()

@@ -11,15 +11,10 @@ public class cloneControl : MonoBehaviour
     private void Start()
     {
         stateController = GetComponent<editStateController>();
-    }
-
-    private void OnEnable()
-    {
-        stateController.behaviorName = "Clone Object";
         objSelect.trackedController2.TriggerClicked += triggerClicked;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         objSelect.trackedController2.TriggerClicked -= triggerClicked;
     }
