@@ -15,50 +15,12 @@ public class editStateController : MonoBehaviour
 
     public objectSelect objSelect;
 
-    public string behaviorName = "";
+    string behaviorName = "";
 
     public List<MonoBehaviour> components = new List<MonoBehaviour>();
 
-    Collider col;
-
     int stateNumber = 0;
-
-    private void OnDisable()
-    {
-        objSelect.trackedController2.PadTouched -= padTouched;
-        objSelect.trackedController2.PadUntouched -= padUntouched;
-    }
-
-    void padTouched(object sender, ClickedEventArgs e)
-    {
-        //objSelect.hand2.GetComponent<MeshRenderer>().enabled = true;
-    }
-
-    void padUntouched(object sender, ClickedEventArgs e)
-    {
-        //objSelect.hand2.GetComponent<MeshRenderer>().enabled = false;
-
-        if (device.GetAxis().x != 0 || device.GetAxis().y != 0)
-        {
-            if (device.GetAxis().x < 0 && device.GetAxis().y > 0)
-            {
-                print("Q 1");
-            }
-            if (device.GetAxis().x > 0 && device.GetAxis().y > 0)
-            {
-                print("Q 2");
-            }
-            if (device.GetAxis().x < 0 && device.GetAxis().y < 0)
-            {
-                print("Q 3");
-            }
-            if (device.GetAxis().x > 0 && device.GetAxis().y < 0)
-            {
-                print("Q 4");
-            }
-        }
-    }
-
+    
     void setControllerIndex()
     {
         device = SteamVR_Controller.Input((int)trackedObject.index);
@@ -79,10 +41,7 @@ public class editStateController : MonoBehaviour
         components.Add(scalControl);
         components.Add(cloneControl);
 
-        enableEditorState(stateNumber);
-
-        objSelect.trackedController2.PadTouched += padTouched;
-        objSelect.trackedController2.PadUntouched += padUntouched;
+        enableEditorState(0);  
     }
 
     void Update()
@@ -92,20 +51,24 @@ public class editStateController : MonoBehaviour
             if (device.GetAxis().x < 0 && device.GetAxis().y > 0)
             {
                 enableEditorState(0);
+                behaviorName = "Position";
             }
             if (device.GetAxis().x > 0 && device.GetAxis().y > 0)
             {
                 enableEditorState(1);
+                behaviorName = "Rotation";
             }
             if (device.GetAxis().x < 0 && device.GetAxis().y < 0)
             {
                 enableEditorState(2);
+                behaviorName = "Scale";
             }
             if (device.GetAxis().x > 0 && device.GetAxis().y < 0)
             {
                 enableEditorState(3);
+                behaviorName = "Clone";
             }
-        }
+        }    
     }
 
     void enableEditorState(int state)

@@ -7,14 +7,20 @@ public class positionControl : MonoBehaviour
     public objectSelect objSelect;
     editStateController stateController;
 
+    SteamVR_TrackedObject trackedObject;
+    SteamVR_Controller.Device device;
+
+    public Vector2 fingerPos;
+    float rate = .1f;
+    Vector3 slideRate;
+
     private void Start()
     {
         stateController = GetComponent<editStateController>();
-    }
+        slideRate = new Vector3(rate, rate, rate);
 
-    private void OnEnable()
-    {
-        stateController.behaviorName = "Position";
+        trackedObject = objSelect.hand2.GetComponent<SteamVR_TrackedObject>();
+        device = SteamVR_Controller.Input((int)trackedObject.index);
     }
 
     void Update()
@@ -22,36 +28,33 @@ public class positionControl : MonoBehaviour
         if (objSelect.trackedController2.triggerPressed)
         {
             transform.position = objSelect.endPosition;
+        }
 
-            //laser length will equal the distance from the hand to the raycast.point (endpoint)
-            //objSelect.laserMaxLength = Vector3.Distance(objSelect.endPosition, objSelect.hand2.transform.position);
-
-            /*
-            if (Input.GetAxis("Vertical") < 1 && Input.GetAxis("Vertical") > .001f)
+        //TODO: how is the touchPad controlling the Scale here?
+        if (device.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
+        {
+            //move toward the hit position
+            if (device.GetAxis().y > .3f)
             {
-                objSelect.laserMaxLength += 1f;
-            }
-            else if(Input.GetAxis("Vertical") > -1 && Input.GetAxis("Vertical") < -.001f)
-            {
-                objSelect.laserMaxLength -= 1f;
+                transform.position = Vector3.MoveTowards(transform.position, objSelect.endPosition, rate);
             }
 
-
-
-         if (Input.GetAxis("leftPadHorizontal") != 0 || Input.GetAxis("rightPadHorizontal") != 0 || Input.GetAxis("leftPadVertical") != 0 || Input.GetAxis("rightPadVertical") != 0)
+            //move toward the controller
+            if (device.GetAxis().y < -.3f)
             {
-                print(Input.GetAxis("leftPadHorizontal") + "   : left pad Horz");
-                print(Input.GetAxis("rightPadHorizontal") + "   : right pad Horz");
-                print(Input.GetAxis("leftPadVertical") + "   : left pad Vert");
-                print(Input.GetAxis("rightPadVertical") + "   : right pad Vert");
-
+                transform.position = Vector3.MoveTowards(transform.position, objSelect.hand2.transform.position, rate);
             }
-            */
+        }
 
-
-
-
-
+        if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip))
+        {
+            stateController.enabled = false;
+            //Get initial finger position
+            fingerPos.y = device.GetAxis().y;
+        }
+        if (device.GetPressUp(SteamVR_Controller.ButtonMask.Grip))
+        {
+            stateController.enabled = true;
         }
     }
 }

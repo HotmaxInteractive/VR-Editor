@@ -10,13 +10,10 @@ public class scaleControl : MonoBehaviour
 
     SteamVR_TrackedObject trackedObject;
     SteamVR_Controller.Device device;
+
     public Vector2 fingerPos;
-    float rate = 1;
+    float rate = .1f;
     Vector3 growRate;
-
-
-
-
 
     private void Start()
     {
@@ -27,15 +24,10 @@ public class scaleControl : MonoBehaviour
         device = SteamVR_Controller.Input((int)trackedObject.index);
     }
 
-    private void OnEnable()
-    {
-        stateController.behaviorName = "Scale";
-    }
-
     void Update()
     {
         //TODO: how is the touchPad controlling the Scale here?
-        if (device.GetPressDown(SteamVR_Controller.ButtonMask.Touchpad))
+        if (device.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
         {
             if(device.GetAxis().y > .3f)
             {
@@ -49,13 +41,13 @@ public class scaleControl : MonoBehaviour
 
         if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip))
         {
-            GetComponent<editStateController>().enabled = false;
+            stateController.enabled = false;
             //Get initial finger position
             fingerPos.y = device.GetAxis().y;
         }
         if (device.GetPressUp(SteamVR_Controller.ButtonMask.Grip))
         {
-            GetComponent<editStateController>().enabled = true;
+            stateController.enabled = true;
         }
     }
 }

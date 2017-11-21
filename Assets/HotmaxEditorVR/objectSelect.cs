@@ -13,15 +13,14 @@ public class objectSelect : MonoBehaviour
     [HideInInspector]
     public SteamVR_TrackedController trackedController2;
 
-    
+    SteamVR_TrackedObject trackedObject;
+    SteamVR_Controller.Device device;
 
     public Vector3 endPosition;
 
     public LineRenderer laserLineRenderer;
-    public float laserWidth = 0.1f;
+    float laserWidth = 0.01f;
     public float laserMaxLength = 5f;
-
-
 
     void Start()
     {
@@ -36,6 +35,9 @@ public class objectSelect : MonoBehaviour
         trackedController2.TriggerClicked += triggerClicked;
 
         Invoke("getAndSetControllerIndecies", 1.2f);
+
+        trackedObject = hand2.GetComponent<SteamVR_TrackedObject>();
+        device = SteamVR_Controller.Input((int)trackedObject.index);
     }
 
     private void OnDisable()
@@ -45,7 +47,7 @@ public class objectSelect : MonoBehaviour
 
     void triggerClicked(object sender, ClickedEventArgs e)
     {
-        selected(hand2.gameObject.transform.position, hand2.gameObject.transform.forward);
+        select(hand2.gameObject.transform.position, hand2.gameObject.transform.forward);
     }
 
 
@@ -66,14 +68,7 @@ public class objectSelect : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetAxis("gripRight") == 1f)
-        {
-            //removeDecorators();
-        }
-
-        //TODO: this should be shooting the laser from the right most controller. Get this controller form the "Hand script"
         ShootLaserFromTargetPosition(hand2.gameObject.transform.position, hand2.gameObject.transform.forward, laserMaxLength);
-
     }
 
     void ShootLaserFromTargetPosition(Vector3 targetPosition, Vector3 direction, float length)
@@ -91,8 +86,10 @@ public class objectSelect : MonoBehaviour
         laserLineRenderer.SetPosition(1, endPosition);
     }
 
-    void selected(Vector3 targetPosition, Vector3 direction)
+
+    void select(Vector3 targetPosition, Vector3 direction)
     {
+        //TODO: write this so the event listener is inside this method so I can check in the update as well
         RaycastHit hit;
         Ray ray = new Ray(targetPosition, direction);
         if (Physics.Raycast(ray, out hit))
@@ -101,32 +98,67 @@ public class objectSelect : MonoBehaviour
             if (hit.collider != null && !hit.collider.name.Contains("structure"))
             {
                 removeDecorators();
+                addDecorations(hit);           
+            }
 
-                GameObject hitObject = hit.collider.gameObject;
-                //turn off collider in selected object, we don't need it for now
-                hit.collider.enabled = false;
-
-                //Add object controllers and reference this class
-                hitObject.AddComponent<positionControl>();
-                hitObject.GetComponent<positionControl>().objSelect = this;
-
-                hitObject.AddComponent<rotationControl>();
-                hitObject.GetComponent<rotationControl>().objSelect = this;
-
-                hitObject.AddComponent<scaleControl>();
-                hitObject.GetComponent<scaleControl>().objSelect = this;
-
-                hitObject.AddComponent<cloneControl>();
-                hitObject.GetComponent<cloneControl>().objSelect = this;
-
-                hitObject.AddComponent<editStateController>();
-                hitObject.GetComponent<editStateController>().objSelect = this;
-
-                //Add the "selectable outline"
-                hitObject.AddComponent<cakeslice.Outline>();
+            if (hit.collider.name.Contains("spawnSlot"))
+            {
+               
+                if (hit.collider.name.Contains("(1)"))
+                {
+                    GameObject spawn = Instantiate(Resources.Load("(1)", typeof(GameObject))) as GameObject;
+                    spawn.transform.position = hit.collider.transform.position;
+                    spawn.transform.rotation = hit.collider.transform.rotation;
+                }
+                if (hit.collider.name.Contains("(2)"))
+                {
+                    GameObject spawn = Instantiate(Resources.Load("(2)", typeof(GameObject))) as GameObject;
+                    spawn.transform.position = hit.collider.transform.position;
+                    spawn.transform.rotation = hit.collider.transform.rotation;
+                }
+                if (hit.collider.name.Contains("(3)"))
+                {
+                    GameObject spawn = Instantiate(Resources.Load("(3)", typeof(GameObject))) as GameObject;
+                    spawn.transform.position = hit.collider.transform.position;
+                    spawn.transform.rotation = hit.collider.transform.rotation;
+                }
+                if (hit.collider.name.Contains("(4)"))
+                {
+                    GameObject spawn = Instantiate(Resources.Load("(4)", typeof(GameObject))) as GameObject;
+                    spawn.transform.position = hit.collider.transform.position;
+                    spawn.transform.rotation = hit.collider.transform.rotation;
+                }
             }
         }
     }
+
+     void addDecorations(RaycastHit raycastHit)
+    {
+        GameObject hitObject = null;
+        hitObject = raycastHit.collider.gameObject;
+        //turn off collider in selected object, we don't need it for now
+        raycastHit.collider.enabled = false;
+
+        //Add object controllers and reference this class
+        hitObject.AddComponent<positionControl>();
+        hitObject.GetComponent<positionControl>().objSelect = this;
+
+        hitObject.AddComponent<rotationControl>();
+        hitObject.GetComponent<rotationControl>().objSelect = this;
+
+        hitObject.AddComponent<scaleControl>();
+        hitObject.GetComponent<scaleControl>().objSelect = this;
+
+        hitObject.AddComponent<cloneControl>();
+        hitObject.GetComponent<cloneControl>().objSelect = this;
+
+        hitObject.AddComponent<editStateController>();
+        hitObject.GetComponent<editStateController>().objSelect = this;
+
+        //Add the "selectable outline"
+        hitObject.AddComponent<cakeslice.Outline>();
+    }
+
 
     void removeDecorators()
     {

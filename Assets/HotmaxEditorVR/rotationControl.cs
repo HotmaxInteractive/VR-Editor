@@ -10,7 +10,9 @@ public class rotationControl : MonoBehaviour
 
     private void Start()
     {
-        stateController = GetComponent<editStateController>();      
+        stateController = GetComponent<editStateController>();
+        objSelect.trackedController2.TriggerClicked += triggerClicked;
+        objSelect.trackedController2.TriggerUnclicked += triggerUnclicked;
     }
 
     void triggerClicked(object sender, ClickedEventArgs e)
@@ -31,18 +33,10 @@ public class rotationControl : MonoBehaviour
         Destroy(parentObject);
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         objSelect.trackedController2.TriggerClicked -= triggerClicked;
         objSelect.trackedController2.TriggerUnclicked -= triggerUnclicked;
-    }
-
-    private void OnEnable()
-    {
-        stateController.behaviorName = "Rotation";
-
-        objSelect.trackedController2.TriggerClicked += triggerClicked;
-        objSelect.trackedController2.TriggerUnclicked += triggerUnclicked;
     }
 
     void Update()
@@ -51,6 +45,5 @@ public class rotationControl : MonoBehaviour
         {
             transform.parent.rotation = objSelect.hand2.transform.rotation;
         }
-
     }
 }
