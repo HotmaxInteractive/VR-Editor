@@ -21,16 +21,21 @@ public class cloneControl : MonoBehaviour
 
     void triggerClicked(object sender, ClickedEventArgs e)
     {
-        var clone = Instantiate(this.gameObject) as GameObject;
-
-        for (int i = 0; i < clone.GetComponent<editStateController>().components.Count; i++)
+        if (objSelect.trackedController2.gripped)
         {
-            Destroy(clone.GetComponent<editStateController>().components[i]);
+            var clone = Instantiate(this.gameObject) as GameObject;
+            clone.transform.rotation = transform.rotation;
+            clone.transform.position = transform.position;
+
+            for (int i = 0; i < clone.GetComponent<editStateController>().components.Count; i++)
+            {
+                Destroy(clone.GetComponent<editStateController>().components[i]);
+            }
+
+            Destroy(clone.GetComponent<editStateController>());
+            Destroy(clone.GetComponent<cakeslice.Outline>());
+
+            clone.GetComponent<Collider>().enabled = true;
         }
-
-        Destroy(clone.GetComponent<editStateController>());
-        Destroy(clone.GetComponent<cakeslice.Outline>());
-
-        clone.GetComponent<Collider>().enabled = true;
     }
 }

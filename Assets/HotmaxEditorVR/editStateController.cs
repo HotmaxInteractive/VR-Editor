@@ -15,11 +15,9 @@ public class editStateController : MonoBehaviour
 
     public objectSelect objSelect;
 
-    public string behaviorName = "";
+    string behaviorName = "";
 
     public List<MonoBehaviour> components = new List<MonoBehaviour>();
-
-    Collider col;
 
     int stateNumber = 0;
     
@@ -43,8 +41,7 @@ public class editStateController : MonoBehaviour
         components.Add(scalControl);
         components.Add(cloneControl);
 
-        enableEditorState(stateNumber);
-
+        enableEditorState(0);  
     }
 
     void Update()
@@ -71,7 +68,7 @@ public class editStateController : MonoBehaviour
                 enableEditorState(3);
                 behaviorName = "Clone";
             }
-        }
+        }    
     }
 
     void enableEditorState(int state)

@@ -19,10 +19,8 @@ public class objectSelect : MonoBehaviour
     public Vector3 endPosition;
 
     public LineRenderer laserLineRenderer;
-    public float laserWidth = 0.1f;
+    float laserWidth = 0.01f;
     public float laserMaxLength = 5f;
-
-
 
     void Start()
     {
@@ -131,7 +129,6 @@ public class objectSelect : MonoBehaviour
                     spawn.transform.rotation = hit.collider.transform.rotation;
                 }
             }
-
         }
     }
 
