@@ -6,7 +6,6 @@ using UnityEngine;
 public class editStateController : MonoBehaviour
 {
     positionControl posControl;
-    rotationControl rotControl;
     scaleControl scalControl;
     cloneControl cloneControl;
 
@@ -20,55 +19,59 @@ public class editStateController : MonoBehaviour
     public List<MonoBehaviour> components = new List<MonoBehaviour>();
 
     int stateNumber = 0;
-    
-    void setControllerIndex()
+
+    private stateManager.editorModes _editorMode = stateManager.editorMode;
+
+    private void Awake()
     {
-        device = SteamVR_Controller.Input((int)trackedObject.index);
+        stateManager.editorModeEvent += updateEditorMode;
+    }
+
+    protected virtual void OnApplicationQuit()
+    {
+        stateManager.editorModeEvent -= updateEditorMode;
+    }
+
+    void updateEditorMode(stateManager.editorModes value)
+    {
+        _editorMode = value;
+        setEditorMode();
     }
 
     void Start()
     {
         trackedObject = objSelect.hand2.GetComponent<SteamVR_TrackedObject>();
-        setControllerIndex();
+        device = SteamVR_Controller.Input((int)trackedObject.index);
 
         posControl = GetComponent<positionControl>();
-        rotControl = GetComponent<rotationControl>();
         scalControl = GetComponent<scaleControl>();
         cloneControl = GetComponent<cloneControl>();
 
         components.Add(posControl);
-        components.Add(rotControl);
         components.Add(scalControl);
         components.Add(cloneControl);
 
-        enableEditorState(0);  
+        setEditorMode();
     }
 
-    void Update()
+ 
+    void setEditorMode()
     {
-        if (device.GetAxis().x != 0 || device.GetAxis().y != 0)
+        if (_editorMode == stateManager.editorModes.universalTransformMode)
         {
-            if (device.GetAxis().x < 0 && device.GetAxis().y > 0)
-            {
-                enableEditorState(0);
-                behaviorName = "Position";
-            }
-            if (device.GetAxis().x > 0 && device.GetAxis().y > 0)
-            {
-                enableEditorState(1);
-                behaviorName = "Rotation";
-            }
-            if (device.GetAxis().x < 0 && device.GetAxis().y < 0)
-            {
-                enableEditorState(2);
-                behaviorName = "Scale";
-            }
-            if (device.GetAxis().x > 0 && device.GetAxis().y < 0)
-            {
-                enableEditorState(3);
-                behaviorName = "Clone";
-            }
-        }    
+            enableEditorState(0);
+            behaviorName = "Position (to be universal transform)";
+        }
+        if (_editorMode == stateManager.editorModes.cloneDeleteMode)
+        {
+            enableEditorState(1);
+            behaviorName = "scale (to be clone delete)";
+        }
+        if (_editorMode == stateManager.editorModes.openMenuMode)
+        {
+            enableEditorState(2);
+            behaviorName = "Clone (to be open menu)";
+        }
     }
 
     void enableEditorState(int state)

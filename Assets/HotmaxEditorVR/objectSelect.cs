@@ -17,6 +17,7 @@ public class objectSelect : MonoBehaviour
     SteamVR_Controller.Device device;
 
     public Vector3 endPosition;
+    public inputManager inputManagerRef;
 
     public LineRenderer laserLineRenderer;
     float laserWidth = 0.01f;
@@ -143,9 +144,6 @@ public class objectSelect : MonoBehaviour
         hitObject.AddComponent<positionControl>();
         hitObject.GetComponent<positionControl>().objSelect = this;
 
-        hitObject.AddComponent<rotationControl>();
-        hitObject.GetComponent<rotationControl>().objSelect = this;
-
         hitObject.AddComponent<scaleControl>();
         hitObject.GetComponent<scaleControl>().objSelect = this;
 
@@ -169,7 +167,6 @@ public class objectSelect : MonoBehaviour
             GameObject highlightedObject = outline.transform.gameObject;
             highlightedObject.GetComponent<Collider>().enabled = true;
             Destroy(highlightedObject.GetComponent<positionControl>());
-            Destroy(highlightedObject.GetComponent<rotationControl>());
             Destroy(highlightedObject.GetComponent<scaleControl>());
             Destroy(highlightedObject.GetComponent<cloneControl>());
             Destroy(highlightedObject.GetComponent<editStateController>());

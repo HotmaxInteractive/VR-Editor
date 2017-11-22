@@ -7,54 +7,58 @@ public class positionControl : MonoBehaviour
     public objectSelect objSelect;
     editStateController stateController;
 
-    SteamVR_TrackedObject trackedObject;
-    SteamVR_Controller.Device device;
+    float initialYPosition;
+    float currentYPos;
 
-    public Vector2 fingerPos;
-    float rate = .1f;
-    Vector3 slideRate;
+    float distToController;
+    float scrollSpeed = 1f;
+    public float scrollDistance = 0;
 
-    private void Start()
+    private stateManager.inputPadModes _inputPadMode = stateManager.inputPadMode;
+
+    private void Awake()
     {
-        stateController = GetComponent<editStateController>();
-        slideRate = new Vector3(rate, rate, rate);
-
-        trackedObject = objSelect.hand2.GetComponent<SteamVR_TrackedObject>();
-        device = SteamVR_Controller.Input((int)trackedObject.index);
+        stateManager.inputModeEvent += updateInputMode;
     }
+
+    protected virtual void OnApplicationQuit()
+    {
+        stateManager.inputModeEvent -= updateInputMode;
+    }
+
+    void updateInputMode(stateManager.inputPadModes value)
+    {
+        _inputPadMode = value;
+    }
+
+    private void OnEnable()
+    {
+        initialYPosition = objSelect.inputManagerRef.scrollY;
+        distToController = Vector3.Distance(transform.position, objSelect.hand2.transform.position);
+        scrollDistance = 0;
+    }
+
 
     void Update()
     {
-        if (objSelect.trackedController2.triggerPressed)
+        if (_inputPadMode == stateManager.inputPadModes.tuningMode)
         {
-            transform.position = objSelect.endPosition;
-        }
+            currentYPos = objSelect.inputManagerRef.scrollY;
 
-        //TODO: how is the touchPad controlling the Scale here?
-        if (device.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
-        {
-            //move toward the hit position
-            if (device.GetAxis().y > .3f)
+
+            Vector3 offset = objSelect.hand2.transform.forward * (distToController + scrollDistance);
+            transform.position = objSelect.hand2.transform.position + new Vector3(offset.x , offset.y, offset.z);
+
+            if (currentYPos > initialYPosition)
             {
-                transform.position = Vector3.MoveTowards(transform.position, objSelect.endPosition, rate);
+                scrollDistance += 1;
+                initialYPosition = currentYPos;
             }
-
-            //move toward the controller
-            if (device.GetAxis().y < -.3f)
+            if (currentYPos < initialYPosition)
             {
-                transform.position = Vector3.MoveTowards(transform.position, objSelect.hand2.transform.position, rate);
+                scrollDistance -= 1;
+                initialYPosition = currentYPos;
             }
-        }
-
-        if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip))
-        {
-            stateController.enabled = false;
-            //Get initial finger position
-            fingerPos.y = device.GetAxis().y;
-        }
-        if (device.GetPressUp(SteamVR_Controller.ButtonMask.Grip))
-        {
-            stateController.enabled = true;
         }
     }
 }
