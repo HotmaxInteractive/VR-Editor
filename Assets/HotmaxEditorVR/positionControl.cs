@@ -7,33 +7,34 @@ public class positionControl : MonoBehaviour
     public objectSelect objSelect;
     editStateController stateController;
 
-    float initialYPosition;
-    float currentYPos;
+    float initialPadYPosition;
+    float currentPadYPos;
 
     float distToController;
     float scrollSpeed = 1f;
     public float scrollDistance = 0;
 
-    private stateManager.inputPadModes _inputPadMode = stateManager.inputPadMode;
+    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
 
     private void Awake()
     {
-        stateManager.inputModeEvent += updateInputMode;
+        stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
     }
 
     protected virtual void OnApplicationQuit()
     {
-        stateManager.inputModeEvent -= updateInputMode;
+        stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
     }
 
-    void updateInputMode(stateManager.inputPadModes value)
+    void updateSelectedObjectIsActive(bool value)
     {
-        _inputPadMode = value;
+        _selectedObjectIsActive = value;
+        print(value);
     }
 
     private void OnEnable()
     {
-        initialYPosition = objSelect.inputManagerRef.scrollY;
+        initialPadYPosition = objSelect.inputManagerRef.scrollY;
         distToController = Vector3.Distance(transform.position, objSelect.hand2.transform.position);
         scrollDistance = 0;
     }
@@ -41,23 +42,24 @@ public class positionControl : MonoBehaviour
 
     void Update()
     {
-        if (_inputPadMode == stateManager.inputPadModes.tuningMode)
+        if (_selectedObjectIsActive == true)
         {
-            currentYPos = objSelect.inputManagerRef.scrollY;
 
+            currentPadYPos = objSelect.inputManagerRef.scrollY;
 
+            
             Vector3 offset = objSelect.hand2.transform.forward * (distToController + scrollDistance);
-            transform.position = objSelect.hand2.transform.position + new Vector3(offset.x , offset.y, offset.z);
+            transform.position = objSelect.hand2.transform.position + offset;
 
-            if (currentYPos > initialYPosition)
+            if (currentPadYPos > initialPadYPosition)
             {
                 scrollDistance += 1;
-                initialYPosition = currentYPos;
+                initialPadYPosition = currentPadYPos;
             }
-            if (currentYPos < initialYPosition)
+            if (currentPadYPos < initialPadYPosition)
             {
                 scrollDistance -= 1;
-                initialYPosition = currentYPos;
+                initialPadYPosition = currentPadYPos;
             }
         }
     }

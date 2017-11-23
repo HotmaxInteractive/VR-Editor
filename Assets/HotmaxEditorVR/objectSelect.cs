@@ -23,6 +23,28 @@ public class objectSelect : MonoBehaviour
     float laserWidth = 0.01f;
     public float laserMaxLength = 5f;
 
+    stateManager _stateManagerMutatorRef;
+
+    GameObject _selectedObject;
+
+    private void Awake()
+    {
+        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
+        stateManager.selectedObjectEvent += updateSelectedObject;
+    }
+
+    protected virtual void OnApplicationQuit()
+    {
+        stateManager.selectedObjectEvent -= updateSelectedObject;
+    }
+
+    void updateSelectedObject(GameObject value)
+    {
+        _selectedObject = value;
+    }
+
+
+
     void Start()
     {
         Vector3[] initLaserPositions = new Vector3[2] { Vector3.zero, Vector3.zero };
@@ -34,6 +56,7 @@ public class objectSelect : MonoBehaviour
         trackedController2 = hand2.gameObject.GetComponent<SteamVR_TrackedController>();
 
         trackedController2.TriggerClicked += triggerClicked;
+        trackedController2.TriggerUnclicked += triggerUnclicked;
 
         Invoke("getAndSetControllerIndecies", 1.2f);
 
@@ -44,11 +67,18 @@ public class objectSelect : MonoBehaviour
     private void OnDisable()
     {
         trackedController2.TriggerClicked -= triggerClicked;
+        trackedController2.TriggerUnclicked -= triggerUnclicked;
+
     }
 
     void triggerClicked(object sender, ClickedEventArgs e)
     {
         select(hand2.gameObject.transform.position, hand2.gameObject.transform.forward);
+    }
+
+    void triggerUnclicked(object sender, ClickedEventArgs e)
+    {
+        _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(false);
     }
 
 
@@ -95,11 +125,21 @@ public class objectSelect : MonoBehaviour
         Ray ray = new Ray(targetPosition, direction);
         if (Physics.Raycast(ray, out hit))
         {
+
             //check to see if the raycast is hitting a game object
             if (hit.collider != null && !hit.collider.name.Contains("structure"))
             {
-                removeDecorators();
-                addDecorations(hit);           
+                // if the selected object is different from the currently selected object
+                if(hit.collider.gameObject == _selectedObject)
+                {
+                    _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(true);
+                }
+                else
+                {
+                    _stateManagerMutatorRef.SET_SELECTED_OBJECT(hit.collider.gameObject);
+                    removeDecorators();
+                    addDecorations(hit);
+                }
             }
 
             if (hit.collider.name.Contains("spawnSlot"))
@@ -137,8 +177,6 @@ public class objectSelect : MonoBehaviour
     {
         GameObject hitObject = null;
         hitObject = raycastHit.collider.gameObject;
-        //turn off collider in selected object, we don't need it for now
-        raycastHit.collider.enabled = false;
 
         //Add object controllers and reference this class
         hitObject.AddComponent<positionControl>();
@@ -165,7 +203,6 @@ public class objectSelect : MonoBehaviour
         if (outline)
         {
             GameObject highlightedObject = outline.transform.gameObject;
-            highlightedObject.GetComponent<Collider>().enabled = true;
             Destroy(highlightedObject.GetComponent<positionControl>());
             Destroy(highlightedObject.GetComponent<scaleControl>());
             Destroy(highlightedObject.GetComponent<cloneControl>());

@@ -7,32 +7,33 @@ public class inputManager : MonoBehaviour
     public Valve.VR.InteractionSystem.Hand hand1;
     public Valve.VR.InteractionSystem.Hand hand2;
 
-    public stateManager _stateManagerMutatorRef;
-
+    stateManager _stateManagerMutatorRef;
     SteamVR_TrackedObject trackedObject2;
     SteamVR_Controller.Device device2;
 
     public float scrollY;
 
-    private stateManager.inputPadModes _inputPadMode = stateManager.inputPadMode;
+    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
     private stateManager.editorModes _editorMode = stateManager.editorMode;
+    
 
 
     private void Awake()
     {
-        stateManager.inputModeEvent += updateInputMode;
+        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
+        stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
         stateManager.editorModeEvent += updateEditorMode;
     }
 
     protected virtual void OnApplicationQuit()
     {
-        stateManager.inputModeEvent -= updateInputMode;
+        stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
         stateManager.editorModeEvent -= updateEditorMode;
     }
 
-    void updateInputMode(stateManager.inputPadModes value)
+    void updateSelectedObjectIsActive(bool value)
     {
-        _inputPadMode = value;
+        _selectedObjectIsActive = value;
         print(value);
     }
 
@@ -77,22 +78,12 @@ public class inputManager : MonoBehaviour
 
         if(device2 != null)
         {
-            if (device2.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
-            {
-                _stateManagerMutatorRef.SET_INPUT_MODE_TUNING();
-            }
-
-            if (device2.GetPressUp(SteamVR_Controller.ButtonMask.Trigger))
-            {
-                _stateManagerMutatorRef.SET_INPUT_MODE_QUADRANT();
-            }
-
-            if(_inputPadMode == stateManager.inputPadModes.tuningMode)
+            if(_selectedObjectIsActive == true)
             {
                 scrollY = device2.GetAxis().y;
             }
 
-            if (_inputPadMode == stateManager.inputPadModes.quadrantMode)
+            if (_selectedObjectIsActive == false)
             {
                 if (device2.GetAxis().x != 0 || device2.GetAxis().y != 0)
                 {

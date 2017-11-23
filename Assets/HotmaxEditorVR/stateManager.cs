@@ -4,15 +4,6 @@ using UnityEngine;
 
 public class stateManager : MonoBehaviour
 {
-    public static inputPadModes inputPadMode = inputPadModes.quadrantMode;
-    public enum inputPadModes
-    {
-        quadrantMode,
-        tuningMode
-    }
-    public delegate void inputModeHandler(inputPadModes value);
-    public static event inputModeHandler inputModeEvent;
-
     public static editorModes editorMode = editorModes.universalTransformMode;
     public enum editorModes
     {
@@ -26,17 +17,18 @@ public class stateManager : MonoBehaviour
 
 
 
+    public static GameObject selectedObject;
+    public delegate void selectedObjectHandler(GameObject obj);
+    public static event selectedObjectHandler selectedObjectEvent;
+
+
+
+    public static bool selectedObjectIsActive = false;
+
+    public delegate void selectedObjectIsActiveHandler(bool value);
+    public static event selectedObjectIsActiveHandler selectedObjectIsActiveEvent;
+
     //------------------MUTATORS------------------\\
-    public void SET_INPUT_MODE_QUADRANT()
-    {
-        inputPadMode = inputPadModes.quadrantMode;
-        inputModeEvent(inputPadModes.quadrantMode);
-    }
-    public void SET_INPUT_MODE_TUNING()
-    {
-        inputPadMode = inputPadModes.tuningMode;
-        inputModeEvent(inputPadModes.tuningMode);
-    }
 
     public void SET_EDITOR_MODE_UNIVERSAL()
     {
@@ -52,5 +44,16 @@ public class stateManager : MonoBehaviour
     {
         editorMode = editorModes.openMenuMode;
         editorModeEvent(editorModes.openMenuMode);
+    }
+    public void SET_SELECTED_OBJECT(GameObject value)
+    {
+        selectedObject = value;
+        selectedObjectEvent(value);
+    }
+
+    public void SET_SELECTED_OBJECT_IS_ACTIVE(bool value)
+    {
+        selectedObjectIsActive = value;
+        selectedObjectIsActiveEvent(value);
     }
 }
