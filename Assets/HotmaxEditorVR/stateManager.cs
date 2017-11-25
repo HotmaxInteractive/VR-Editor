@@ -15,6 +15,17 @@ public class stateManager : MonoBehaviour
     public static event editorModeHandler editorModeEvent;
 
 
+    public static rotationModes rotationMode;
+    public enum rotationModes
+    {
+        xRotationMode,
+        yRotationMode,
+        zRotationMode
+    }
+    public delegate void rotationModeHandler(rotationModes value);
+    public static event rotationModeHandler rotationModeEvent;
+
+
 
 
     public static GameObject selectedObject;
@@ -27,6 +38,17 @@ public class stateManager : MonoBehaviour
 
     public delegate void selectedObjectIsActiveHandler(bool value);
     public static event selectedObjectIsActiveHandler selectedObjectIsActiveEvent;
+
+
+    public static bool rotationGizmosActive = false;
+
+    public delegate void rotationGizmoIsActiveHandler(bool value);
+    public static event rotationGizmoIsActiveHandler rotationGizmosActiveEvent;
+
+    public static bool rotationGizmoIsSelected = false;
+
+    public delegate void rotationGizmoIsSelectedHandler(bool value);
+    public static event rotationGizmoIsSelectedHandler rotationGizmoIsSelectedEvent;
 
     //------------------MUTATORS------------------\\
 
@@ -55,5 +77,38 @@ public class stateManager : MonoBehaviour
     {
         selectedObjectIsActive = value;
         selectedObjectIsActiveEvent(value);
+    }
+
+    public void SET_ROTATION_GIZMOS_ACTIVE(bool value)
+    {
+        rotationGizmosActive = value;
+        rotationGizmosActiveEvent(value);
+    }
+
+    public void SET_ROTATION_GIZMO_IS_SELECTED(bool value)
+    {
+        rotationGizmoIsSelected = value;
+        rotationGizmoIsSelectedEvent(value);
+    }
+
+    public void SET_X_ROTATION_GIZMO_ACTIVE()
+    {
+        rotationMode = rotationModes.xRotationMode;
+        rotationModeEvent(rotationModes.xRotationMode);
+        print(rotationMode);
+    }
+
+    public void SET_Y_ROTATION_GIZMO_ACTIVE()
+    {
+        rotationMode = rotationModes.yRotationMode;
+        rotationModeEvent(rotationModes.yRotationMode);
+        print(rotationMode);
+    }
+
+    public void SET_Z_ROTATION_GIZMO_ACTIVE()
+    {
+        rotationMode = rotationModes.zRotationMode;
+        rotationModeEvent(rotationModes.zRotationMode);
+        print(rotationMode);
     }
 }

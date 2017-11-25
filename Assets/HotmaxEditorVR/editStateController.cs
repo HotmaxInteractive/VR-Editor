@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class editStateController : MonoBehaviour
 {
-    positionControl posControl;
-    scaleControl scalControl;
-    cloneControl cloneControl;
+    universalTransform _universalTransform;
+    scaleControl _scaleControl;
+    cloneControl _cloneControl;
 
     SteamVR_TrackedObject trackedObject;
     SteamVR_Controller.Device device;
@@ -43,13 +43,13 @@ public class editStateController : MonoBehaviour
         trackedObject = objSelect.hand2.GetComponent<SteamVR_TrackedObject>();
         device = SteamVR_Controller.Input((int)trackedObject.index);
 
-        posControl = GetComponent<positionControl>();
-        scalControl = GetComponent<scaleControl>();
-        cloneControl = GetComponent<cloneControl>();
+        _universalTransform = GetComponent<universalTransform>();
+        _scaleControl = GetComponent<scaleControl>();
+        _cloneControl = GetComponent<cloneControl>();
 
-        components.Add(posControl);
-        components.Add(scalControl);
-        components.Add(cloneControl);
+        components.Add(_universalTransform);
+        components.Add(_scaleControl);
+        components.Add(_cloneControl);
 
         setEditorMode();
     }

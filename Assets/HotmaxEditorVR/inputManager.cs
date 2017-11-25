@@ -34,7 +34,6 @@ public class inputManager : MonoBehaviour
     void updateSelectedObjectIsActive(bool value)
     {
         _selectedObjectIsActive = value;
-        print(value);
     }
 
     void updateEditorMode(stateManager.editorModes value)
@@ -74,7 +73,7 @@ public class inputManager : MonoBehaviour
 
     void Update()
     {
-        //------------------------using the pad for a menu------------------------\\
+        //------------------------using the pad------------------------\\
 
         if(device2 != null)
         {
@@ -83,6 +82,7 @@ public class inputManager : MonoBehaviour
                 scrollY = device2.GetAxis().y;
             }
 
+            //using the quadrants
             if (_selectedObjectIsActive == false)
             {
                 if (device2.GetAxis().x != 0 || device2.GetAxis().y != 0)

@@ -11,7 +11,7 @@ public class positionControl : MonoBehaviour
     float currentPadYPos;
 
     float distToController;
-    float scrollSpeed = 1f;
+    float scrollSpeed = .2f;
     public float scrollDistance = 0;
 
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
@@ -53,12 +53,12 @@ public class positionControl : MonoBehaviour
 
             if (currentPadYPos > initialPadYPosition)
             {
-                scrollDistance += 1;
+                scrollDistance += scrollSpeed;
                 initialPadYPosition = currentPadYPos;
             }
             if (currentPadYPos < initialPadYPosition)
             {
-                scrollDistance -= 1;
+                scrollDistance -= scrollSpeed;
                 initialPadYPosition = currentPadYPos;
             }
         }

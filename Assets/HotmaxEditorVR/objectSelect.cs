@@ -23,6 +23,8 @@ public class objectSelect : MonoBehaviour
     float laserWidth = 0.01f;
     public float laserMaxLength = 5f;
 
+    public GameObject rotationGizmos;
+
     stateManager _stateManagerMutatorRef;
 
     GameObject _selectedObject;
@@ -62,6 +64,8 @@ public class objectSelect : MonoBehaviour
 
         trackedObject = hand2.GetComponent<SteamVR_TrackedObject>();
         device = SteamVR_Controller.Input((int)trackedObject.index);
+
+        rotationGizmos = GameObject.Find("rotationGizmos");
     }
 
     private void OnDisable()
@@ -79,10 +83,11 @@ public class objectSelect : MonoBehaviour
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
         _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(false);
+        _stateManagerMutatorRef.SET_ROTATION_GIZMOS_ACTIVE(true);
+        _stateManagerMutatorRef.SET_ROTATION_GIZMO_IS_SELECTED(false);
     }
 
 
-    //TODO: this is a bug, if the controllers are turned on too late and if they arent being tracked...
     void getAndSetControllerIndecies()
     {
         //get the controller index
@@ -130,15 +135,37 @@ public class objectSelect : MonoBehaviour
             if (hit.collider != null && !hit.collider.name.Contains("structure"))
             {
                 // if the selected object is different from the currently selected object
-                if(hit.collider.gameObject == _selectedObject)
+                if (hit.collider.gameObject == _selectedObject)
                 {
                     _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(true);
+                    _stateManagerMutatorRef.SET_ROTATION_GIZMOS_ACTIVE(false);
                 }
                 else
                 {
-                    _stateManagerMutatorRef.SET_SELECTED_OBJECT(hit.collider.gameObject);
-                    removeDecorators();
-                    addDecorations(hit);
+                    if (hit.collider.name.Contains("RotationGizmo"))
+                    {
+                        _stateManagerMutatorRef.SET_ROTATION_GIZMO_IS_SELECTED(true);
+
+                        if (hit.collider.name.Contains("xRotationGizmo"))
+                        {
+                            _stateManagerMutatorRef.SET_X_ROTATION_GIZMO_ACTIVE();
+                        }
+                        if (hit.collider.name.Contains("yRotationGizmo"))
+                        {
+                            _stateManagerMutatorRef.SET_Y_ROTATION_GIZMO_ACTIVE();
+                        }
+                        if (hit.collider.name.Contains("zRotationGizmo"))
+                        {
+                            _stateManagerMutatorRef.SET_Z_ROTATION_GIZMO_ACTIVE();
+                        }
+                    }
+                    else
+                    {
+                        _stateManagerMutatorRef.SET_SELECTED_OBJECT(hit.collider.gameObject);
+                        removeDecorators();
+                        addDecorations(hit);
+                        _stateManagerMutatorRef.SET_ROTATION_GIZMOS_ACTIVE(true);
+                    }
                 }
             }
 
@@ -173,14 +200,14 @@ public class objectSelect : MonoBehaviour
         }
     }
 
-     void addDecorations(RaycastHit raycastHit)
+    void addDecorations(RaycastHit raycastHit)
     {
         GameObject hitObject = null;
         hitObject = raycastHit.collider.gameObject;
 
         //Add object controllers and reference this class
-        hitObject.AddComponent<positionControl>();
-        hitObject.GetComponent<positionControl>().objSelect = this;
+        hitObject.AddComponent<universalTransform>();
+        hitObject.GetComponent<universalTransform>().objSelect = this;
 
         hitObject.AddComponent<scaleControl>();
         hitObject.GetComponent<scaleControl>().objSelect = this;
@@ -190,6 +217,7 @@ public class objectSelect : MonoBehaviour
 
         hitObject.AddComponent<editStateController>();
         hitObject.GetComponent<editStateController>().objSelect = this;
+
 
         //Add the "selectable outline"
         hitObject.AddComponent<cakeslice.Outline>();
@@ -203,7 +231,7 @@ public class objectSelect : MonoBehaviour
         if (outline)
         {
             GameObject highlightedObject = outline.transform.gameObject;
-            Destroy(highlightedObject.GetComponent<positionControl>());
+            Destroy(highlightedObject.GetComponent<universalTransform>());
             Destroy(highlightedObject.GetComponent<scaleControl>());
             Destroy(highlightedObject.GetComponent<cloneControl>());
             Destroy(highlightedObject.GetComponent<editStateController>());
