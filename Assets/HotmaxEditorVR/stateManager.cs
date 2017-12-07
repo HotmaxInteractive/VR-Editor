@@ -14,6 +14,10 @@ public class stateManager : MonoBehaviour
     public delegate void editorModeHandler(editorModes value);
     public static event editorModeHandler editorModeEvent;
 
+    public static bool rotationGizmoIsSelected = false;
+
+    public delegate void rotationGizmoIsSelectedHandler(bool value);
+    public static event rotationGizmoIsSelectedHandler rotationGizmoIsSelectedEvent;
 
     public static rotationModes rotationMode;
     public enum rotationModes
@@ -25,24 +29,15 @@ public class stateManager : MonoBehaviour
     public delegate void rotationModeHandler(rotationModes value);
     public static event rotationModeHandler rotationModeEvent;
 
-
-
-
     public static GameObject selectedObject;
     public delegate void selectedObjectHandler(GameObject obj);
     public static event selectedObjectHandler selectedObjectEvent;
-
-
 
     public static bool selectedObjectIsActive = false;
 
     public delegate void selectedObjectIsActiveHandler(bool value);
     public static event selectedObjectIsActiveHandler selectedObjectIsActiveEvent;
 
-    public static bool rotationGizmoIsSelected = false;
-
-    public delegate void rotationGizmoIsSelectedHandler(bool value);
-    public static event rotationGizmoIsSelectedHandler rotationGizmoIsSelectedEvent;
 
     //------------------MUTATORS------------------\\
 
