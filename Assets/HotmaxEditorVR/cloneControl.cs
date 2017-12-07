@@ -5,37 +5,60 @@ using UnityEngine;
 public class cloneControl : MonoBehaviour
 {
     public objectSelect objSelect;
-    editStateController stateController;
     public float scaleSize = .5f;
+    bool cloneMode = false;
+    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
+    private stateManager.editorModes _editorMode = stateManager.editorMode;
+    GameObject _selectedObject;
+
 
     private void Start()
     {
-        stateController = GetComponent<editStateController>();
         objSelect.trackedController2.TriggerClicked += triggerClicked;
+        stateManager.editorModeEvent += updateEditorMode;
+        stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
+        stateManager.selectedObjectEvent += updateSelectedObjectEvent;
     }
 
-    private void OnDestroy()
+    protected virtual void OnApplicationQuit()
     {
         objSelect.trackedController2.TriggerClicked -= triggerClicked;
+        stateManager.editorModeEvent -= updateEditorMode;
+        stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
+
+    }
+
+    void updateEditorMode(stateManager.editorModes value)
+    {
+        _editorMode = value;
+    }
+
+    void updateSelectedObjectIsActive(bool value)
+    {
+        _selectedObjectIsActive = value;
+    }
+
+    //MAYBE: if editor mode clone delete, update hit object. take the new value and clone it
+    void updateSelectedObjectEvent(GameObject value)
+    {
+        _selectedObject = value;
     }
 
     void triggerClicked(object sender, ClickedEventArgs e)
     {
-        if (objSelect.trackedController2.gripped)
+        if (_editorMode == stateManager.editorModes.cloneDeleteMode)
         {
+
             var clone = Instantiate(this.gameObject) as GameObject;
             clone.transform.rotation = transform.rotation;
             clone.transform.position = transform.position;
 
-            for (int i = 0; i < clone.GetComponent<editStateController>().components.Count; i++)
-            {
-                Destroy(clone.GetComponent<editStateController>().components[i]);
-            }
+            //TODO: now that we have the clone, add decorators to it
 
-            Destroy(clone.GetComponent<editStateController>());
+            Destroy(clone.GetComponent<universalTransform>());
+            Destroy(clone.GetComponent<cloneControl>());
+            Destroy(clone.GetComponent<scaleControl>());
             Destroy(clone.GetComponent<cakeslice.Outline>());
-
-            clone.GetComponent<Collider>().enabled = true;
         }
     }
 }

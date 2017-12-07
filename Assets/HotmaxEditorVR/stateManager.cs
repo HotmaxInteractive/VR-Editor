@@ -39,12 +39,6 @@ public class stateManager : MonoBehaviour
     public delegate void selectedObjectIsActiveHandler(bool value);
     public static event selectedObjectIsActiveHandler selectedObjectIsActiveEvent;
 
-
-    public static bool rotationGizmosActive = false;
-
-    public delegate void rotationGizmoIsActiveHandler(bool value);
-    public static event rotationGizmoIsActiveHandler rotationGizmosActiveEvent;
-
     public static bool rotationGizmoIsSelected = false;
 
     public delegate void rotationGizmoIsSelectedHandler(bool value);
@@ -79,12 +73,6 @@ public class stateManager : MonoBehaviour
         selectedObjectIsActiveEvent(value);
     }
 
-    public void SET_ROTATION_GIZMOS_ACTIVE(bool value)
-    {
-        rotationGizmosActive = value;
-        rotationGizmosActiveEvent(value);
-    }
-
     public void SET_ROTATION_GIZMO_IS_SELECTED(bool value)
     {
         rotationGizmoIsSelected = value;
@@ -95,20 +83,17 @@ public class stateManager : MonoBehaviour
     {
         rotationMode = rotationModes.xRotationMode;
         rotationModeEvent(rotationModes.xRotationMode);
-        print(rotationMode);
     }
 
     public void SET_Y_ROTATION_GIZMO_ACTIVE()
     {
         rotationMode = rotationModes.yRotationMode;
         rotationModeEvent(rotationModes.yRotationMode);
-        print(rotationMode);
     }
 
     public void SET_Z_ROTATION_GIZMO_ACTIVE()
     {
         rotationMode = rotationModes.zRotationMode;
         rotationModeEvent(rotationModes.zRotationMode);
-        print(rotationMode);
     }
 }

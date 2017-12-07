@@ -6,11 +6,9 @@ public class rotationControl : MonoBehaviour
 {
     public objectSelect objSelect;
     GameObject parentObject;
-    editStateController stateController;
 
     private void Start()
     {
-        stateController = GetComponent<editStateController>();
         objSelect.trackedController2.TriggerClicked += triggerClicked;
         objSelect.trackedController2.TriggerUnclicked += triggerUnclicked;
     }

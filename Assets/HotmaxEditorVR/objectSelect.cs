@@ -83,7 +83,6 @@ public class objectSelect : MonoBehaviour
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
         _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(false);
-        _stateManagerMutatorRef.SET_ROTATION_GIZMOS_ACTIVE(true);
         _stateManagerMutatorRef.SET_ROTATION_GIZMO_IS_SELECTED(false);
     }
 
@@ -138,7 +137,7 @@ public class objectSelect : MonoBehaviour
                 if (hit.collider.gameObject == _selectedObject)
                 {
                     _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(true);
-                    _stateManagerMutatorRef.SET_ROTATION_GIZMOS_ACTIVE(false);
+                    
                 }
                 else
                 {
@@ -164,7 +163,6 @@ public class objectSelect : MonoBehaviour
                         _stateManagerMutatorRef.SET_SELECTED_OBJECT(hit.collider.gameObject);
                         removeDecorators();
                         addDecorations(hit);
-                        _stateManagerMutatorRef.SET_ROTATION_GIZMOS_ACTIVE(true);
                     }
                 }
             }
@@ -215,10 +213,6 @@ public class objectSelect : MonoBehaviour
         hitObject.AddComponent<cloneControl>();
         hitObject.GetComponent<cloneControl>().objSelect = this;
 
-        hitObject.AddComponent<editStateController>();
-        hitObject.GetComponent<editStateController>().objSelect = this;
-
-
         //Add the "selectable outline"
         hitObject.AddComponent<cakeslice.Outline>();
     }
@@ -234,7 +228,6 @@ public class objectSelect : MonoBehaviour
             Destroy(highlightedObject.GetComponent<universalTransform>());
             Destroy(highlightedObject.GetComponent<scaleControl>());
             Destroy(highlightedObject.GetComponent<cloneControl>());
-            Destroy(highlightedObject.GetComponent<editStateController>());
             Destroy(outline);
         }
     }

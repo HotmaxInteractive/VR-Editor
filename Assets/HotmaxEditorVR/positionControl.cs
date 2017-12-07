@@ -5,7 +5,6 @@ using UnityEngine;
 public class positionControl : MonoBehaviour
 {
     public objectSelect objSelect;
-    editStateController stateController;
 
     float initialPadYPosition;
     float currentPadYPos;

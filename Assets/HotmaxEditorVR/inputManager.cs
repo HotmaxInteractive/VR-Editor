@@ -23,7 +23,8 @@ public class inputManager : MonoBehaviour
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
         stateManager.editorModeEvent += updateEditorMode;
-    }
+
+}
 
     protected virtual void OnApplicationQuit()
     {
@@ -77,13 +78,11 @@ public class inputManager : MonoBehaviour
 
         if(device2 != null)
         {
-            if(_selectedObjectIsActive == true)
+            if(_selectedObjectIsActive)
             {
                 scrollY = device2.GetAxis().y;
             }
-
-            //using the quadrants
-            if (_selectedObjectIsActive == false)
+            else
             {
                 if (device2.GetAxis().x != 0 || device2.GetAxis().y != 0)
                 {
