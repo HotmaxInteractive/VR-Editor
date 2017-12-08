@@ -15,7 +15,6 @@ public class stateManager : MonoBehaviour
     public static event editorModeHandler editorModeEvent;
 
     public static bool rotationGizmoIsSelected = false;
-
     public delegate void rotationGizmoIsSelectedHandler(bool value);
     public static event rotationGizmoIsSelectedHandler rotationGizmoIsSelectedEvent;
 
@@ -34,7 +33,6 @@ public class stateManager : MonoBehaviour
     public static event selectedObjectHandler selectedObjectEvent;
 
     public static bool selectedObjectIsActive = false;
-
     public delegate void selectedObjectIsActiveHandler(bool value);
     public static event selectedObjectIsActiveHandler selectedObjectIsActiveEvent;
 

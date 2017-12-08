@@ -10,7 +10,6 @@ public class scaleControl : MonoBehaviour
 
     private stateManager.editorModes _editorMode = stateManager.editorMode;
 
-
     private void Start()
     {
         growRate = new Vector3(rate, rate, rate);
@@ -36,13 +35,13 @@ public class scaleControl : MonoBehaviour
         if(_editorMode == stateManager.editorModes.openMenuMode)
         {
             //TODO: how is the touchPad controlling the Scale here?
-            if (inputManager.device2.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
+            if (inputManager.selectorHand.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
             {
-                if (inputManager.device2.GetAxis().y > .3f)
+                if (inputManager.selectorHand.GetAxis().y > .3f)
                 {
                     transform.localScale += growRate;
                 }
-                if (inputManager.device2.GetAxis().y < -.3f)
+                if (inputManager.selectorHand.GetAxis().y < -.3f)
                 {
                     transform.localScale -= growRate;
                 }

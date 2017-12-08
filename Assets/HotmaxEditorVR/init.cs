@@ -4,24 +4,12 @@ using UnityEngine;
 
 public class init : MonoBehaviour {
 
-
     //-- reference hooks
     //-- used for classes that frequently get destroyed but need reference to a gameObject
     public static GameObject rotationGizmos;
-
 
     void Awake ()
     {
         rotationGizmos = GameObject.Find("rotationGizmos");
     }
-
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

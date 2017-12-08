@@ -16,7 +16,10 @@ public class cloneControl : MonoBehaviour
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
         stateManager.selectedObjectEvent += updateSelectedObjectEvent;
 
-        cloneSelectedObject();
+        if (_editorMode == stateManager.editorModes.cloneDeleteMode)
+        {
+            cloneSelectedObject();
+        }
     }
 
     protected virtual void OnApplicationQuit()
@@ -35,7 +38,10 @@ public class cloneControl : MonoBehaviour
         _selectedObjectIsActive = value;
         if (_selectedObjectIsActive)
         {
-            cloneSelectedObject();
+            if (_editorMode == stateManager.editorModes.cloneDeleteMode)
+            {
+                cloneSelectedObject();
+            }
         }
     }
 
@@ -47,16 +53,13 @@ public class cloneControl : MonoBehaviour
     //clone the currently selected object and delete the editing behaviours from it
     void cloneSelectedObject()
     {
-        if (_editorMode == stateManager.editorModes.cloneDeleteMode)
-        {
-            var clone = Instantiate(this.gameObject) as GameObject;
-            clone.transform.rotation = transform.rotation;
-            clone.transform.position = transform.position;
+        var clone = Instantiate(this.gameObject) as GameObject;
+        clone.transform.rotation = transform.rotation;
+        clone.transform.position = transform.position;
 
-            Destroy(clone.GetComponent<universalTransform>());
-            Destroy(clone.GetComponent<cloneControl>());
-            Destroy(clone.GetComponent<scaleControl>());
-            Destroy(clone.GetComponent<cakeslice.Outline>());
-        }
+        Destroy(clone.GetComponent<universalTransform>());
+        Destroy(clone.GetComponent<cloneControl>());
+        Destroy(clone.GetComponent<scaleControl>());
+        Destroy(clone.GetComponent<cakeslice.Outline>());
     }
 }

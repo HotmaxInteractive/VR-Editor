@@ -5,18 +5,17 @@ using UnityEngine;
 public class inputManager : MonoBehaviour
 {
     // -- controller refs
+    //TODO: make these private in the future if nothing is grabbing it from the outside
     public static Valve.VR.InteractionSystem.Hand hand1;
     public static Valve.VR.InteractionSystem.Hand hand2;
     public static SteamVR_TrackedController trackedController1;
     public static SteamVR_TrackedController trackedController2;
     private SteamVR_TrackedObject trackedObject2;
-    public static SteamVR_Controller.Device device2;
+    public static SteamVR_Controller.Device selectorHand;
 
 
     private stateManager _stateManagerMutatorRef;
-    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
-    private stateManager.editorModes _editorMode = stateManager.editorMode;
-    
+    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;    
 
 
     private void Awake()
@@ -29,21 +28,19 @@ public class inputManager : MonoBehaviour
         trackedController1 = hand1.gameObject.GetComponent<SteamVR_TrackedController>();
         trackedController2 = hand2.gameObject.GetComponent<SteamVR_TrackedController>();
         trackedObject2 = hand2.GetComponent<SteamVR_TrackedObject>();
-        device2 = SteamVR_Controller.Input((int)trackedObject2.index);
+        selectorHand = SteamVR_Controller.Input((int)trackedObject2.index);
 
-
+        //This method depends on another steamVR method which fires 1s after the app starts.
+        //The steamVR method finds the hardware indecies of the controllers
         Invoke("setControllerIndecies", 1.2f);
 
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
-        stateManager.editorModeEvent += updateEditorMode;
     }
 
     protected virtual void OnApplicationQuit()
     {
         stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
-        stateManager.editorModeEvent -= updateEditorMode;
-
     }
 
     void updateSelectedObjectIsActive(bool value)
@@ -51,17 +48,14 @@ public class inputManager : MonoBehaviour
         _selectedObjectIsActive = value;
     }
 
-    void updateEditorMode(stateManager.editorModes value)
-    {
-        print(value);
-    }
-
-    //TODO: this is a bug, if the controllers are turned on too late and if they arent being tracked...
+    //TODO: this should probably be an event that broadcasts in steamVR Hand, but this seems to be working for now
+    //------and edge case might be if only one controller is on
     void setControllerIndecies()
     {
-        if (trackedObject2 == null)
+        if (hand2.controller == null)
         {
-            Invoke("setControllerIndecies", 1.2f);
+            Invoke("setControllerIndecies", 1f);
+            print("trying to find a hardware for the controller (Hand.controller)");
             return;
         }
         //get the controller index
@@ -75,14 +69,14 @@ public class inputManager : MonoBehaviour
         hand1.gameObject.GetComponent<SteamVR_TrackedObject>().SetDeviceIndex((int)hand1ControllerIndex);
         hand2.gameObject.GetComponent<SteamVR_TrackedObject>().SetDeviceIndex((int)hand2ControllerIndex);
 
-        device2 = SteamVR_Controller.Input((int)trackedObject2.index);
+        selectorHand = SteamVR_Controller.Input((int)trackedObject2.index);
     }
 
     void Update()
     {
         //------------------------using the pad------------------------\\
 
-        if(device2 != null)
+        if(selectorHand != null)
         {
             if(_selectedObjectIsActive)
             {
@@ -91,21 +85,21 @@ public class inputManager : MonoBehaviour
             else
             {
                 //TODO: move to menu handler
-                if (device2.GetAxis().x != 0 || device2.GetAxis().y != 0)
+                if (selectorHand.GetAxis().x != 0 || selectorHand.GetAxis().y != 0)
                 {
-                    if (device2.GetAxis().x < 0 && device2.GetAxis().y > 0)
+                    if (selectorHand.GetAxis().x < 0 && selectorHand.GetAxis().y > 0)
                     {
                         _stateManagerMutatorRef.SET_EDITOR_MODE_UNIVERSAL();
                     }
-                    if (device2.GetAxis().x > 0 && device2.GetAxis().y > 0)
+                    if (selectorHand.GetAxis().x > 0 && selectorHand.GetAxis().y > 0)
                     {
                         _stateManagerMutatorRef.SET_EDITOR_MODE_CLONE_DELETE();
                     }
-                    if (device2.GetAxis().x < 0 && device2.GetAxis().y < 0)
+                    if (selectorHand.GetAxis().x < 0 && selectorHand.GetAxis().y < 0)
                     {
                         _stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
                     }
-                    if (device2.GetAxis().x > 0 && device2.GetAxis().y < 0)
+                    if (selectorHand.GetAxis().x > 0 && selectorHand.GetAxis().y < 0)
                     {
                         _stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
                     }

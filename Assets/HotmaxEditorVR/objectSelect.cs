@@ -8,8 +8,10 @@ public class objectSelect : MonoBehaviour
     //--laser stuff
     private Vector3 laserEndPosition;
     public LineRenderer laserLineRenderer;
+    [SerializeField]
     private float laserWidth = 0.01f;
-    public float laserMaxLength = 5f;
+    [SerializeField]
+    private float laserMaxLength = 5f;
 
     //--local refs
     private stateManager _stateManagerMutatorRef;
