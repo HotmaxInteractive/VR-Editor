@@ -4,28 +4,25 @@ using UnityEngine;
 
 public class cloneControl : MonoBehaviour
 {
-    public objectSelect objSelect;
-    public float scaleSize = .5f;
-    bool cloneMode = false;
-    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
-    private stateManager.editorModes _editorMode = stateManager.editorMode;
-    GameObject _selectedObject;
+    private bool cloneMode = false;
 
+    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
+    private GameObject _selectedObject;
+    private stateManager.editorModes _editorMode = stateManager.editorMode;
 
     private void Start()
     {
-        objSelect.trackedController2.TriggerClicked += triggerClicked;
         stateManager.editorModeEvent += updateEditorMode;
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
         stateManager.selectedObjectEvent += updateSelectedObjectEvent;
+
+        cloneSelectedObject();
     }
 
     protected virtual void OnApplicationQuit()
     {
-        objSelect.trackedController2.TriggerClicked -= triggerClicked;
         stateManager.editorModeEvent -= updateEditorMode;
         stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
-
     }
 
     void updateEditorMode(stateManager.editorModes value)
@@ -36,24 +33,25 @@ public class cloneControl : MonoBehaviour
     void updateSelectedObjectIsActive(bool value)
     {
         _selectedObjectIsActive = value;
+        if (_selectedObjectIsActive)
+        {
+            cloneSelectedObject();
+        }
     }
 
-    //MAYBE: if editor mode clone delete, update hit object. take the new value and clone it
     void updateSelectedObjectEvent(GameObject value)
     {
         _selectedObject = value;
     }
 
-    void triggerClicked(object sender, ClickedEventArgs e)
+    //clone the currently selected object and delete the editing behaviours from it
+    void cloneSelectedObject()
     {
         if (_editorMode == stateManager.editorModes.cloneDeleteMode)
         {
-
             var clone = Instantiate(this.gameObject) as GameObject;
             clone.transform.rotation = transform.rotation;
             clone.transform.position = transform.position;
-
-            //TODO: now that we have the clone, add decorators to it
 
             Destroy(clone.GetComponent<universalTransform>());
             Destroy(clone.GetComponent<cloneControl>());
