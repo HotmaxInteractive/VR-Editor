@@ -4,50 +4,48 @@ using UnityEngine;
 
 public class scaleControl : MonoBehaviour
 {
-    public objectSelect objSelect;
-    editStateController stateController;
     public float scaleSize = .5f;
+    private float rate = .1f;
+    private Vector3 growRate;
 
-    SteamVR_TrackedObject trackedObject;
-    SteamVR_Controller.Device device;
-
-    public Vector2 fingerPos;
-    float rate = .1f;
-    Vector3 growRate;
+    private stateManager.editorModes _editorMode = stateManager.editorMode;
 
     private void Start()
     {
         growRate = new Vector3(rate, rate, rate);
-        stateController = GetComponent<editStateController>();
+    }
 
-        trackedObject = objSelect.hand2.GetComponent<SteamVR_TrackedObject>();
-        device = SteamVR_Controller.Input((int)trackedObject.index);
+    private void OnEnable()
+    {
+        stateManager.editorModeEvent += updateEditorMode;
+    }
+
+    private void OnDisable()
+    {
+        stateManager.editorModeEvent -= updateEditorMode;
+    }
+
+    void updateEditorMode(stateManager.editorModes value)
+    {
+        _editorMode = value;
     }
 
     void Update()
     {
-        //TODO: how is the touchPad controlling the Scale here?
-        if (device.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
+        if(_editorMode == stateManager.editorModes.openMenuMode)
         {
-            if(device.GetAxis().y > .3f)
+            //TODO: how is the touchPad controlling the Scale here?
+            if (inputManager.selectorHand.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
             {
-                transform.localScale += growRate;
+                if (inputManager.selectorHand.GetAxis().y > .3f)
+                {
+                    transform.localScale += growRate;
+                }
+                if (inputManager.selectorHand.GetAxis().y < -.3f)
+                {
+                    transform.localScale -= growRate;
+                }
             }
-            if (device.GetAxis().y < -.3f)
-            {
-                transform.localScale -= growRate;
-            }
-        }
-
-        if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip))
-        {
-            stateController.enabled = false;
-            //Get initial finger position
-            fingerPos.y = device.GetAxis().y;
-        }
-        if (device.GetPressUp(SteamVR_Controller.ButtonMask.Grip))
-        {
-            stateController.enabled = true;
         }
     }
 }

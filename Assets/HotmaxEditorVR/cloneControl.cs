@@ -4,38 +4,63 @@ using UnityEngine;
 
 public class cloneControl : MonoBehaviour
 {
-    public objectSelect objSelect;
-    editStateController stateController;
-    public float scaleSize = .5f;
+    private bool cloneMode = false;
+
+    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
+    private GameObject _selectedObject;
+    private stateManager.editorModes _editorMode = stateManager.editorMode;
 
     private void Start()
     {
-        stateController = GetComponent<editStateController>();
-        objSelect.trackedController2.TriggerClicked += triggerClicked;
-    }
+        stateManager.editorModeEvent += updateEditorMode;
+        stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
+        stateManager.selectedObjectEvent += updateSelectedObjectEvent;
 
-    private void OnDestroy()
-    {
-        objSelect.trackedController2.TriggerClicked -= triggerClicked;
-    }
-
-    void triggerClicked(object sender, ClickedEventArgs e)
-    {
-        if (objSelect.trackedController2.gripped)
+        if (_editorMode == stateManager.editorModes.cloneDeleteMode)
         {
-            var clone = Instantiate(this.gameObject) as GameObject;
-            clone.transform.rotation = transform.rotation;
-            clone.transform.position = transform.position;
-
-            for (int i = 0; i < clone.GetComponent<editStateController>().components.Count; i++)
-            {
-                Destroy(clone.GetComponent<editStateController>().components[i]);
-            }
-
-            Destroy(clone.GetComponent<editStateController>());
-            Destroy(clone.GetComponent<cakeslice.Outline>());
-
-            clone.GetComponent<Collider>().enabled = true;
+            cloneSelectedObject();
         }
+    }
+
+    protected virtual void OnApplicationQuit()
+    {
+        stateManager.editorModeEvent -= updateEditorMode;
+        stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
+    }
+
+    void updateEditorMode(stateManager.editorModes value)
+    {
+        _editorMode = value;
+    }
+
+    void updateSelectedObjectIsActive(bool value)
+    {
+        _selectedObjectIsActive = value;
+        if (_selectedObjectIsActive)
+        {
+            if (_editorMode == stateManager.editorModes.cloneDeleteMode)
+            {
+                cloneSelectedObject();
+            }
+        }
+    }
+
+    void updateSelectedObjectEvent(GameObject value)
+    {
+        _selectedObject = value;
+    }
+
+    //clone the currently selected object and delete the editing behaviours from it
+    void cloneSelectedObject()
+    {
+        var clone = Instantiate(this.gameObject) as GameObject;
+        clone.transform.rotation = transform.rotation;
+        clone.transform.position = transform.position;
+        clone.transform.parent = init.props.transform;
+
+        Destroy(clone.GetComponent<universalTransform>());
+        Destroy(clone.GetComponent<cloneControl>());
+        Destroy(clone.GetComponent<scaleControl>());
+        Destroy(clone.GetComponent<cakeslice.Outline>());
     }
 }
