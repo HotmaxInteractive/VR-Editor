@@ -56,6 +56,7 @@ public class cloneControl : MonoBehaviour
         var clone = Instantiate(this.gameObject) as GameObject;
         clone.transform.rotation = transform.rotation;
         clone.transform.position = transform.position;
+        clone.transform.parent = init.props.transform;
 
         Destroy(clone.GetComponent<universalTransform>());
         Destroy(clone.GetComponent<cloneControl>());

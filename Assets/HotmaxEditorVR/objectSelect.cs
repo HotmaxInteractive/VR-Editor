@@ -13,27 +13,13 @@ public class objectSelect : MonoBehaviour
     [SerializeField]
     private float laserMaxLength = 5f;
 
-    //--local refs
+    
     private stateManager _stateManagerMutatorRef;
-    private GameObject _selectedObject;
 
     private void Awake()
     {
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
-        stateManager.selectedObjectEvent += updateSelectedObject;
     }
-
-    protected virtual void OnApplicationQuit()
-    {
-        stateManager.selectedObjectEvent -= updateSelectedObject;
-    }
-
-    void updateSelectedObject(GameObject value)
-    {
-        _selectedObject = value;
-    }
-
-
 
     void Start()
     {
@@ -53,11 +39,11 @@ public class objectSelect : MonoBehaviour
         select(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
     }
 
+
+    //TODO: move this to somewhere where it makes more sense
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
         _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(false);
-
-        //TODO: Is this the correct position for this?
         _stateManagerMutatorRef.SET_ROTATION_GIZMO_IS_SELECTED(false);
     }
 
@@ -88,78 +74,18 @@ public class objectSelect : MonoBehaviour
         Ray ray = new Ray(targetPosition, direction);
         if (Physics.Raycast(ray, out hit))
         {
-
-            //validate that raycast is hitting something selectable
-            if (hit.collider != null && !hit.collider.name.Contains("structure"))
+            if(hit.collider.gameObject.GetComponent<MonoBehaviour>() is IHittable)
             {
-
-                // selected object selection
-                if (hit.collider.gameObject == _selectedObject)
-                {
-                    _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(true);
-                }
-
-                // rotation gizmo selection
-                // cant use gameobject rotational gizmo because it could be null
-                // TODO: find better method to check NULL value
-                else if (hit.collider.name.Contains("RotationGizmo"))
-                {
-
-                    _stateManagerMutatorRef.SET_ROTATION_GIZMO_IS_SELECTED(true);
-
-                    if (hit.collider.name.Contains("xRotationGizmo"))
-                    {
-                        _stateManagerMutatorRef.SET_X_ROTATION_GIZMO_ACTIVE();
-                    }
-                    if (hit.collider.name.Contains("yRotationGizmo"))
-                    {
-                        _stateManagerMutatorRef.SET_Y_ROTATION_GIZMO_ACTIVE();
-                    }
-                    if (hit.collider.name.Contains("zRotationGizmo"))
-                    {
-                        _stateManagerMutatorRef.SET_Z_ROTATION_GIZMO_ACTIVE();
-                    }
-                }
-
-                //default out to this
-                else
-                {
-                    Debug.Log("default rayhit");
-                    _stateManagerMutatorRef.SET_SELECTED_OBJECT(hit.collider.gameObject);
-                    removeDecorators();
-                    addDecorations(hit);
-                }
-            }
-
-           
+                hit.collider.gameObject.GetComponent<IHittable>().receiveHit(hit);
+            }   
         }
     }
+}
 
-    void addDecorations(RaycastHit raycastHit)
-    {
-        GameObject hitObject = null;
-        hitObject = raycastHit.collider.gameObject;
 
-        //Add object controllers and reference this class
-        hitObject.AddComponent<universalTransform>();
-        hitObject.AddComponent<scaleControl>();
-        hitObject.AddComponent<cloneControl>();
 
-        //Add the "selectable outline"
-        hitObject.AddComponent<cakeslice.Outline>();
-    }
 
-    void removeDecorators()
-    {
-        //Clean up old highlighted object before adding new stuff
-        cakeslice.Outline outline = (cakeslice.Outline)FindObjectOfType(typeof(cakeslice.Outline));
-        if (outline)
-        {
-            GameObject highlightedObject = outline.transform.gameObject;
-            Destroy(highlightedObject.GetComponent<universalTransform>());
-            Destroy(highlightedObject.GetComponent<scaleControl>());
-            Destroy(highlightedObject.GetComponent<cloneControl>());
-            Destroy(outline);
-        }
-    }
+public interface IHittable
+{
+    void receiveHit(RaycastHit hit);
 }
