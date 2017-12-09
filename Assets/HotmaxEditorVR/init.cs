@@ -9,9 +9,12 @@ public class init : MonoBehaviour {
     public static GameObject rotationGizmos;
     public static GameObject props;
 
+    public static stateManager _stateManagerMutatorRef;
+
     void Awake ()
     {
         rotationGizmos = GameObject.Find("rotationGizmos");
         props = GameObject.Find("Props");
+        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
     }
 }

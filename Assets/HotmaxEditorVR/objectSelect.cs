@@ -40,11 +40,10 @@ public class objectSelect : MonoBehaviour
     }
 
 
-    //TODO: move this to somewhere where it makes more sense
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
+        //TODO: move this to somewhere where it makes more sense
         _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(false);
-        _stateManagerMutatorRef.SET_ROTATION_GIZMO_IS_SELECTED(false);
     }
 
     void Update()
@@ -76,6 +75,7 @@ public class objectSelect : MonoBehaviour
         {
             if(hit.collider.gameObject.GetComponent<MonoBehaviour>() is IHittable)
             {
+                //have hit instance fire receiveHit function
                 hit.collider.gameObject.GetComponent<IHittable>().receiveHit(hit);
             }   
         }
