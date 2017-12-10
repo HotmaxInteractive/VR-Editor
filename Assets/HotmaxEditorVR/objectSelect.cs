@@ -33,6 +33,12 @@ public class objectSelect : MonoBehaviour
         inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
     }
 
+    private void OnApplicationQuit()
+    {
+        inputManager.trackedController2.TriggerClicked -= triggerClicked;
+        inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
+    }
+
 
     void triggerClicked(object sender, ClickedEventArgs e)
     {

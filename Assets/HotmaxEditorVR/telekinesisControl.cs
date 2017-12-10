@@ -21,9 +21,21 @@ public class telekinesisControl : MonoBehaviour
         initialPadYPosition = inputManager.selectorHand.GetAxis().y;
         distToController = Vector3.Distance(transform.position, inputManager.hand2.transform.position);
         scrollDistance = 0;
+
+        inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
+    }
+
+    private void OnDisable()
+    {
+        inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
 
 
+    //TODO: turns off the telekinesis control, is this the right way to handle this?
+    void triggerUnclicked(object sender, ClickedEventArgs e)
+    {
+        this.enabled = false;
+    }
 
     // Update is called once per frame
     void Update ()

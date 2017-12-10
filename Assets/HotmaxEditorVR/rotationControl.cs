@@ -25,14 +25,8 @@ public class rotationControl : MonoBehaviour
         NONE
     }
 
-    private void Awake()
-    {
-        print("rot control is awake: " + gameObject.name);
-    }
-
     private void OnEnable()
     {
-        print("rotational control is enabled: " + gameObject.name);
         stateManager.rotationGizmoIsSelectedEvent += updateRotationGizmoIsSelected;
         stateManager.rotationModeEvent += updateRotationModeEvent;
 
@@ -46,11 +40,12 @@ public class rotationControl : MonoBehaviour
 
     protected virtual void OnDisable()
     {
-        print("rotational control is disabled: " + gameObject.name);
-
         stateManager.rotationGizmoIsSelectedEvent -= updateRotationGizmoIsSelected;
         stateManager.rotationModeEvent -= updateRotationModeEvent;
+
+
         init.rotationGizmos.SetActive(false);
+
 
         inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
     }

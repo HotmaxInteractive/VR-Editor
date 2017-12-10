@@ -21,8 +21,6 @@ public class prop : MonoBehaviour, IHittable
         stateManager.selectedObjectEvent += updateSelectedObject;
         stateManager.editorModeEvent += updateEditorMode;
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
-
-
     }
 
     protected virtual void OnApplicationQuit()
@@ -66,8 +64,7 @@ public class prop : MonoBehaviour, IHittable
     }
 
     void addDecorations()
-    {
-       
+    {      
         //Add object controllers and reference this class
         this.gameObject.AddComponent<rotationControl>();
         this.gameObject.AddComponent<telekinesisControl>();
@@ -81,7 +78,6 @@ public class prop : MonoBehaviour, IHittable
 
         //disable all of them and check editor mode to set active
         checkEnabledBehaviors();
-
 
         //Add the "selectable outline"
         this.gameObject.AddComponent<cakeslice.Outline>();
@@ -108,12 +104,6 @@ public class prop : MonoBehaviour, IHittable
         }
     }
 
-    private void Update()
-    {
-        
-    }
-
-
     void updateEditorMode(stateManager.editorModes value)
     {
         _editorMode = value;
@@ -122,6 +112,8 @@ public class prop : MonoBehaviour, IHittable
         {
             checkEnabledBehaviors();
         }
+
+        print(value);
     }
 
     private void checkEnabledBehaviors()
@@ -147,11 +139,17 @@ public class prop : MonoBehaviour, IHittable
                 break;
 
             case stateManager.editorModes.cloneDeleteMode:
-                for (int i = 0; i < editBehaviours.Count; i++)
+                if (_selectedObjectIsActive)
                 {
-                    editBehaviours[i].enabled = false;
+                    for (int i = 0; i < editBehaviours.Count; i++)
+                    {
+                        editBehaviours[i].enabled = false;
+                    }
+                    //turn on the cloning behaviour
+                    editBehaviours[2].enabled = true;
+                    //turn on telekinesis behaviour
+                    editBehaviours[1].enabled = true;
                 }
-                editBehaviours[2].enabled = true;
                 break;
 
             case stateManager.editorModes.openMenuMode:
