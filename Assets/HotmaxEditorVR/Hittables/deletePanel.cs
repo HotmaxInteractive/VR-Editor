@@ -9,14 +9,11 @@ public class deletePanel : MonoBehaviour, IHittable
     //--local refs
     private stateManager _stateManagerMutatorRef;
     private GameObject _selectedObject;
-    private stateManager.editorModes _editorMode = stateManager.editorMode;
-
 
     private void Awake()
     {
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
         stateManager.selectedObjectEvent += updateSelectedObject;
-
     }
 
     private void OnApplicationQuit()
@@ -32,8 +29,8 @@ public class deletePanel : MonoBehaviour, IHittable
     public void receiveHit(RaycastHit hit)
     {
         _selectedObject.transform.parent = init.deletedProps.transform;
-        init.deletePanel.SetActive(false);
         _selectedObject.SetActive(false);
+        this.gameObject.SetActive(false);
     }
 }
 

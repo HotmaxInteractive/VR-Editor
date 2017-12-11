@@ -12,8 +12,7 @@ public class objectSelect : MonoBehaviour
     private float laserWidth = 0.01f;
     [SerializeField]
     private float laserMaxLength = 5f;
-
-    
+  
     private stateManager _stateManagerMutatorRef;
 
     private void Awake()
@@ -45,7 +44,6 @@ public class objectSelect : MonoBehaviour
         select(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
     }
 
-
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
         //TODO: move this to somewhere where it makes more sense
@@ -71,7 +69,6 @@ public class objectSelect : MonoBehaviour
         laserLineRenderer.SetPosition(0, targetPosition);
         laserLineRenderer.SetPosition(1, laserEndPosition);
     }
-
 
     void select(Vector3 targetPosition, Vector3 direction)
     {
