@@ -14,7 +14,6 @@ public class prop : MonoBehaviour, IHittable
     //--put the monobehaviours into a list
     private List<MonoBehaviour> editBehaviours = new List<MonoBehaviour>();
 
-
     private void Awake()
     {
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
@@ -47,7 +46,6 @@ public class prop : MonoBehaviour, IHittable
 
     public void receiveHit(RaycastHit hit)
     {
-
         // selected object selection
         if (this.gameObject == _selectedObject)
         {
@@ -57,35 +55,33 @@ public class prop : MonoBehaviour, IHittable
         // if new prop is selected
         else
         {
-            _stateManagerMutatorRef.SET_SELECTED_OBJECT(hit.collider.gameObject);
             removeDecorators();
+            _stateManagerMutatorRef.SET_SELECTED_OBJECT(hit.collider.gameObject);
             addDecorations();
         }
     }
 
     void addDecorations()
-    {      
+    {
         //Add object controllers and reference this class
         this.gameObject.AddComponent<rotationControl>();
         this.gameObject.AddComponent<telekinesisControl>();
-        this.gameObject.AddComponent<cloneControl>();
         this.gameObject.AddComponent<scaleControl>();
+        //Add the "selectable outline"
+        this.gameObject.AddComponent<cakeslice.Outline>();
 
         editBehaviours.Add(GetComponent<rotationControl>());
         editBehaviours.Add(GetComponent<telekinesisControl>());
-        editBehaviours.Add(GetComponent<cloneControl>());
         editBehaviours.Add(GetComponent<scaleControl>());
 
         //disable all of them and check editor mode to set active
         checkEnabledBehaviors();
-
-        //Add the "selectable outline"
-        this.gameObject.AddComponent<cakeslice.Outline>();
     }
 
     void removeDecorators()
     {
         //Clean up old highlighted object before adding new stuff
+        //Optimise this later FindObjectOfType is slow, as the scene gets bigger it gets slower
         cakeslice.Outline outline = (cakeslice.Outline)FindObjectOfType(typeof(cakeslice.Outline));
         if (outline)
         {
@@ -93,11 +89,9 @@ public class prop : MonoBehaviour, IHittable
             Destroy(highlightedObject.GetComponent<rotationControl>());
             Destroy(highlightedObject.GetComponent<telekinesisControl>());
             Destroy(highlightedObject.GetComponent<scaleControl>());
-            Destroy(highlightedObject.GetComponent<cloneControl>());
 
             editBehaviours.Remove(GetComponent<rotationControl>());
             editBehaviours.Remove(GetComponent<telekinesisControl>());
-            editBehaviours.Remove(GetComponent<cloneControl>());
             editBehaviours.Remove(GetComponent<scaleControl>());
 
             Destroy(outline);
@@ -112,8 +106,6 @@ public class prop : MonoBehaviour, IHittable
         {
             checkEnabledBehaviors();
         }
-
-        print(value);
     }
 
     private void checkEnabledBehaviors()
@@ -139,14 +131,17 @@ public class prop : MonoBehaviour, IHittable
                 break;
 
             case stateManager.editorModes.cloneDeleteMode:
+                for (int i = 0; i < editBehaviours.Count; i++)
+                {
+                    editBehaviours[i].enabled = false;
+                }
+
+                deleteSelectedObject();
+
                 if (_selectedObjectIsActive)
                 {
-                    for (int i = 0; i < editBehaviours.Count; i++)
-                    {
-                        editBehaviours[i].enabled = false;
-                    }
                     //turn on the cloning behaviour
-                    editBehaviours[2].enabled = true;
+                    cloneSelectedObject();
                     //turn on telekinesis behaviour
                     editBehaviours[1].enabled = true;
                 }
@@ -157,8 +152,34 @@ public class prop : MonoBehaviour, IHittable
                 {
                     editBehaviours[i].enabled = false;
                 }
-                editBehaviours[3].enabled = true;
+
+                editBehaviours[2].enabled = true;
                 break;
+        }
+    }
+
+    void cloneSelectedObject()
+    {
+        var clone = Instantiate(this.gameObject) as GameObject;
+        clone.transform.rotation = transform.rotation;
+        clone.transform.position = transform.position;
+        clone.transform.parent = init.props.transform;
+
+        Destroy(clone.GetComponent<rotationControl>());
+        Destroy(clone.GetComponent<telekinesisControl>());
+        Destroy(clone.GetComponent<scaleControl>());
+        Destroy(clone.GetComponent<cakeslice.Outline>());
+
+        clone.name = this.gameObject.name;
+    }
+
+    void deleteSelectedObject()
+    {
+        if(_selectedObject.activeInHierarchy)
+        {
+            init.deletePanel.SetActive(true);
+            Vector3 selectedObjectTransform = new Vector3(_selectedObject.transform.position.x, _selectedObject.transform.position.y + 1, _selectedObject.transform.position.z);
+            init.deletePanel.transform.position = selectedObjectTransform;
         }
     }
 }

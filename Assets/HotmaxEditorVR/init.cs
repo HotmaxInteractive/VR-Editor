@@ -8,13 +8,18 @@ public class init : MonoBehaviour {
     //-- used for classes that frequently get destroyed but need reference to a gameObject
     public static GameObject rotationGizmos;
     public static GameObject props;
+    public static GameObject deletePanel;
+    public static GameObject deletedProps;
 
     public static stateManager _stateManagerMutatorRef;
 
     void Awake ()
     {
         rotationGizmos = GameObject.Find("rotationGizmos");
-        props = GameObject.Find("Props");
+        props = GameObject.Find("props");
+        deletePanel = GameObject.Find("deletePanel");
+        deletedProps = GameObject.Find("deletedProps");
+        
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
     }
 }
