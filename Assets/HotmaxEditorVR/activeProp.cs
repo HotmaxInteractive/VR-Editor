@@ -62,7 +62,6 @@ public class activeProp : MonoBehaviour
         activePropStateMachine();
     }
 
-
     private void activePropStateMachine()
     {
         for (int i = 0; i < decorators.Count; i++)
@@ -125,8 +124,6 @@ public class activeProp : MonoBehaviour
                 break;
         }
     }
-
-
 
     void addDecorations()
     {

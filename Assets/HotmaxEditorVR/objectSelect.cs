@@ -41,6 +41,7 @@ public class objectSelect : MonoBehaviour
 
     void triggerClicked(object sender, ClickedEventArgs e)
     {
+        //put if else here, if colliding with IHittable object for freegrab
         select(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
     }
 

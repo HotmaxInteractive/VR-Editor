@@ -25,6 +25,94 @@ public class rotationControl : MonoBehaviour
         NONE
     }
 
+    //--------------------------------------------------------------------------------------------------------------------
+    private GameObject oldHitSlice;
+
+    void Update()
+    {
+        //Additive if your raycast doesn't leave the pie (+ or - 15 degrees).
+        //Plus 360 / siblingIndex if raycast leaves the pie
+        RaycastHit hit;
+        Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
+        //Only hit the layer that has the pie slices
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Gizmo Layer")))
+        {
+            print(hit.collider.name);
+            if (hit.collider != null && hit.collider.transform.parent.name == "pieHolder")
+            {
+                if (hit.collider.gameObject != oldHitSlice)
+                {
+                    float rotateDegrees = 360 / (float)hit.transform.parent.childCount;
+                    Vector3 rotationYDirection = new Vector3(0, rotateDegrees, 0);
+                    Vector3 rotationZDirection = new Vector3(0, 0, rotateDegrees);
+                    Transform initialParent = transform.parent;
+
+                    if (_rotationGizmoIsSelected)
+                    {
+                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.transform.position = transform.position;
+
+                        switch (_rotationMode)
+                        {
+                            case stateManager.rotationModes.xRotationMode:
+                                //compare the current hit sibling index with old hit sibling index
+                                if (hit.collider.transform.GetSiblingIndex() > oldHitSlice.transform.GetSiblingIndex())
+                                {
+                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 90);
+                                    transform.parent = cube.transform;
+                                    transform.localEulerAngles += rotationYDirection;
+                                }
+                                else if (hit.collider.transform.GetSiblingIndex() < oldHitSlice.transform.GetSiblingIndex())
+                                {
+                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 90);
+                                    transform.parent = cube.transform;
+                                    transform.localEulerAngles -= rotationYDirection;
+                                }
+                                break;
+                            case stateManager.rotationModes.yRotationMode:
+                                if (hit.collider.transform.GetSiblingIndex() > oldHitSlice.transform.GetSiblingIndex())
+                                {
+                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z);
+                                    transform.parent = cube.transform;
+                                    transform.localEulerAngles += rotationYDirection;
+                                }
+                                else if (hit.collider.transform.GetSiblingIndex() < oldHitSlice.transform.GetSiblingIndex())
+                                {
+                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z);
+                                    transform.parent = cube.transform;
+                                    transform.localEulerAngles -= rotationYDirection;
+                                }
+                                break;
+                            case stateManager.rotationModes.zRotationMode:
+                                if (hit.collider.transform.GetSiblingIndex() > oldHitSlice.transform.GetSiblingIndex())
+                                {
+                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x + 90, transform.eulerAngles.y, transform.eulerAngles.z + 90);
+                                    transform.parent = cube.transform;
+                                    transform.localEulerAngles += rotationZDirection;
+                                }
+                                else if (hit.collider.transform.GetSiblingIndex() < oldHitSlice.transform.GetSiblingIndex())
+                                {
+                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x + 90, transform.eulerAngles.y, transform.eulerAngles.z + 90);
+                                    transform.parent = cube.transform;
+                                    transform.localEulerAngles -= rotationZDirection;
+                                }
+                                break;
+                        }
+                        oldHitSlice = hit.collider.gameObject;
+
+                        transform.parent = initialParent;
+
+                        Destroy(cube);
+                    }
+                }
+            }
+        }
+    }
+
+
+    //--------------------------------------------------------------------------------------------------------------------
+
+
     private void OnEnable()
     {
         stateManager.rotationGizmoIsSelectedEvent += updateRotationGizmoIsSelected;
@@ -43,9 +131,7 @@ public class rotationControl : MonoBehaviour
         stateManager.rotationGizmoIsSelectedEvent -= updateRotationGizmoIsSelected;
         stateManager.rotationModeEvent -= updateRotationModeEvent;
 
-
         init.rotationGizmos.SetActive(false);
-
 
         inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
@@ -64,16 +150,28 @@ public class rotationControl : MonoBehaviour
         _rotationMode = value;
         if (_rotationGizmoIsSelected)
         {
+            RaycastHit hit;
+            Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
+            if (Physics.Raycast(ray, out hit))
+            {
+                //rotate the pie slice's parent 
+                oldHitSlice = hit.collider.gameObject;
+            }
+
             switch (_rotationMode)
             {
                 case stateManager.rotationModes.xRotationMode:
                     setRotationGizmoVisible(visibleRotation.X);
+                    init.rotationGizmos.transform.Find("xRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(true);
                     break;
                 case stateManager.rotationModes.yRotationMode:
                     setRotationGizmoVisible(visibleRotation.Y);
+                    init.rotationGizmos.transform.Find("yRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(true);
                     break;
                 case stateManager.rotationModes.zRotationMode:
                     setRotationGizmoVisible(visibleRotation.Z);
+                    init.rotationGizmos.transform.Find("zRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(true);
+
                     break;
             }
         }
@@ -82,69 +180,11 @@ public class rotationControl : MonoBehaviour
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
         init._stateManagerMutatorRef.SET_ROTATION_GIZMO_IS_SELECTED(false);
+        init.rotationGizmos.transform.Find("xRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(false);
+        init.rotationGizmos.transform.Find("yRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(false);
+        init.rotationGizmos.transform.Find("zRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(false);
     }
 
-    void Update()
-    {
-        //Rotation Mode
-        if (_rotationGizmoIsSelected)
-        {
-            currentXControllerPosition = inputManager.hand2.transform.localPosition.x;
-            currentYControllerPosition = inputManager.hand2.transform.localPosition.y;
-            float moveBuffer = 0.01f;
-
-            if (_rotationMode == stateManager.rotationModes.xRotationMode)
-            {
-
-                Vector3 xRotation = new Vector3(15, 0, 0);
-
-                if (currentXControllerPosition > initialXControllerPosition + moveBuffer)
-                {
-                    transform.localEulerAngles -= xRotation;
-                    init.rotationGizmos.transform.localEulerAngles -= xRotation;
-                    initialXControllerPosition = currentXControllerPosition;
-                }
-                if (currentXControllerPosition < initialXControllerPosition - moveBuffer)
-                {
-                    transform.localEulerAngles += xRotation;
-                    init.rotationGizmos.transform.localEulerAngles += xRotation;
-                    initialXControllerPosition = currentXControllerPosition;
-                }
-            }
-            if (_rotationMode == stateManager.rotationModes.yRotationMode)
-            {
-                Vector3 yRotation = new Vector3(0, 15, 0);
-                if (currentXControllerPosition > initialXControllerPosition + moveBuffer)
-                {
-                    transform.localEulerAngles -= yRotation;
-                    init.rotationGizmos.transform.localEulerAngles -= yRotation;
-                    initialXControllerPosition = currentXControllerPosition;
-                }
-                if (currentXControllerPosition < initialXControllerPosition - moveBuffer)
-                {
-                    transform.localEulerAngles += yRotation;
-                    init.rotationGizmos.transform.localEulerAngles += yRotation;
-                    initialXControllerPosition = currentXControllerPosition;
-                }
-            }
-            if (_rotationMode == stateManager.rotationModes.zRotationMode)
-            {
-                Vector3 zRotation = new Vector3(0, 0, 15);
-                if (currentYControllerPosition > initialYControllerPosition + moveBuffer)
-                {
-                    transform.localEulerAngles -= zRotation;
-                    init.rotationGizmos.transform.localEulerAngles -= zRotation;
-                    initialYControllerPosition = currentYControllerPosition;
-                }
-                if (currentYControllerPosition < initialYControllerPosition - moveBuffer)
-                {
-                    transform.localEulerAngles += zRotation;
-                    init.rotationGizmos.transform.localEulerAngles += zRotation;
-                    initialYControllerPosition = currentYControllerPosition;
-                }
-            }
-        }
-    }
 
     void setRotationGizmoVisible(visibleRotation visibleRotation)
     {
