@@ -31,13 +31,12 @@ public class rotationControl : MonoBehaviour
     void Update()
     {
         //Additive if your raycast doesn't leave the pie (+ or - 15 degrees).
-        //Plus 360 / siblingIndex if raycast leaves the pie
         RaycastHit hit;
         Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
         //Only hit the layer that has the pie slices
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Gizmo Layer")))
         {
-            print(hit.collider.name);
+            
             if (hit.collider != null && hit.collider.transform.parent.name == "pieHolder")
             {
                 if (hit.collider.gameObject != oldHitSlice)
@@ -49,34 +48,37 @@ public class rotationControl : MonoBehaviour
 
                     if (_rotationGizmoIsSelected)
                     {
+                        //Going to destroy the cube after the if statement
                         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                         cube.transform.position = transform.position;
+                        int newHitSiblingIndex = hit.collider.transform.GetSiblingIndex();
+                        int oldHitSiblingIndex = oldHitSlice.transform.GetSiblingIndex();
+                        int numOfSlices = hit.collider.transform.parent.transform.childCount;
 
                         switch (_rotationMode)
                         {
                             case stateManager.rotationModes.xRotationMode:
                                 //compare the current hit sibling index with old hit sibling index
-                                if (hit.collider.transform.GetSiblingIndex() > oldHitSlice.transform.GetSiblingIndex())
+                                if (newHitSiblingIndex > oldHitSiblingIndex || (newHitSiblingIndex == 0 && oldHitSiblingIndex == numOfSlices - 1))
                                 {
                                     cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 90);
                                     transform.parent = cube.transform;
                                     transform.localEulerAngles += rotationYDirection;
                                 }
-                                else if (hit.collider.transform.GetSiblingIndex() < oldHitSlice.transform.GetSiblingIndex())
-                                {
+                                else {
                                     cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 90);
                                     transform.parent = cube.transform;
                                     transform.localEulerAngles -= rotationYDirection;
                                 }
                                 break;
                             case stateManager.rotationModes.yRotationMode:
-                                if (hit.collider.transform.GetSiblingIndex() > oldHitSlice.transform.GetSiblingIndex())
+                                if (newHitSiblingIndex > oldHitSiblingIndex || (newHitSiblingIndex == 0 && oldHitSiblingIndex == numOfSlices - 1))
                                 {
                                     cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z);
                                     transform.parent = cube.transform;
                                     transform.localEulerAngles += rotationYDirection;
                                 }
-                                else if (hit.collider.transform.GetSiblingIndex() < oldHitSlice.transform.GetSiblingIndex())
+                                else
                                 {
                                     cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z);
                                     transform.parent = cube.transform;
@@ -84,13 +86,13 @@ public class rotationControl : MonoBehaviour
                                 }
                                 break;
                             case stateManager.rotationModes.zRotationMode:
-                                if (hit.collider.transform.GetSiblingIndex() > oldHitSlice.transform.GetSiblingIndex())
+                                if (newHitSiblingIndex > oldHitSiblingIndex || (newHitSiblingIndex == 0 && oldHitSiblingIndex == numOfSlices - 1))
                                 {
                                     cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x + 90, transform.eulerAngles.y, transform.eulerAngles.z + 90);
                                     transform.parent = cube.transform;
                                     transform.localEulerAngles += rotationZDirection;
                                 }
-                                else if (hit.collider.transform.GetSiblingIndex() < oldHitSlice.transform.GetSiblingIndex())
+                                else
                                 {
                                     cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x + 90, transform.eulerAngles.y, transform.eulerAngles.z + 90);
                                     transform.parent = cube.transform;
