@@ -10,6 +10,7 @@ public class init : MonoBehaviour {
     public static GameObject props;
     public static GameObject deletePanel;
     public static GameObject deletedProps;
+    public static GameObject handColliderFollow;
 
     public static stateManager _stateManagerMutatorRef;
 
@@ -19,7 +20,8 @@ public class init : MonoBehaviour {
         props = GameObject.Find("props");
         deletePanel = GameObject.Find("deletePanel");
         deletedProps = GameObject.Find("deletedProps");
-        
+        handColliderFollow = GameObject.Find("handColliderFollow");
+
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
     }
 }

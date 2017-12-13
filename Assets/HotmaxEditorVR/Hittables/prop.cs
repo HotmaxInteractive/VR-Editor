@@ -30,21 +30,16 @@ public class prop : MonoBehaviour, IHittable
         // selected object selection
         if (this.gameObject == _selectedObject)
         {
-            print("object is active");
             _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(true);
         }
-   
+
         // if new prop is selected
         else
         {
-            print("new object is selected");
-
             _stateManagerMutatorRef.SET_SELECTED_OBJECT(hit.collider.gameObject);
 
             this.gameObject.AddComponent<activeProp>();
         }
     }
-
-    
 }
 

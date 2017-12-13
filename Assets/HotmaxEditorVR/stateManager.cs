@@ -36,13 +36,17 @@ public class stateManager : MonoBehaviour
     public delegate void selectedObjectIsActiveHandler(bool value);
     public static event selectedObjectIsActiveHandler selectedObjectIsActiveEvent;
 
+    public static GameObject objectCollidedWithHand;
+    public delegate void objectCollidedWithHandHandler(GameObject value);
+    public static event objectCollidedWithHandHandler objectCollidedWithHandEvent;
+
 
     //------------------MUTATORS------------------\\
 
     public void SET_EDITOR_MODE_UNIVERSAL()
     {
         editorMode = editorModes.universalTransformMode;
-        if(editorModeEvent != null)
+        if (editorModeEvent != null)
         {
             editorModeEvent(editorModes.universalTransformMode);
         }
@@ -114,6 +118,15 @@ public class stateManager : MonoBehaviour
         if (rotationModeEvent != null)
         {
             rotationModeEvent(rotationModes.zRotationMode);
+        }
+    }
+
+    public void SET_OBJECT_COLLIDED_WITH_HAND(GameObject value)
+    {
+        objectCollidedWithHand = value;
+        if (objectCollidedWithHandEvent != null)
+        {
+            objectCollidedWithHandEvent(value);
         }
     }
 }
