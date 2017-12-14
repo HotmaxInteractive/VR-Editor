@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class rotationControl : MonoBehaviour
 {
+    //--local refs
     private bool _rotationGizmoIsSelected = stateManager.rotationGizmoIsSelected;
-
     private stateManager.rotationModes _rotationMode = stateManager.rotationMode;
 
-    private float initialXControllerPosition;
-    private float currentXControllerPosition;
-
-    private float initialYControllerPosition;
-    private float currentYControllerPosition;
-
     private List<Transform> transforms = new List<Transform>();
+
+    bool initialHit = false;
+    private Transform initialParent;
+    private Vector3 targetPostition;
+    private GameObject lookAtRaycast;
+
+    Vector3 initialRotation;
 
     private enum visibleRotation
     {
@@ -25,95 +26,71 @@ public class rotationControl : MonoBehaviour
         NONE
     }
 
-    //--------------------------------------------------------------------------------------------------------------------
-    private GameObject oldHitSlice;
-
     void Update()
     {
-        //Additive if your raycast doesn't leave the pie (+ or - 15 degrees).
         RaycastHit hit;
         Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
-        //Only hit the layer that has the pie slices
+        //Only hit the layer that is in Gizmo Layer
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Gizmo Layer")))
         {
-            
-            if (hit.collider != null && hit.collider.transform.parent.name == "pieHolder")
+            if (hit.collider != null)
             {
-                if (hit.collider.gameObject != oldHitSlice)
+                Vector3 lookPos;
+                Quaternion rotation;
+
+                if (_rotationGizmoIsSelected)
                 {
-                    float rotateDegrees = 360 / (float)hit.transform.parent.childCount;
-                    Vector3 rotationYDirection = new Vector3(0, rotateDegrees, 0);
-                    Vector3 rotationZDirection = new Vector3(0, 0, rotateDegrees);
-                    Transform initialParent = transform.parent;
-
-                    if (_rotationGizmoIsSelected)
+                    switch (_rotationMode)
                     {
-                        //Going to destroy the cube after the if statement
-                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        cube.transform.position = transform.position;
-                        int newHitSiblingIndex = hit.collider.transform.GetSiblingIndex();
-                        int oldHitSiblingIndex = oldHitSlice.transform.GetSiblingIndex();
-                        int numOfSlices = hit.collider.transform.parent.transform.childCount;
+                        case stateManager.rotationModes.xRotationMode:
+                            //preserve this objects original rotation by parenting into an object that is sdoing the lookAT
+                            if (initialHit)
+                            {
+                                //do lookAt so the lookAtRaycast objects right side is facing hit.point
+                                lookAtRaycast.transform.LookAt(hit.point, Vector3.right);
+                                transform.parent = lookAtRaycast.transform;
+                                initialHit = false;
+                            }
+                            lookPos = hit.point - lookAtRaycast.transform.position;
+                            //lock the x rotation to just the x axis
+                            lookPos.x = 0;
+                            //lookAtRaycast's right side needs to follow the hit.point on a locked Y axis
+                            rotation = Quaternion.LookRotation(lookPos, Vector3.right);
+                            lookAtRaycast.transform.rotation = Quaternion.Slerp(lookAtRaycast.transform.rotation, rotation, Time.deltaTime * 3);
+                            break;
 
-                        switch (_rotationMode)
-                        {
-                            case stateManager.rotationModes.xRotationMode:
-                                //compare the current hit sibling index with old hit sibling index
-                                if (newHitSiblingIndex > oldHitSiblingIndex || (newHitSiblingIndex == 0 && oldHitSiblingIndex == numOfSlices - 1))
-                                {
-                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 90);
-                                    transform.parent = cube.transform;
-                                    transform.localEulerAngles += rotationYDirection;
-                                }
-                                else {
-                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 90);
-                                    transform.parent = cube.transform;
-                                    transform.localEulerAngles -= rotationYDirection;
-                                }
-                                break;
-                            case stateManager.rotationModes.yRotationMode:
-                                if (newHitSiblingIndex > oldHitSiblingIndex || (newHitSiblingIndex == 0 && oldHitSiblingIndex == numOfSlices - 1))
-                                {
-                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z);
-                                    transform.parent = cube.transform;
-                                    transform.localEulerAngles += rotationYDirection;
-                                }
-                                else
-                                {
-                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z);
-                                    transform.parent = cube.transform;
-                                    transform.localEulerAngles -= rotationYDirection;
-                                }
-                                break;
-                            case stateManager.rotationModes.zRotationMode:
-                                if (newHitSiblingIndex > oldHitSiblingIndex || (newHitSiblingIndex == 0 && oldHitSiblingIndex == numOfSlices - 1))
-                                {
-                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x + 90, transform.eulerAngles.y, transform.eulerAngles.z + 90);
-                                    transform.parent = cube.transform;
-                                    transform.localEulerAngles += rotationZDirection;
-                                }
-                                else
-                                {
-                                    cube.transform.eulerAngles = new Vector3(transform.eulerAngles.x + 90, transform.eulerAngles.y, transform.eulerAngles.z + 90);
-                                    transform.parent = cube.transform;
-                                    transform.localEulerAngles -= rotationZDirection;
-                                }
-                                break;
-                        }
-                        oldHitSlice = hit.collider.gameObject;
+                        case stateManager.rotationModes.yRotationMode:
+                            if (initialHit)
+                            {
+                                lookAtRaycast.transform.LookAt(hit.point, Vector3.up);
+                                transform.parent = lookAtRaycast.transform;
+                                initialHit = false;
+                            }
 
-                        transform.parent = initialParent;
+                            lookPos = hit.point - lookAtRaycast.transform.position;
+                            lookPos.y = 0;
+                            rotation = Quaternion.LookRotation(lookPos, Vector3.up);
+                            lookAtRaycast.transform.rotation = Quaternion.Slerp(lookAtRaycast.transform.rotation, rotation, Time.deltaTime * 3);
+                            break;
 
-                        Destroy(cube);
+                        case stateManager.rotationModes.zRotationMode:
+                            if (initialHit)
+                            {
+                                lookAtRaycast.transform.LookAt(hit.point, Vector3.forward);
+                                transform.parent = lookAtRaycast.transform;
+                                initialHit = false;
+                            }
+
+                            lookPos = hit.point - lookAtRaycast.transform.position;
+                            lookPos.z = 0;
+                            rotation = Quaternion.LookRotation(lookPos, Vector3.forward);
+                            lookAtRaycast.transform.rotation = Quaternion.Slerp(lookAtRaycast.transform.rotation, rotation, Time.deltaTime * 3);
+                            break;
                     }
                 }
             }
         }
     }
-
-
-    //--------------------------------------------------------------------------------------------------------------------
-
 
     private void OnEnable()
     {
@@ -123,7 +100,6 @@ public class rotationControl : MonoBehaviour
         //handle the visual representation of the rotation gizmo
         init.rotationGizmos.SetActive(true);
         init.rotationGizmos.transform.position = transform.position;
-        init.rotationGizmos.transform.rotation = transform.rotation;
 
         inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
     }
@@ -142,9 +118,25 @@ public class rotationControl : MonoBehaviour
     void updateRotationGizmoIsSelected(bool value)
     {
         _rotationGizmoIsSelected = value;
-        initialXControllerPosition = inputManager.hand2.transform.position.x;
-        initialYControllerPosition = inputManager.hand2.transform.position.y;
         setRotationGizmoVisible(visibleRotation.ALL);
+
+        if(_rotationGizmoIsSelected)
+        {
+            lookAtRaycast = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            lookAtRaycast.GetComponent<MeshRenderer>().enabled = false;
+            lookAtRaycast.GetComponent<BoxCollider>().enabled = false;
+
+            lookAtRaycast.transform.position = transform.position;
+
+            initialParent = transform.parent;
+            initialHit = true;
+        }
+        else
+        {
+            transform.parent = initialParent;
+            Destroy(lookAtRaycast);
+        }
     }
 
     void updateRotationModeEvent(stateManager.rotationModes value)
@@ -152,27 +144,19 @@ public class rotationControl : MonoBehaviour
         _rotationMode = value;
         if (_rotationGizmoIsSelected)
         {
-            RaycastHit hit;
-            Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
-            if (Physics.Raycast(ray, out hit))
-            {
-                //rotate the pie slice's parent 
-                oldHitSlice = hit.collider.gameObject;
-            }
-
             switch (_rotationMode)
             {
                 case stateManager.rotationModes.xRotationMode:
                     setRotationGizmoVisible(visibleRotation.X);
-                    init.rotationGizmos.transform.Find("xRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(true);
+                    init.rotationGizmos.transform.Find("xRotationGizmo").transform.Find("pie").gameObject.SetActive(true);
                     break;
                 case stateManager.rotationModes.yRotationMode:
                     setRotationGizmoVisible(visibleRotation.Y);
-                    init.rotationGizmos.transform.Find("yRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(true);
+                    init.rotationGizmos.transform.Find("yRotationGizmo").transform.Find("pie").gameObject.SetActive(true);
                     break;
                 case stateManager.rotationModes.zRotationMode:
                     setRotationGizmoVisible(visibleRotation.Z);
-                    init.rotationGizmos.transform.Find("zRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(true);
+                    init.rotationGizmos.transform.Find("zRotationGizmo").transform.Find("pie").gameObject.SetActive(true);
 
                     break;
             }
@@ -182,9 +166,9 @@ public class rotationControl : MonoBehaviour
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
         init._stateManagerMutatorRef.SET_ROTATION_GIZMO_IS_SELECTED(false);
-        init.rotationGizmos.transform.Find("xRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(false);
-        init.rotationGizmos.transform.Find("yRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(false);
-        init.rotationGizmos.transform.Find("zRotationGizmo").transform.Find("pieHolder").gameObject.SetActive(false);
+        init.rotationGizmos.transform.Find("xRotationGizmo").transform.Find("pie").gameObject.SetActive(false);
+        init.rotationGizmos.transform.Find("yRotationGizmo").transform.Find("pie").gameObject.SetActive(false);
+        init.rotationGizmos.transform.Find("zRotationGizmo").transform.Find("pie").gameObject.SetActive(false);
     }
 
 

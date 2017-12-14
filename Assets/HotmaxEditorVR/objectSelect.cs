@@ -35,7 +35,6 @@ public class objectSelect : MonoBehaviour
         inputManager.trackedController2.TriggerClicked += triggerClicked;
         inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
         stateManager.objectCollidedWithHandEvent += updateObjectCollidedWithHand;
-
     }
 
     private void OnApplicationQuit()
@@ -56,6 +55,7 @@ public class objectSelect : MonoBehaviour
         }
         else
         {
+            //a prop has collided with the hand
             //probably do other stuff to the prop too
             initialPropParent = _objectCollidedWithHand.transform.parent;
             _objectCollidedWithHand.transform.parent = inputManager.hand2.transform;
