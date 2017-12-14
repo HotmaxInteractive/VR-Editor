@@ -10,12 +10,13 @@ public class rotationControl : MonoBehaviour
 
     private List<Transform> transforms = new List<Transform>();
 
-    bool initialHit = false;
+    //--vars used during rotation
+    private bool initialHit = false;
     private Transform initialParent;
     private Vector3 targetPostition;
     private GameObject lookAtRaycast;
-
-    Vector3 initialRotation;
+    private Vector3 lookPos;
+    private Quaternion rotation;
 
     private enum visibleRotation
     {
@@ -35,61 +36,43 @@ public class rotationControl : MonoBehaviour
         {
             if (hit.collider != null)
             {
-                Vector3 lookPos;
-                Quaternion rotation;
-
                 if (_rotationGizmoIsSelected)
                 {
                     switch (_rotationMode)
                     {
                         case stateManager.rotationModes.xRotationMode:
-                            //preserve this objects original rotation by parenting into an object that is sdoing the lookAT
-                            if (initialHit)
-                            {
-                                //do lookAt so the lookAtRaycast objects right side is facing hit.point
-                                lookAtRaycast.transform.LookAt(hit.point, Vector3.right);
-                                transform.parent = lookAtRaycast.transform;
-                                initialHit = false;
-                            }
-                            lookPos = hit.point - lookAtRaycast.transform.position;
-                            //lock the x rotation to just the x axis
-                            lookPos.x = 0;
-                            //lookAtRaycast's right side needs to follow the hit.point on a locked Y axis
-                            rotation = Quaternion.LookRotation(lookPos, Vector3.right);
-                            lookAtRaycast.transform.rotation = Quaternion.Slerp(lookAtRaycast.transform.rotation, rotation, Time.deltaTime * 3);
+                            doRotation(hit, Vector3.right, lookPos.x);
                             break;
 
                         case stateManager.rotationModes.yRotationMode:
-                            if (initialHit)
-                            {
-                                lookAtRaycast.transform.LookAt(hit.point, Vector3.up);
-                                transform.parent = lookAtRaycast.transform;
-                                initialHit = false;
-                            }
-
-                            lookPos = hit.point - lookAtRaycast.transform.position;
-                            lookPos.y = 0;
-                            rotation = Quaternion.LookRotation(lookPos, Vector3.up);
-                            lookAtRaycast.transform.rotation = Quaternion.Slerp(lookAtRaycast.transform.rotation, rotation, Time.deltaTime * 3);
+                            doRotation(hit, Vector3.up, lookPos.y);
                             break;
 
                         case stateManager.rotationModes.zRotationMode:
-                            if (initialHit)
-                            {
-                                lookAtRaycast.transform.LookAt(hit.point, Vector3.forward);
-                                transform.parent = lookAtRaycast.transform;
-                                initialHit = false;
-                            }
-
-                            lookPos = hit.point - lookAtRaycast.transform.position;
-                            lookPos.z = 0;
-                            rotation = Quaternion.LookRotation(lookPos, Vector3.forward);
-                            lookAtRaycast.transform.rotation = Quaternion.Slerp(lookAtRaycast.transform.rotation, rotation, Time.deltaTime * 3);
+                            doRotation(hit, Vector3.forward, lookPos.z);
                             break;
                     }
                 }
             }
         }
+    }
+
+    void doRotation(RaycastHit hit, Vector3 faceDirection, float lockAxis)
+    {
+        //on raycast + click trigger preserve this objects original rotation by parenting other object
+        if (initialHit)
+        {
+            //do lookAt so the the perpendicular face to the locked axis faces the hit.point
+            lookAtRaycast.transform.LookAt(hit.point, faceDirection);
+            transform.parent = lookAtRaycast.transform;
+            initialHit = false;
+        }
+        lookPos = hit.point - lookAtRaycast.transform.position;
+        //lock the rotation to just one axis
+        lockAxis = 0;
+        //lookAtRaycast follows the hit.point with locked axis
+        rotation = Quaternion.LookRotation(lookPos, faceDirection);
+        lookAtRaycast.transform.rotation = Quaternion.Slerp(lookAtRaycast.transform.rotation, rotation, Time.deltaTime * 3);
     }
 
     private void OnEnable()
@@ -114,7 +97,6 @@ public class rotationControl : MonoBehaviour
         inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
 
-
     void updateRotationGizmoIsSelected(bool value)
     {
         _rotationGizmoIsSelected = value;
@@ -122,11 +104,10 @@ public class rotationControl : MonoBehaviour
 
         if(_rotationGizmoIsSelected)
         {
+            //set up the container for our object to rotate
             lookAtRaycast = GameObject.CreatePrimitive(PrimitiveType.Cube);
-
             lookAtRaycast.GetComponent<MeshRenderer>().enabled = false;
             lookAtRaycast.GetComponent<BoxCollider>().enabled = false;
-
             lookAtRaycast.transform.position = transform.position;
 
             initialParent = transform.parent;
@@ -134,6 +115,7 @@ public class rotationControl : MonoBehaviour
         }
         else
         {
+            //unparent object before destroying
             transform.parent = initialParent;
             Destroy(lookAtRaycast);
         }
@@ -181,7 +163,6 @@ public class rotationControl : MonoBehaviour
         transforms.Add(xGizmo);
         transforms.Add(yGizmo);
         transforms.Add(zGizmo);
-
 
         switch (visibleRotation)
         {
