@@ -10,10 +10,17 @@ public class deletePanel : MonoBehaviour, IHittable
     private stateManager _stateManagerMutatorRef;
     private GameObject _selectedObject;
 
+    public Transform target;
+
     private void Awake()
     {
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
         stateManager.selectedObjectEvent += updateSelectedObject;
+    }
+
+    void Update()
+    {
+        transform.LookAt(target);
     }
 
     private void OnApplicationQuit()

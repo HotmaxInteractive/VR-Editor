@@ -7,7 +7,11 @@ public class handColliderFollow : MonoBehaviour
     //--local refs
     private stateManager _stateManagerMutatorRef;
 
+    private GameObject collidedWithHand;
+
     Transform selectorHand;
+
+    private bool isCurrentlyColliding = false;
 
     private void Awake()
     {
@@ -21,11 +25,28 @@ public class handColliderFollow : MonoBehaviour
         transform.rotation = selectorHand.rotation;
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.GetComponent<MonoBehaviour>() is IHittable)
+        if (other.gameObject.GetComponent<MonoBehaviour>() is prop)
         {
-            _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(other.gameObject);
+            if(!isCurrentlyColliding)
+            {
+                collidedWithHand = other.gameObject;
+                _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(other.gameObject);
+                isCurrentlyColliding = true;
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.GetComponent<MonoBehaviour>() is prop)
+        {
+            if(collidedWithHand == other.gameObject)
+            {
+                _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(null);
+                isCurrentlyColliding = false;
+            }
         }
     }
 }

@@ -57,6 +57,7 @@ public class objectSelect : MonoBehaviour
         {
             //a prop has collided with the hand
             //probably do other stuff to the prop too
+            _stateManagerMutatorRef.SET_SELECTED_OBJECT(null);
             initialPropParent = _objectCollidedWithHand.transform.parent;
             _objectCollidedWithHand.transform.parent = inputManager.hand2.transform;
         }
@@ -70,7 +71,8 @@ public class objectSelect : MonoBehaviour
         if(_objectCollidedWithHand !=  null)
         {
             _objectCollidedWithHand.transform.parent = initialPropParent;
-            _objectCollidedWithHand = null;
+            _stateManagerMutatorRef.SET_SELECTED_OBJECT(_objectCollidedWithHand);
+            _objectCollidedWithHand.AddComponent<activeProp>();
         }
     }
 
@@ -78,7 +80,6 @@ public class objectSelect : MonoBehaviour
     {
         _objectCollidedWithHand = value;
     }
-
 
     void Update()
     {

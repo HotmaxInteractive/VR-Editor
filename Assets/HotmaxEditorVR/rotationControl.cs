@@ -8,16 +8,17 @@ public class rotationControl : MonoBehaviour
     private bool _rotationGizmoIsSelected = stateManager.rotationGizmoIsSelected;
     private stateManager.rotationModes _rotationMode = stateManager.rotationMode;
 
-    private List<Transform> transforms = new List<Transform>();
-
     //--vars used during rotation
     private bool initialHit = false;
     private Transform initialParent;
     private Vector3 targetPostition;
     private GameObject lookAtRaycast;
+    private GameObject stationaryLookAtRaycast;
     private Vector3 lookPos;
     private Quaternion rotation;
 
+    //--Handles turning off and on Gizmo axis
+    private List<Transform> transforms = new List<Transform>();
     private enum visibleRotation
     {
         X,
@@ -64,6 +65,7 @@ public class rotationControl : MonoBehaviour
         {
             //do lookAt so the the perpendicular face to the locked axis faces the hit.point
             lookAtRaycast.transform.LookAt(hit.point, faceDirection);
+            stationaryLookAtRaycast.transform.LookAt(hit.point, faceDirection);
             transform.parent = lookAtRaycast.transform;
             initialHit = false;
         }
@@ -105,11 +107,13 @@ public class rotationControl : MonoBehaviour
         if(_rotationGizmoIsSelected)
         {
             //set up the container for our object to rotate
-            lookAtRaycast = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            lookAtRaycast.GetComponent<MeshRenderer>().enabled = false;
-            lookAtRaycast.GetComponent<BoxCollider>().enabled = false;
+            lookAtRaycast = Instantiate(Resources.Load("lookAtRaycast", typeof(GameObject))) as GameObject;
+            //This should have a different apearance than the "lookAtRaycast object"
+            stationaryLookAtRaycast = Instantiate(Resources.Load("lookAtRaycast", typeof(GameObject))) as GameObject;
             lookAtRaycast.transform.position = transform.position;
+            stationaryLookAtRaycast.transform.position = transform.position;
 
+            //save current parent
             initialParent = transform.parent;
             initialHit = true;
         }
@@ -118,6 +122,7 @@ public class rotationControl : MonoBehaviour
             //unparent object before destroying
             transform.parent = initialParent;
             Destroy(lookAtRaycast);
+            Destroy(stationaryLookAtRaycast);
         }
     }
 
@@ -139,7 +144,6 @@ public class rotationControl : MonoBehaviour
                 case stateManager.rotationModes.zRotationMode:
                     setRotationGizmoVisible(visibleRotation.Z);
                     init.rotationGizmos.transform.Find("zRotationGizmo").transform.Find("pie").gameObject.SetActive(true);
-
                     break;
             }
         }
