@@ -6,6 +6,7 @@ public class handColliderFollow : MonoBehaviour
 {
     //--local refs
     private stateManager _stateManagerMutatorRef;
+    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
 
     private GameObject collidedWithHand;
 
@@ -16,7 +17,20 @@ public class handColliderFollow : MonoBehaviour
     private void Awake()
     {
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
+
+        stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
+
         selectorHand = GameObject.Find("Hand2").transform;
+    }
+
+    private void OnApplicationQuit()
+    {
+        stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
+    }
+
+    void updateSelectedObjectIsActive(bool value)
+    {
+        _selectedObjectIsActive = value;
     }
 
     void Update()
@@ -29,7 +43,7 @@ public class handColliderFollow : MonoBehaviour
     {
         if (other.gameObject.GetComponent<MonoBehaviour>() is prop)
         {
-            if(!isCurrentlyColliding)
+            if(!isCurrentlyColliding && !_selectedObjectIsActive)
             {
                 collidedWithHand = other.gameObject;
                 _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(other.gameObject);

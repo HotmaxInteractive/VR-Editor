@@ -94,7 +94,11 @@ public class rotationControl : MonoBehaviour
         stateManager.rotationGizmoIsSelectedEvent -= updateRotationGizmoIsSelected;
         stateManager.rotationModeEvent -= updateRotationModeEvent;
 
-        init.rotationGizmos.SetActive(false);
+        //throws error when the app quits if we don't check if it is not null
+        if(init.rotationGizmos != null)
+        {
+            init.rotationGizmos.SetActive(false);
+        }
 
         inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
@@ -104,7 +108,7 @@ public class rotationControl : MonoBehaviour
         _rotationGizmoIsSelected = value;
         setRotationGizmoVisible(visibleRotation.ALL);
 
-        if(_rotationGizmoIsSelected)
+        if (_rotationGizmoIsSelected)
         {
             //set up the container for our object to rotate
             lookAtRaycast = Instantiate(Resources.Load("lookAtRaycast", typeof(GameObject))) as GameObject;
@@ -156,7 +160,6 @@ public class rotationControl : MonoBehaviour
         init.rotationGizmos.transform.Find("yRotationGizmo").transform.Find("pie").gameObject.SetActive(false);
         init.rotationGizmos.transform.Find("zRotationGizmo").transform.Find("pie").gameObject.SetActive(false);
     }
-
 
     void setRotationGizmoVisible(visibleRotation visibleRotation)
     {
