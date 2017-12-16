@@ -36,57 +36,97 @@ public class stateManager : MonoBehaviour
     public delegate void selectedObjectIsActiveHandler(bool value);
     public static event selectedObjectIsActiveHandler selectedObjectIsActiveEvent;
 
+    public static GameObject objectCollidedWithHand;
+    public delegate void objectCollidedWithHandHandler(GameObject value);
+    public static event objectCollidedWithHandHandler objectCollidedWithHandEvent;
+
 
     //------------------MUTATORS------------------\\
 
     public void SET_EDITOR_MODE_UNIVERSAL()
     {
         editorMode = editorModes.universalTransformMode;
-        editorModeEvent(editorModes.universalTransformMode);
+        if (editorModeEvent != null)
+        {
+            editorModeEvent(editorModes.universalTransformMode);
+        }
     }
     public void SET_EDITOR_MODE_CLONE_DELETE()
     {
         editorMode = editorModes.cloneDeleteMode;
-        editorModeEvent(editorModes.cloneDeleteMode);
+        if (editorModeEvent != null)
+        {
+            editorModeEvent(editorModes.cloneDeleteMode);
+        }
     }
     public void SET_EDITOR_MODE_OPEN_MENU()
     {
         editorMode = editorModes.openMenuMode;
-        editorModeEvent(editorModes.openMenuMode);
+        if (editorModeEvent != null)
+        {
+            editorModeEvent(editorModes.openMenuMode);
+        }
     }
     public void SET_SELECTED_OBJECT(GameObject value)
     {
         selectedObject = value;
-        selectedObjectEvent(value);
+        if (selectedObjectEvent != null)
+        {
+            selectedObjectEvent(value);
+        }
     }
 
     public void SET_SELECTED_OBJECT_IS_ACTIVE(bool value)
     {
         selectedObjectIsActive = value;
-        selectedObjectIsActiveEvent(value);
+        if (selectedObjectIsActiveEvent != null)
+        {
+            selectedObjectIsActiveEvent(value);
+        }
     }
 
     public void SET_ROTATION_GIZMO_IS_SELECTED(bool value)
     {
         rotationGizmoIsSelected = value;
-        rotationGizmoIsSelectedEvent(value);
+        if (rotationGizmoIsSelectedEvent != null)
+        {
+            rotationGizmoIsSelectedEvent(value);
+        }
     }
 
     public void SET_X_ROTATION_GIZMO_ACTIVE()
     {
         rotationMode = rotationModes.xRotationMode;
-        rotationModeEvent(rotationModes.xRotationMode);
+        if (rotationModeEvent != null)
+        {
+            rotationModeEvent(rotationModes.xRotationMode);
+        }
     }
 
     public void SET_Y_ROTATION_GIZMO_ACTIVE()
     {
         rotationMode = rotationModes.yRotationMode;
-        rotationModeEvent(rotationModes.yRotationMode);
+        if (rotationModeEvent != null)
+        {
+            rotationModeEvent(rotationModes.yRotationMode);
+        }
     }
 
     public void SET_Z_ROTATION_GIZMO_ACTIVE()
     {
         rotationMode = rotationModes.zRotationMode;
-        rotationModeEvent(rotationModes.zRotationMode);
+        if (rotationModeEvent != null)
+        {
+            rotationModeEvent(rotationModes.zRotationMode);
+        }
+    }
+
+    public void SET_OBJECT_COLLIDED_WITH_HAND(GameObject value)
+    {
+        objectCollidedWithHand = value;
+        if (objectCollidedWithHandEvent != null)
+        {
+            objectCollidedWithHandEvent(value);
+        }
     }
 }

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class inputManager : MonoBehaviour
 {
+    //--local refs
+    private bool _rotationGizmoIsSelected = stateManager.rotationGizmoIsSelected;
+
     // -- controller refs
     //TODO: make these private in the future if nothing is grabbing it from the outside
     public static Valve.VR.InteractionSystem.Hand hand1;
@@ -20,6 +23,8 @@ public class inputManager : MonoBehaviour
 
     private void Awake()
     {
+        stateManager.rotationGizmoIsSelectedEvent += updateRotationGizmoIsSelected;
+
         //Match up the hardware index with the "steamVR Hand2"
         //So the Hand2 is always the starting rightmost hand reletive to the HMD
         //Not sure why steamVR's select hand option doesn't do this, let me know if you figure it out
@@ -40,12 +45,19 @@ public class inputManager : MonoBehaviour
 
     protected virtual void OnApplicationQuit()
     {
+        stateManager.rotationGizmoIsSelectedEvent -= updateRotationGizmoIsSelected;
+
         stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
     }
 
     void updateSelectedObjectIsActive(bool value)
     {
         _selectedObjectIsActive = value;
+    }
+
+    void updateRotationGizmoIsSelected(bool value)
+    {
+        _rotationGizmoIsSelected = value;
     }
 
     //TODO: this should probably be an event that broadcasts in steamVR Hand, but this seems to be working for now
@@ -78,7 +90,7 @@ public class inputManager : MonoBehaviour
 
         if(selectorHand != null)
         {
-            if(_selectedObjectIsActive)
+            if(_selectedObjectIsActive || _rotationGizmoIsSelected)
             {
                 return;
             }
