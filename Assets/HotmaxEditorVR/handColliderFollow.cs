@@ -8,19 +8,18 @@ public class handColliderFollow : MonoBehaviour
     private stateManager _stateManagerMutatorRef;
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
 
+    //--save collided prop
     private GameObject collidedWithHand;
-
-    Transform selectorHand;
-
     private bool isCurrentlyColliding = false;
+
+    //--hand for collider to follow
+    private Transform selectorHand;
 
     private void Awake()
     {
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
-
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
-
-        selectorHand = GameObject.Find("Hand2").transform;
+        selectorHand = inputManager.hand2.gameObject.transform;
     }
 
     private void OnApplicationQuit()
@@ -43,7 +42,9 @@ public class handColliderFollow : MonoBehaviour
     {
         if (other.gameObject.GetComponent<MonoBehaviour>() is prop)
         {
-            if(!isCurrentlyColliding && !_selectedObjectIsActive)
+            //TODO: if you bring object in from telekinesis mode, and unclick, 
+            //you have to still leave and enter object to free grab
+            if (!isCurrentlyColliding && !_selectedObjectIsActive)
             {
                 collidedWithHand = other.gameObject;
                 _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(other.gameObject);

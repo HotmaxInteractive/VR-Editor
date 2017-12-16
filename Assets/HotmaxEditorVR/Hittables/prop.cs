@@ -37,7 +37,6 @@ public class prop : MonoBehaviour, IHittable
         else
         {
             _stateManagerMutatorRef.SET_SELECTED_OBJECT(hit.collider.gameObject);
-
             this.gameObject.AddComponent<activeProp>();
         }
     }

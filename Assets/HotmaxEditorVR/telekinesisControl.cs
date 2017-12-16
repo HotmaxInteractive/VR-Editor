@@ -21,13 +21,12 @@ public class telekinesisControl : MonoBehaviour
         initialPadYPosition = inputManager.selectorHand.GetAxis().y;
         distToController = Vector3.Distance(transform.position, inputManager.hand2.transform.position);
         scrollDistance = 0;
+        init.rotationGizmos.SetActive(false);
     }
 
     // Update is called once per frame
     void Update ()
     {
-        init.rotationGizmos.SetActive(false);
-
         currentPadYPos = inputManager.selectorHand.GetAxis().y;
 
         Vector3 offset = inputManager.hand2.transform.forward * (distToController + scrollDistance);

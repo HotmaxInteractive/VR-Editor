@@ -11,7 +11,6 @@ public class rotationControl : MonoBehaviour
     //--vars used during rotation
     private bool initialHit = false;
     private Transform initialParent;
-    private Vector3 targetPostition;
     private GameObject lookAtRaycast;
     private GameObject stationaryLookAtRaycast;
     private Vector3 lookPos;

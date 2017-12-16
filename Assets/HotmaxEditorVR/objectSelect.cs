@@ -48,15 +48,12 @@ public class objectSelect : MonoBehaviour
 
     void triggerClicked(object sender, ClickedEventArgs e)
     {
-        //put if else here, if colliding with IHittable object for freegrab
         if(_objectCollidedWithHand == null)
         {
             select(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
         }
         else
         {
-            //a prop has collided with the hand
-            //probably do other stuff to the prop too
             _stateManagerMutatorRef.SET_SELECTED_OBJECT(null);
             initialPropParent = _objectCollidedWithHand.transform.parent;
             _objectCollidedWithHand.transform.parent = inputManager.hand2.transform;
@@ -65,7 +62,6 @@ public class objectSelect : MonoBehaviour
 
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
-        //TODO: move this to somewhere where it makes more sense
         _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(false);
 
         if(_objectCollidedWithHand !=  null)

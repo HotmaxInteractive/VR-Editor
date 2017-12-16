@@ -20,7 +20,6 @@ public class init : MonoBehaviour {
         props = GameObject.Find("props");
         deletePanel = GameObject.Find("deletePanel");
         deletedProps = GameObject.Find("deletedProps");
-        handColliderFollow = GameObject.Find("handColliderFollow");
 
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
     }

@@ -7,20 +7,13 @@ using UnityEngine.Events;
 public class deletePanel : MonoBehaviour, IHittable
 {
     //--local refs
-    private stateManager _stateManagerMutatorRef;
     private GameObject _selectedObject;
 
     public Transform target;
 
     private void Awake()
     {
-        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
         stateManager.selectedObjectEvent += updateSelectedObject;
-    }
-
-    void Update()
-    {
-        transform.LookAt(target);
     }
 
     private void OnApplicationQuit()
@@ -28,11 +21,17 @@ public class deletePanel : MonoBehaviour, IHittable
         stateManager.selectedObjectEvent -= updateSelectedObject;
     }
 
+    void Update()
+    {
+        transform.LookAt(target);
+    }
+
     void updateSelectedObject(GameObject value)
     {
         _selectedObject = value;
     }
 
+    //TODO: flesh out what to do with deleted props
     public void receiveHit(RaycastHit hit)
     {
         _selectedObject.transform.parent = init.deletedProps.transform;
