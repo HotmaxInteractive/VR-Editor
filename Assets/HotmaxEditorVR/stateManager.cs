@@ -9,7 +9,8 @@ public class stateManager : MonoBehaviour
     {
         universalTransformMode,
         cloneDeleteMode,
-        openMenuMode
+        spawnMenuMode,
+        propertiesMenuMode
     }
     public delegate void editorModeHandler(editorModes value);
     public static event editorModeHandler editorModeEvent;
@@ -59,12 +60,20 @@ public class stateManager : MonoBehaviour
             editorModeEvent(editorModes.cloneDeleteMode);
         }
     }
-    public void SET_EDITOR_MODE_OPEN_MENU()
+    public void SET_EDITOR_MODE_SPAWN_MENU()
     {
-        editorMode = editorModes.openMenuMode;
+        editorMode = editorModes.spawnMenuMode;
         if (editorModeEvent != null)
         {
-            editorModeEvent(editorModes.openMenuMode);
+            editorModeEvent(editorModes.spawnMenuMode);
+        }
+    }
+    public void SET_EDITOR_MODE_PROPERTIES_MENU()
+    {
+        editorMode = editorModes.propertiesMenuMode;
+        if (editorModeEvent != null)
+        {
+            editorModeEvent(editorModes.propertiesMenuMode);
         }
     }
     public void SET_SELECTED_OBJECT(GameObject value)

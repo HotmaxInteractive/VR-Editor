@@ -112,9 +112,6 @@ public class objectSelect : MonoBehaviour
     }
 }
 
-
-
-
 public interface IHittable
 {
     void receiveHit(RaycastHit hit);

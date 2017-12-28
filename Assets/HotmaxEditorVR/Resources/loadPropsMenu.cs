@@ -52,7 +52,7 @@ public class loadPropsMenu : MonoBehaviour
     {
         _editorMode = value;
 
-        if(_editorMode == stateManager.editorModes.openMenuMode)
+        if(_editorMode == stateManager.editorModes.spawnMenuMode)
         {
             toggleMenuComponents(true);
         }
@@ -217,11 +217,17 @@ public class loadPropsMenu : MonoBehaviour
                 //get the correct object from the current chunk
                 GameObject newProp = Instantiate(chunkedList[currentPage][hit.transform.GetSiblingIndex()]);
                 newProp.name = chunkedList[currentPage][hit.transform.GetSiblingIndex()].name;
+                newProp.transform.parent = propParent.transform;
                 newProp.SetActive(true);
 
                 //set the spawned object to the new selected object
                 _stateManagerMutatorRef.SET_SELECTED_OBJECT(newProp);
                 newProp.transform.position = hit.point;
+                //check for prop -some objects are loaded with props, some aren't. 
+                if(!newProp.GetComponent<prop>())
+                {
+                    newProp.AddComponent<prop>();
+                }
                 newProp.AddComponent<activeProp>();
                 _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(true);
 
@@ -266,19 +272,5 @@ public class loadPropsMenu : MonoBehaviour
         {
             child.gameObject.SetActive(on);
         }
-    }
-}
-
-
-//a handy helper method that turns a list into a chunked list
-public static class ListExtensions
-{
-    public static List<List<T>> ChunkBy<T>(this List<T> source, int chunkSize)
-    {
-        return source
-            .Select((x, i) => new { Index = i, Value = x })
-            .GroupBy(x => x.Index / chunkSize)
-            .Select(x => x.Select(v => v.Value).ToList())
-            .ToList();
     }
 }
