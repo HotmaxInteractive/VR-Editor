@@ -7,6 +7,7 @@ public class loadPropsMenu : MonoBehaviour
 {
     //--local refs
     private stateManager _stateManagerMutatorRef;
+    private stateManager.editorModes _editorMode = stateManager.editorMode;
 
     //--ref to props scene object
     private GameObject propParent;
@@ -20,13 +21,10 @@ public class loadPropsMenu : MonoBehaviour
     private List<GameObject> propObject = new List<GameObject>();
     private List<List<GameObject>> chunkedList = new List<List<GameObject>>();
 
-    //--check if props are in the scene already
+    //--if false, disabled initial props on stage
     public bool propIsInStageAlready = false;
 
     private int currentPage;
-
-    private stateManager.editorModes _editorMode = stateManager.editorMode;
-
 
     //TODO: for some reason the steamVR trigger event listener won't attach in enable or Awake. works in Start...
     private void OnEnable()

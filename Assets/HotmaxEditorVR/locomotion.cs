@@ -16,7 +16,6 @@ public class locomotion : MonoBehaviour
     private GameObject player;
     private Rigidbody handRB;
 
-
     void Start()
     {
         inputManager.trackedController2.Gripped += gripped;
@@ -34,7 +33,7 @@ public class locomotion : MonoBehaviour
 
     void gripped(object sender, ClickedEventArgs e)
     {
-        currentControllerPosition = handRB.gameObject.transform.localPosition;
+        //--set initial "last position"
         lastPosition = handRB.gameObject.transform.localPosition;
 
         isGripped = true;
@@ -49,13 +48,13 @@ public class locomotion : MonoBehaviour
     {   
         if(isGripped)
         {
+            //--finds vector direction of the controller when gripped
             currentControllerPosition = handRB.transform.localPosition;
             var direction = currentControllerPosition - lastPosition;
             var localDirection = handRB.transform.TransformDirection(direction);
             lastPosition = currentControllerPosition;
 
             player.transform.Translate(-localDirection * 5);
-
         }
         else
         {
