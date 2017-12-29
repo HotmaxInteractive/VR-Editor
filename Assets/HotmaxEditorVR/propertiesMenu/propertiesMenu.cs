@@ -135,7 +135,6 @@ public class propertiesMenu : MonoBehaviour
 
             if (hit.collider.gameObject.GetComponent<MonoBehaviour>() is prop)
             {
-                print(hit.collider);
                 //if their is a new hit object set the material page to 0
                 GameObject lastHitObject = hitObject;
                 if (lastHitObject != hit.collider.gameObject)

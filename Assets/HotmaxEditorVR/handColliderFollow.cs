@@ -35,7 +35,6 @@ public class handColliderFollow : MonoBehaviour
     void Update()
     {
         transform.position = selectorHand.position;
-        transform.rotation = selectorHand.rotation;
     }
 
     private void OnTriggerEnter(Collider other)
