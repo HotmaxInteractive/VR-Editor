@@ -10,54 +10,122 @@ public class propertiesMenu : MonoBehaviour
     //--prefab called "lightSource" must be in the Resources folder
     //--All imported textures must be read/writable
 
+    //--local refs
+    private GameObject _selectedObject = stateManager.selectedObject;
+    private stateManager.editorModes _editorMode = stateManager.editorMode;
+
+    //--add all materials in object to list
     private List<string> materialNames = new List<string>();
     private List<List<string>> chunkedMaterialList = new List<List<string>>();
     private int currentPage = 0;
 
-    private GameObject hitObject;
-    private GameObject props;
-
-    //--Game Objects that are in the the properties menu
+    //--refs to children objects
     private GameObject materialListHolder;
     private GameObject slider;
     private TextMesh physicsText;
     private TextMesh animatorText;
 
-    private GameObject selectedObject;
     private Rigidbody selectedObjectRb;
 
+    //--slider stuff
     private bool sliderMoving = false;
     float sliderUnit;
 
     private bool hasLocalAnimator = false;
 
-    private stateManager.editorModes _editorMode = stateManager.editorMode;
-
     private bool triggerDown = false;
 
     void Start()
     {
+        stateManager.selectedObjectEvent += updateSelectedObject;
         stateManager.editorModeEvent += updateEditorMode;
 
         inputManager.trackedController2.TriggerClicked += triggerClicked;
         inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
 
+        //--menu children
         materialListHolder = GameObject.Find("materialListHolder");
         slider = GameObject.Find("massSlider");
-
         physicsText = GameObject.Find("physicsText").GetComponent<TextMesh>();
         animatorText = GameObject.Find("animatorText").GetComponent<TextMesh>();
-
-        props = GameObject.Find("props");
-        selectedObject = props.transform.GetChild(0).gameObject;
     }
 
     private void OnApplicationQuit()
     {
+        stateManager.selectedObjectEvent -= updateSelectedObject;
         stateManager.editorModeEvent -= updateEditorMode;
 
         inputManager.trackedController2.TriggerClicked -= triggerClicked;
         inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
+    }
+
+    void updateSelectedObject(GameObject value)
+    {
+        _selectedObject = value;
+
+        if (_selectedObject.GetComponent<MonoBehaviour>() is prop)
+        {
+            currentPage = 0;
+
+            //TODO: check to see if the animation class is attached
+            animatorText.text = "#no animation";
+
+            //--------------------------------------MATERIALS--------------------------------------\\
+            //before we add new materials clear out the list
+            materialNames.Clear();
+
+            //if the hit object has a renderer, get the material
+            if (_selectedObject.GetComponent<Renderer>())
+            {
+                //if there is more than one material loop and add
+                for (int i = 0; i < _selectedObject.GetComponent<Renderer>().materials.Length; i++)
+                {
+                    materialNames.Add(_selectedObject.GetComponent<Renderer>().materials[i].name);
+                }
+            }
+
+            //get all the materials in the children
+            //--TODO: Do this on GLTF serialization
+            Renderer[] renderers = _selectedObject.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
+            {
+                materialNames.Add(renderer.material.name);
+            }
+
+            removeLastMaterialPage();
+
+            //get only unique instances of the material names
+            materialNames = materialNames.Distinct().ToList();
+
+            //create "chunks" groups of 4 to display the object
+            chunkedMaterialList = ListExtensions.ChunkBy(materialNames, 4);
+            showMaterialPage(0);
+
+            //--------------------------------------MASS--------------------------------------\\
+
+            //--GETTING
+            //if it has a Rb it should be under 90 mass units
+            if (_selectedObject.GetComponent<Rigidbody>())
+            {
+                selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
+
+                if (selectedObjectRb.mass < 60)
+                {
+                    physicsText.text = "#grabbable #throwable";
+                }
+                else if (selectedObjectRb.mass > 60 && selectedObjectRb.mass < 90)
+                {
+                    physicsText.text = "#heavy #non-grabbable";
+                }
+
+                slider.transform.localPosition = new Vector3(0, 0, selectedObjectRb.mass / 10);
+            }
+            else
+            {
+                slider.transform.localPosition = new Vector3(0, 0, 10);
+                physicsText.text = "#non-moveable";
+            }
+        }                    
     }
 
     void updateEditorMode(stateManager.editorModes value)
@@ -74,6 +142,7 @@ public class propertiesMenu : MonoBehaviour
         }
     }
 
+    //--Handles the menu buttons
     void triggerClicked(object sender, ClickedEventArgs e)
     {
         triggerDown = true;
@@ -116,151 +185,72 @@ public class propertiesMenu : MonoBehaviour
                 toggleMenuComponents(false);
             }
 
-            //--SETTING
+            //--SETTING (just updating the UI for now)
             if (hit.collider.gameObject.name == "toggleHasLocalAnimator")
             {
                 if (hasLocalAnimator)
                 {
-                    Destroy(hitObject.GetComponent<localAnimator>());
+                    //TODO: remove animator
                     animatorText.text = "#no-animation";
                     hasLocalAnimator = false;
                 }
                 else
                 {
-                    hitObject.AddComponent<localAnimator>();
+                    //TODO: Add animation controller class
                     animatorText.text = "#has-animation";
                     hasLocalAnimator = true;
                 }
-            }
-
-            if (hit.collider.gameObject.GetComponent<MonoBehaviour>() is prop)
-            {
-                //if their is a new hit object set the material page to 0
-                GameObject lastHitObject = hitObject;
-                if (lastHitObject != hit.collider.gameObject)
-                {
-                    currentPage = 0;
-                }
-
-                //--GETTING
-                if (hit.collider.gameObject.GetComponent<localAnimator>())
-                {
-                    animatorText.text = "#has animation";
-                    hasLocalAnimator = true;
-                }
-                else
-                {
-                    animatorText.text = "#no animation";
-                    hasLocalAnimator = false;
-                }
-
-                //reset hitObject to the newly hit object
-                hitObject = hit.collider.gameObject;
-                selectedObject = hitObject;
-                selectedObjectRb = selectedObject.GetComponent<Rigidbody>();
-
-                //------------------------------------------MATERIALS------------------------------------------\\
-                //before we add new materials clear out the list
-                materialNames.Clear();
-
-                //if the hit object has a renderer, get the material
-                if (hitObject.GetComponent<Renderer>())
-                {
-                    //if there is more than one material loop and add
-                    for (int i = 0; i < hitObject.GetComponent<Renderer>().materials.Length; i++)
-                    {
-                        materialNames.Add(hitObject.GetComponent<Renderer>().materials[i].name);
-                    }
-                }
-
-                //get all the materials in the children
-                Renderer[] renderers = hitObject.GetComponentsInChildren<Renderer>();
-                foreach (Renderer renderer in renderers)
-                {
-                    materialNames.Add(renderer.material.name);
-                }
-
-                removeLastMaterialPage();
-
-                //get only unique instances of the material names
-                materialNames = materialNames.Distinct().ToList();
-
-                //create "chunks" groups of 4 to display the object
-                chunkedMaterialList = ListExtensions.ChunkBy(materialNames, 4);
-                showMaterialPage(0);
-
-                //--------------------------------------MASS--------------------------------------\\
-
-                //--GETTING
-                //if it has a Rb it should be under 90 mass units
-                if (selectedObject.GetComponent<Rigidbody>())
-                {
-                    if (selectedObjectRb.mass < 60)
-                    {
-                        physicsText.text = "#grabbable #throwable";
-                    }
-                    else if (selectedObjectRb.mass > 60 && selectedObjectRb.mass < 90)
-                    {
-                        physicsText.text = "#heavy #non-grabbable";
-                    }
-
-                    slider.transform.localPosition = new Vector3(0, 0, selectedObjectRb.mass / 10);
-                }
-                else
-                {
-                    slider.transform.localPosition = new Vector3(0, 0, 10);
-                    physicsText.text = "#non-moveable";
-                }
-            }
+            }           
         }
-
     }
 
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
         triggerDown = false;
 
+        MeshCollider selectedObjectMeshCollider = _selectedObject.GetComponent<MeshCollider>();
+
         if (sliderMoving)
         {
             if (sliderUnit < 6)
             {
-                if (!selectedObject.GetComponent<Rigidbody>())
+                if (!_selectedObject.GetComponent<Rigidbody>())
                 {
-                    if (selectedObject.GetComponent<MeshCollider>() && selectedObject.GetComponent<MeshCollider>().convex == false)
+                    if (selectedObjectMeshCollider && selectedObjectMeshCollider.convex == false)
                     {
-                        selectedObject.GetComponent<MeshCollider>().convex = true;
+                        selectedObjectMeshCollider.convex = true;
                     }
-                    selectedObject.AddComponent<Rigidbody>();
+                    _selectedObject.AddComponent<Rigidbody>();
                 }
-                selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
+                _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
                 physicsText.text = "#grabbable #throwable";
 
             }
             else if (sliderUnit > 6 && sliderUnit < 9)
             {
-                if (!selectedObject.GetComponent<Rigidbody>())
+                if (!_selectedObject.GetComponent<Rigidbody>())
                 {
-                    if (selectedObject.GetComponent<MeshCollider>() && selectedObject.GetComponent<MeshCollider>().convex == false)
+                    if (selectedObjectMeshCollider && selectedObjectMeshCollider.convex == false)
                     {
-                        selectedObject.GetComponent<MeshCollider>().convex = true;
+                        selectedObjectMeshCollider.convex = true;
                     }
-                    selectedObject.AddComponent<Rigidbody>();
+                    _selectedObject.AddComponent<Rigidbody>();
+                    selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
                 }
-                selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
+                _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
                 physicsText.text = "#heavy #non-grabbable";
             }
             else
             {
-                if (selectedObject.GetComponent<Rigidbody>())
+                if (_selectedObject.GetComponent<Rigidbody>())
                 {
-                    Destroy(selectedObject.GetComponent<Rigidbody>());
+                    Destroy(_selectedObject.GetComponent<Rigidbody>());
                 }
                 physicsText.text = "#non-moveable";
             }
             sliderMoving = false;
         }
     }
-
 
     void Update()
     {

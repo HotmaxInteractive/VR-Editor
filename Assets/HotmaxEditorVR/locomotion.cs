@@ -30,7 +30,6 @@ public class locomotion : MonoBehaviour
     {
         inputManager.trackedController2.Gripped -= gripped;
         inputManager.trackedController2.Ungripped -= ungripped;
-
     }
 
     void gripped(object sender, ClickedEventArgs e)
