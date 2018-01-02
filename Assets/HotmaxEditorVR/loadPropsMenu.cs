@@ -13,8 +13,7 @@ public class loadPropsMenu : MonoBehaviour
     private GameObject propParent;
 
     //--menu prop tile parent and child
-    private GameObject propTiles;
-    private GameObject menuProp;
+    public GameObject propTiles;
 
     //--Lists to handle getting unique props in menu
     private List<string> propName = new List<string>();
@@ -65,7 +64,6 @@ public class loadPropsMenu : MonoBehaviour
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
 
         propParent = GameObject.Find("props");
-        propTiles = GameObject.Find("propTiles");
 
         //get the names of all props in props
         for (int i = 0; i < propParent.transform.childCount; i++)

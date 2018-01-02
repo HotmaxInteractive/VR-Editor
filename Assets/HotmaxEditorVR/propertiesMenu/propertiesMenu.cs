@@ -20,10 +20,10 @@ public class propertiesMenu : MonoBehaviour
     private int currentPage = 0;
 
     //--refs to children objects
-    private GameObject materialListHolder;
-    private GameObject slider;
-    private TextMesh physicsText;
-    private TextMesh animatorText;
+    public GameObject materialListHolder;
+    public GameObject slider;
+    public TextMesh physicsText;
+    public TextMesh animatorText;
 
     private Rigidbody selectedObjectRb;
 
@@ -42,12 +42,6 @@ public class propertiesMenu : MonoBehaviour
 
         inputManager.trackedController2.TriggerClicked += triggerClicked;
         inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
-
-        //--menu children
-        materialListHolder = GameObject.Find("materialListHolder");
-        slider = GameObject.Find("massSlider");
-        physicsText = GameObject.Find("physicsText").GetComponent<TextMesh>();
-        animatorText = GameObject.Find("animatorText").GetComponent<TextMesh>();
     }
 
     private void OnApplicationQuit()
@@ -63,7 +57,7 @@ public class propertiesMenu : MonoBehaviour
     {
         _selectedObject = value;
 
-        if (_selectedObject.GetComponent<MonoBehaviour>() is prop)
+        if (_selectedObject != null)
         {
             currentPage = 0;
 
@@ -208,18 +202,12 @@ public class propertiesMenu : MonoBehaviour
     {
         triggerDown = false;
 
-        MeshCollider selectedObjectMeshCollider = _selectedObject.GetComponent<MeshCollider>();
-
         if (sliderMoving)
         {
             if (sliderUnit < 6)
             {
                 if (!_selectedObject.GetComponent<Rigidbody>())
                 {
-                    if (selectedObjectMeshCollider && selectedObjectMeshCollider.convex == false)
-                    {
-                        selectedObjectMeshCollider.convex = true;
-                    }
                     _selectedObject.AddComponent<Rigidbody>();
                 }
                 _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
@@ -230,10 +218,6 @@ public class propertiesMenu : MonoBehaviour
             {
                 if (!_selectedObject.GetComponent<Rigidbody>())
                 {
-                    if (selectedObjectMeshCollider && selectedObjectMeshCollider.convex == false)
-                    {
-                        selectedObjectMeshCollider.convex = true;
-                    }
                     _selectedObject.AddComponent<Rigidbody>();
                     selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
                 }
