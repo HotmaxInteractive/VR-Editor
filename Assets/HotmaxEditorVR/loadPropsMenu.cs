@@ -264,7 +264,11 @@ public class loadPropsMenu : MonoBehaviour
 
     void toggleMenuComponents(bool on)
     {
-        foreach (Transform child in transform)
+        foreach (Transform child in transform.parent.GetChild(0))
+        {
+            child.gameObject.SetActive(on);
+        }
+        foreach (Transform child in transform.parent.GetChild(1))
         {
             child.gameObject.SetActive(on);
         }

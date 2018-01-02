@@ -126,7 +126,7 @@ public class propertiesMenu : MonoBehaviour
     {
         _editorMode = value;
 
-        if (_editorMode == stateManager.editorModes.propertiesMenuMode)
+        if (_editorMode == stateManager.editorModes.spawnMenuMode)
         {
             toggleMenuComponents(true);
         }
@@ -172,11 +172,6 @@ public class propertiesMenu : MonoBehaviour
                     removeLastMaterialPage();
                     showMaterialPage(currentPage);
                 }
-            }
-
-            if (hit.collider.gameObject.name == "closePropertiesMenu")
-            {
-                toggleMenuComponents(false);
             }
 
             //--SETTING (just updating the UI for now)
@@ -281,7 +276,11 @@ public class propertiesMenu : MonoBehaviour
 
     void toggleMenuComponents(bool on)
     {
-        foreach (Transform child in transform)
+        foreach (Transform child in transform.parent.GetChild(0))
+        {
+            child.gameObject.SetActive(on);
+        }
+        foreach (Transform child in transform.parent.GetChild(1))
         {
             child.gameObject.SetActive(on);
         }
