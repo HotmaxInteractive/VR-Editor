@@ -52,6 +52,10 @@ public class loadPropsMenu : MonoBehaviour
         if(_editorMode == stateManager.editorModes.spawnMenuMode)
         {
             toggleMenuComponents(true);
+
+            Vector3 offset = init.vrCamera.transform.forward * 2;
+            transform.parent.transform.position = init.vrCamera.transform.position + offset;
+            transform.parent.transform.LookAt(init.vrCamera.transform);
         }
         else
         {

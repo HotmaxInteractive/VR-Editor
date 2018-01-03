@@ -38,7 +38,6 @@ public class propertiesMenu : MonoBehaviour
     void Start()
     {
         stateManager.selectedObjectEvent += updateSelectedObject;
-        stateManager.editorModeEvent += updateEditorMode;
 
         inputManager.trackedController2.TriggerClicked += triggerClicked;
         inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
@@ -47,7 +46,6 @@ public class propertiesMenu : MonoBehaviour
     private void OnApplicationQuit()
     {
         stateManager.selectedObjectEvent -= updateSelectedObject;
-        stateManager.editorModeEvent -= updateEditorMode;
 
         inputManager.trackedController2.TriggerClicked -= triggerClicked;
         inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
@@ -122,20 +120,6 @@ public class propertiesMenu : MonoBehaviour
         }                    
     }
 
-    void updateEditorMode(stateManager.editorModes value)
-    {
-        _editorMode = value;
-
-        if (_editorMode == stateManager.editorModes.spawnMenuMode)
-        {
-            toggleMenuComponents(true);
-        }
-        else
-        {
-            toggleMenuComponents(false);
-        }
-    }
-
     //--Handles the menu buttons
     void triggerClicked(object sender, ClickedEventArgs e)
     {
@@ -206,6 +190,7 @@ public class propertiesMenu : MonoBehaviour
                     _selectedObject.AddComponent<Rigidbody>();
                 }
                 _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
+                _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
                 physicsText.text = "#grabbable #throwable";
 
             }
@@ -217,6 +202,7 @@ public class propertiesMenu : MonoBehaviour
                     selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
                 }
                 _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
+                _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
                 physicsText.text = "#heavy #non-grabbable";
             }
             else
@@ -271,18 +257,6 @@ public class propertiesMenu : MonoBehaviour
         for (int i = 0; i < materialListHolder.transform.childCount; i++)
         {
             Destroy(materialListHolder.transform.GetChild(i).gameObject);
-        }
-    }
-
-    void toggleMenuComponents(bool on)
-    {
-        foreach (Transform child in transform.parent.GetChild(0))
-        {
-            child.gameObject.SetActive(on);
-        }
-        foreach (Transform child in transform.parent.GetChild(1))
-        {
-            child.gameObject.SetActive(on);
         }
     }
 }
