@@ -49,13 +49,21 @@ public class loadPropsMenu : MonoBehaviour
     {
         _editorMode = value;
 
-        if(_editorMode == stateManager.editorModes.spawnMenuMode)
+        if (_editorMode == stateManager.editorModes.spawnMenuMode)
         {
             toggleMenuComponents(true);
 
-            Vector3 offset = init.vrCamera.transform.forward * 2;
-            transform.parent.transform.position = init.vrCamera.transform.position + offset;
-            transform.parent.transform.LookAt(init.vrCamera.transform);
+            //--make menu face the HMD
+            GameObject menu = transform.parent.transform.gameObject;
+            GameObject vrCam = init.vrCamera;
+
+            Vector3 forwardAmount = vrCam.transform.position + (vrCam.transform.forward * 2.15f);
+            Quaternion rotationAmount = vrCam.transform.rotation;
+
+            menu.transform.position = new Vector3(forwardAmount.x, vrCam.transform.position.y - 1, forwardAmount.z);
+
+            menu.transform.rotation = rotationAmount;
+            menu.transform.localEulerAngles = new Vector3(0, menu.transform.localEulerAngles.y + 180, 0);
         }
         else
         {
