@@ -32,7 +32,7 @@ public class scaleControl : MonoBehaviour
 
     void Update()
     {
-        if(_editorMode == stateManager.editorModes.spawnMenuMode)
+        if(_editorMode == stateManager.editorModes.openMenuMode)
         {
             //TODO: how is the touchPad controlling the Scale here?
             if (inputManager.selectorHand.GetPress(SteamVR_Controller.ButtonMask.Touchpad))

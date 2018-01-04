@@ -9,8 +9,7 @@ public class stateManager : MonoBehaviour
     {
         universalTransformMode,
         cloneDeleteMode,
-        spawnMenuMode,
-        propertiesMenuMode
+        openMenuMode
     }
     public delegate void editorModeHandler(editorModes value);
     public static event editorModeHandler editorModeEvent;
@@ -41,6 +40,32 @@ public class stateManager : MonoBehaviour
     public delegate void objectCollidedWithHandHandler(GameObject value);
     public static event objectCollidedWithHandHandler objectCollidedWithHandEvent;
 
+    public static bool playerIsLocomoting;
+    public delegate void playerIsLocomotingHandler(bool value);
+    public static event playerIsLocomotingHandler playerIsLocomotingEvent;
+
+    public delegate void spawnPageDecrementedHandler();
+    public static event spawnPageDecrementedHandler spawnPageIncrementedEvent;
+
+    public delegate void spawnPageIncrementedHandler();
+    public static event spawnPageIncrementedHandler spawnPageDecrementedEvent;
+
+    public delegate void closeMenuHandler();
+    public static event closeMenuHandler closeMenuEvent;
+
+    public delegate void materialPageDecrementedHandler();
+    public static event materialPageDecrementedHandler materialPageIncrementedEvent;
+
+    public delegate void materialPageIncrementedHandler();
+    public static event materialPageIncrementedHandler materialPageDecrementedEvent;
+
+    public delegate void massScaleHitHandler();
+    public static event massScaleHitHandler massScaleHitEvent;
+
+    public static Vector3 raycastHitPoint;
+    public static GameObject raycastHitGameObject;
+    public delegate void raycastHitInfoHandler(Vector3 value1, GameObject value2);
+    public static event raycastHitInfoHandler raycastHitInfoEvent;
 
     //------------------MUTATORS------------------\\
 
@@ -60,22 +85,16 @@ public class stateManager : MonoBehaviour
             editorModeEvent(editorModes.cloneDeleteMode);
         }
     }
-    public void SET_EDITOR_MODE_SPAWN_MENU()
+
+    public void SET_EDITOR_MODE_OPEN_MENU()
     {
-        editorMode = editorModes.spawnMenuMode;
+        editorMode = editorModes.openMenuMode;
         if (editorModeEvent != null)
         {
-            editorModeEvent(editorModes.spawnMenuMode);
+            editorModeEvent(editorModes.openMenuMode);
         }
     }
-    public void SET_EDITOR_MODE_PROPERTIES_MENU()
-    {
-        editorMode = editorModes.propertiesMenuMode;
-        if (editorModeEvent != null)
-        {
-            editorModeEvent(editorModes.propertiesMenuMode);
-        }
-    }
+
     public void SET_SELECTED_OBJECT(GameObject value)
     {
         selectedObject = value;
@@ -136,6 +155,71 @@ public class stateManager : MonoBehaviour
         if (objectCollidedWithHandEvent != null)
         {
             objectCollidedWithHandEvent(value);
+        }
+    }
+
+    public void SET_PLAYER_IS_LOCOMOTING(bool value)
+    {
+        playerIsLocomoting = value;
+        if (playerIsLocomotingEvent != null)
+        {
+            playerIsLocomotingEvent(value);
+        }
+    }
+
+    public void SET_SPAWN_PAGE_INCREMENTED()
+    {
+        if (spawnPageIncrementedEvent != null)
+        {
+            spawnPageIncrementedEvent();
+        }
+    }
+
+    public void SET_SPAWN_PAGE_DECREMENTED()
+    {
+        if (spawnPageDecrementedEvent != null)
+        {
+            spawnPageDecrementedEvent();
+        }
+    }
+
+    public void SET_MENU_CLOSED()
+    {
+        if (closeMenuEvent != null)
+        {
+            closeMenuEvent();
+        }
+    }
+
+    public void SET_MATERIAL_PAGE_INCREMENTED()
+    {
+        if (materialPageIncrementedEvent != null)
+        {
+            materialPageIncrementedEvent();
+        }
+    }
+
+    public void SET_MATERIAL_PAGE_DECREMENTED()
+    {
+        if (materialPageDecrementedEvent != null)
+        {
+            materialPageDecrementedEvent();
+        }
+    }
+
+    public void SET_MASS_SCALE_HIT()
+    {
+        if (massScaleHitEvent != null)
+        {
+            massScaleHitEvent();
+        }
+    }
+
+    public void SET_RAYCAST_HIT_INFO(Vector3 value1, GameObject value2)
+    {
+        if (raycastHitInfoEvent != null)
+        {
+            raycastHitInfoEvent(value1, value2);
         }
     }
 }

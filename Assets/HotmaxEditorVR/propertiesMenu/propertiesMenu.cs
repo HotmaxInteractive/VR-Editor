@@ -13,6 +13,9 @@ public class propertiesMenu : MonoBehaviour
     //--local refs
     private GameObject _selectedObject = stateManager.selectedObject;
     private stateManager.editorModes _editorMode = stateManager.editorMode;
+    private Vector3 _raycastHitPoint;
+    private GameObject _raycastHitObject;
+
 
     //--add all materials in object to list
     private List<string> materialNames = new List<string>();
@@ -23,7 +26,7 @@ public class propertiesMenu : MonoBehaviour
     public GameObject materialListHolder;
     public GameObject slider;
     public TextMesh physicsText;
-    public TextMesh animatorText;
+    public GameObject massScale;
 
     private Rigidbody selectedObjectRb;
 
@@ -31,23 +34,27 @@ public class propertiesMenu : MonoBehaviour
     private bool sliderMoving = false;
     float sliderUnit;
 
-    private bool hasLocalAnimator = false;
-
-    private bool triggerDown = false;
+    private bool massScaleHit = false;
 
     void Start()
     {
         stateManager.selectedObjectEvent += updateSelectedObject;
+        stateManager.materialPageIncrementedEvent += updateMaterialPageIncrementedEvent;
+        stateManager.materialPageDecrementedEvent += updateMaterialPageDecrementedEvent;
+        stateManager.massScaleHitEvent += updatemassScaleHitEvent;
+        stateManager.raycastHitInfoEvent += updateRaycastHitInfoEvent;
 
-        inputManager.trackedController2.TriggerClicked += triggerClicked;
         inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
     }
 
     private void OnApplicationQuit()
     {
         stateManager.selectedObjectEvent -= updateSelectedObject;
+        stateManager.materialPageIncrementedEvent -= updateMaterialPageIncrementedEvent;
+        stateManager.materialPageDecrementedEvent -= updateMaterialPageDecrementedEvent;
+        stateManager.massScaleHitEvent -= updatemassScaleHitEvent;
+        stateManager.raycastHitInfoEvent -= updateRaycastHitInfoEvent;
 
-        inputManager.trackedController2.TriggerClicked -= triggerClicked;
         inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
 
@@ -58,9 +65,6 @@ public class propertiesMenu : MonoBehaviour
         if (_selectedObject != null)
         {
             currentPage = 0;
-
-            //TODO: check to see if the animation class is attached
-            animatorText.text = "#no animation";
 
             //--------------------------------------MATERIALS--------------------------------------\\
             //before we add new materials clear out the list
@@ -117,121 +121,101 @@ public class propertiesMenu : MonoBehaviour
                 slider.transform.localPosition = new Vector3(0, 0, 10);
                 physicsText.text = "#non-moveable";
             }
-        }                    
+        }
     }
 
-    //--Handles the menu buttons
-    void triggerClicked(object sender, ClickedEventArgs e)
+    void updateMaterialPageIncrementedEvent()
     {
-        triggerDown = true;
-
-        RaycastHit hit;
-        Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        if (currentPage >= chunkedMaterialList.Count - 1)
         {
-            if (hit.collider.gameObject.name == "materialPageUp")
-            {
-                if (currentPage >= chunkedMaterialList.Count - 1)
-                {
-                    return;
-                }
-                else
-                {
-                    currentPage += 1;
-                    removeLastMaterialPage();
-                    showMaterialPage(currentPage);
-                }
-            }
-
-            if (hit.collider.gameObject.name == "materialPageDown")
-            {
-                if (currentPage <= 0)
-                {
-                    return;
-                }
-                else
-                {
-                    currentPage -= 1;
-                    removeLastMaterialPage();
-                    showMaterialPage(currentPage);
-                }
-            }
-
-            //--SETTING (just updating the UI for now)
-            if (hit.collider.gameObject.name == "toggleHasLocalAnimator")
-            {
-                if (hasLocalAnimator)
-                {
-                    //TODO: remove animator
-                    animatorText.text = "#no-animation";
-                    hasLocalAnimator = false;
-                }
-                else
-                {
-                    //TODO: Add animation controller class
-                    animatorText.text = "#has-animation";
-                    hasLocalAnimator = true;
-                }
-            }           
+            return;
         }
+        else
+        {
+            currentPage += 1;
+            removeLastMaterialPage();
+            showMaterialPage(currentPage);
+        }
+    }
+
+    void updateMaterialPageDecrementedEvent()
+    {
+        if (currentPage <= 0)
+        {
+            return;
+        }
+        else
+        {
+            currentPage -= 1;
+            removeLastMaterialPage();
+            showMaterialPage(currentPage);
+        }
+    }
+
+    void updatemassScaleHitEvent()
+    {
+        massScaleHit = true;
+    }
+
+    void updateRaycastHitInfoEvent(Vector3 value1, GameObject value2)
+    {
+        _raycastHitPoint = value1;
+        _raycastHitObject = value2;
     }
 
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
-        triggerDown = false;
+        massScaleHit = false;
 
-        if (sliderMoving)
+        if(_selectedObject != null)
         {
-            if (sliderUnit < 6)
+            if (sliderMoving)
             {
-                if (!_selectedObject.GetComponent<Rigidbody>())
+                if (sliderUnit < 6)
                 {
-                    _selectedObject.AddComponent<Rigidbody>();
-                }
-                _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
-                _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
-                physicsText.text = "#grabbable #throwable";
+                    if (!_selectedObject.GetComponent<Rigidbody>())
+                    {
+                        _selectedObject.AddComponent<Rigidbody>();
+                    }
+                    _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
+                    _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
+                    physicsText.text = "#grabbable #throwable";
 
-            }
-            else if (sliderUnit > 6 && sliderUnit < 9)
-            {
-                if (!_selectedObject.GetComponent<Rigidbody>())
-                {
-                    _selectedObject.AddComponent<Rigidbody>();
-                    selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
                 }
-                _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
-                _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
-                physicsText.text = "#heavy #non-grabbable";
-            }
-            else
-            {
-                if (_selectedObject.GetComponent<Rigidbody>())
+                else if (sliderUnit > 6 && sliderUnit < 9)
                 {
-                    Destroy(_selectedObject.GetComponent<Rigidbody>());
+                    if (!_selectedObject.GetComponent<Rigidbody>())
+                    {
+                        _selectedObject.AddComponent<Rigidbody>();
+                        selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
+                    }
+                    _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
+                    _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
+                    physicsText.text = "#heavy #non-grabbable";
                 }
-                physicsText.text = "#non-moveable";
+                else
+                {
+                    if (_selectedObject.GetComponent<Rigidbody>())
+                    {
+                        Destroy(_selectedObject.GetComponent<Rigidbody>());
+                    }
+                    physicsText.text = "#non-moveable";
+                }
+                sliderMoving = false;
             }
-            sliderMoving = false;
         }
     }
 
     void Update()
     {
-        if (triggerDown)
+        if (massScaleHit)
         {
-            RaycastHit hit;
-            Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
-            if (Physics.Raycast(ray, out hit, 100))
+            if (_raycastHitObject == massScale)
             {
-                if (hit.collider.gameObject == slider.transform.parent.transform.parent.gameObject)
-                {
-                    slider.transform.position = hit.point;
-                    slider.transform.localPosition = new Vector3(0, 0, slider.transform.localPosition.z);
-                    sliderUnit = slider.transform.localPosition.z;
-                    sliderMoving = true;
-                }
+                slider.transform.position = _raycastHitPoint;
+                slider.transform.localPosition = new Vector3(0, 0, slider.transform.localPosition.z);
+                sliderUnit = slider.transform.localPosition.z;
+                sliderMoving = true;
             }
         }
     }

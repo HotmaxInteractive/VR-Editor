@@ -93,17 +93,11 @@ public class activeProp : MonoBehaviour
                     init.deletePanel.SetActive(true);
                 }
                 break;
-            case stateManager.editorModes.spawnMenuMode:
+            case stateManager.editorModes.openMenuMode:
                 if (_selectedObjectIsActive)
                 {
                     decorators["telekinesisControl"].enabled = true;
                 }
-                break;
-            case stateManager.editorModes.propertiesMenuMode:
-                //if (_selectedObjectIsActive)
-                //{
-                //    decorators["telekinesisControl"].enabled = true;
-                //}
                 break;
         }
     }
@@ -123,11 +117,8 @@ public class activeProp : MonoBehaviour
             case stateManager.editorModes.cloneDeleteMode:
                 //nothing
                 break;
-            case stateManager.editorModes.spawnMenuMode:
+            case stateManager.editorModes.openMenuMode:
                 decorators["scaleControl"].enabled = true;
-                break;
-            case stateManager.editorModes.propertiesMenuMode:
-                //nothing
                 break;
         }
     }

@@ -109,11 +109,11 @@ public class inputManager : MonoBehaviour
                     }
                     if (selectorHand.GetAxis().x < 0 && selectorHand.GetAxis().y < 0)
                     {
-                        _stateManagerMutatorRef.SET_EDITOR_MODE_SPAWN_MENU();
+                        _stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
                     }
                     if (selectorHand.GetAxis().x > 0 && selectorHand.GetAxis().y < 0)
                     {
-                        _stateManagerMutatorRef.SET_EDITOR_MODE_PROPERTIES_MENU();
+                        _stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
                     }
                 }
             }

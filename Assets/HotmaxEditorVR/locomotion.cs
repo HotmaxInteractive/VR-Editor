@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class locomotion : MonoBehaviour
 {
+    private stateManager _stateManagerMutatorRef;
+
     private bool isGripped = false;
 
     private Vector3 lastPosition;
@@ -18,6 +20,8 @@ public class locomotion : MonoBehaviour
 
     void Start()
     {
+        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
+
         inputManager.trackedController2.Gripped += gripped;
         inputManager.trackedController2.Ungripped += ungripped;
 
@@ -37,11 +41,15 @@ public class locomotion : MonoBehaviour
         lastPosition = handRB.gameObject.transform.localPosition;
 
         isGripped = true;
+
+        _stateManagerMutatorRef.SET_PLAYER_IS_LOCOMOTING(true);
     }
 
     void ungripped(object sender, ClickedEventArgs e)
     {
         isGripped = false;
+
+        _stateManagerMutatorRef.SET_PLAYER_IS_LOCOMOTING(false);
     }
 
     void Update()

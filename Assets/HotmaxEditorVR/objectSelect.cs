@@ -42,7 +42,6 @@ public class objectSelect : MonoBehaviour
         inputManager.trackedController2.TriggerClicked -= triggerClicked;
         inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
         stateManager.objectCollidedWithHandEvent -= updateObjectCollidedWithHand;
-
     }
 
 
@@ -85,12 +84,14 @@ public class objectSelect : MonoBehaviour
     void ShootLaserFromTargetPosition(Vector3 targetPosition, Vector3 direction, float length)
     {
         Ray ray = new Ray(targetPosition, direction);
-        RaycastHit raycastHit;
+        RaycastHit hit;
         laserEndPosition = targetPosition + (length * direction);
 
-        if (Physics.Raycast(ray, out raycastHit, length))
+        if (Physics.Raycast(ray, out hit, length))
         {
-            laserEndPosition = raycastHit.point;
+            laserEndPosition = hit.point;
+            //TODO: this should go somewhere more explicit
+            _stateManagerMutatorRef.SET_RAYCAST_HIT_INFO(hit.point, hit.collider.gameObject);
         }
 
         laserLineRenderer.SetPosition(0, targetPosition);
