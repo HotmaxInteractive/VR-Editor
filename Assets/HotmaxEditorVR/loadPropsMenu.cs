@@ -19,6 +19,7 @@ public class loadPropsMenu : MonoBehaviour
     private List<List<GameObject>> chunkedList = new List<List<GameObject>>();
 
     //--if false, disabled initial props on stage
+    //--TODO: remove when props are received from PropClass
     public bool propIsInStageAlready = false;
 
     private int currentPage;
