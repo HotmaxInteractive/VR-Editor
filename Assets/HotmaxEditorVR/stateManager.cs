@@ -44,24 +44,6 @@ public class stateManager : MonoBehaviour
     public delegate void playerIsLocomotingHandler(bool value);
     public static event playerIsLocomotingHandler playerIsLocomotingEvent;
 
-    public delegate void spawnPageDecrementedHandler();
-    public static event spawnPageDecrementedHandler spawnPageIncrementedEvent;
-
-    public delegate void spawnPageIncrementedHandler();
-    public static event spawnPageIncrementedHandler spawnPageDecrementedEvent;
-
-    public delegate void closeMenuHandler();
-    public static event closeMenuHandler closeMenuEvent;
-
-    public delegate void materialPageDecrementedHandler();
-    public static event materialPageDecrementedHandler materialPageIncrementedEvent;
-
-    public delegate void materialPageIncrementedHandler();
-    public static event materialPageIncrementedHandler materialPageDecrementedEvent;
-
-    public delegate void massScaleHitHandler();
-    public static event massScaleHitHandler massScaleHitEvent;
-
     public static Vector3 raycastHitPoint;
     public static GameObject raycastHitGameObject;
     public delegate void raycastHitInfoHandler(Vector3 value1, GameObject value2);
@@ -164,54 +146,6 @@ public class stateManager : MonoBehaviour
         if (playerIsLocomotingEvent != null)
         {
             playerIsLocomotingEvent(value);
-        }
-    }
-
-    public void SET_SPAWN_PAGE_INCREMENTED()
-    {
-        if (spawnPageIncrementedEvent != null)
-        {
-            spawnPageIncrementedEvent();
-        }
-    }
-
-    public void SET_SPAWN_PAGE_DECREMENTED()
-    {
-        if (spawnPageDecrementedEvent != null)
-        {
-            spawnPageDecrementedEvent();
-        }
-    }
-
-    public void SET_MENU_CLOSED()
-    {
-        if (closeMenuEvent != null)
-        {
-            closeMenuEvent();
-        }
-    }
-
-    public void SET_MATERIAL_PAGE_INCREMENTED()
-    {
-        if (materialPageIncrementedEvent != null)
-        {
-            materialPageIncrementedEvent();
-        }
-    }
-
-    public void SET_MATERIAL_PAGE_DECREMENTED()
-    {
-        if (materialPageDecrementedEvent != null)
-        {
-            materialPageDecrementedEvent();
-        }
-    }
-
-    public void SET_MASS_SCALE_HIT()
-    {
-        if (massScaleHitEvent != null)
-        {
-            massScaleHitEvent();
         }
     }
 

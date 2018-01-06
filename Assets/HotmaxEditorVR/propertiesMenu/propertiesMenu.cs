@@ -20,13 +20,12 @@ public class propertiesMenu : MonoBehaviour
     //--add all materials in object to list
     private List<string> materialNames = new List<string>();
     private List<List<string>> chunkedMaterialList = new List<List<string>>();
-    private int currentPage = 0;
+    private int currentMaterialsPage = 0;
 
     //--refs to children objects
     public GameObject materialListHolder;
     public GameObject slider;
     public TextMesh physicsText;
-    public GameObject massScale;
 
     private Rigidbody selectedObjectRb;
 
@@ -39,23 +38,13 @@ public class propertiesMenu : MonoBehaviour
     void Start()
     {
         stateManager.selectedObjectEvent += updateSelectedObject;
-        stateManager.materialPageIncrementedEvent += updateMaterialPageIncrementedEvent;
-        stateManager.materialPageDecrementedEvent += updateMaterialPageDecrementedEvent;
-        stateManager.massScaleHitEvent += updatemassScaleHitEvent;
         stateManager.raycastHitInfoEvent += updateRaycastHitInfoEvent;
-
-        inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
     }
 
     private void OnApplicationQuit()
     {
         stateManager.selectedObjectEvent -= updateSelectedObject;
-        stateManager.materialPageIncrementedEvent -= updateMaterialPageIncrementedEvent;
-        stateManager.materialPageDecrementedEvent -= updateMaterialPageDecrementedEvent;
-        stateManager.massScaleHitEvent -= updatemassScaleHitEvent;
         stateManager.raycastHitInfoEvent -= updateRaycastHitInfoEvent;
-
-        inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
 
     void updateSelectedObject(GameObject value)
@@ -64,7 +53,7 @@ public class propertiesMenu : MonoBehaviour
 
         if (_selectedObject != null)
         {
-            currentPage = 0;
+            currentMaterialsPage = 0;
 
             //--------------------------------------MATERIALS--------------------------------------\\
             //before we add new materials clear out the list
@@ -124,37 +113,32 @@ public class propertiesMenu : MonoBehaviour
         }
     }
 
-    void updateMaterialPageIncrementedEvent()
+    public void materialPageUp()
     {
-        if (currentPage >= chunkedMaterialList.Count - 1)
+        if (currentMaterialsPage >= chunkedMaterialList.Count - 1)
         {
             return;
         }
         else
         {
-            currentPage += 1;
+            currentMaterialsPage += 1;
             removeLastMaterialPage();
-            showMaterialPage(currentPage);
+            showMaterialPage(currentMaterialsPage);
         }
     }
 
-    void updateMaterialPageDecrementedEvent()
+    public void materialPageDown()
     {
-        if (currentPage <= 0)
+        if (currentMaterialsPage <= 0)
         {
             return;
         }
         else
         {
-            currentPage -= 1;
+            currentMaterialsPage -= 1;
             removeLastMaterialPage();
-            showMaterialPage(currentPage);
+            showMaterialPage(currentMaterialsPage);
         }
-    }
-
-    void updatemassScaleHitEvent()
-    {
-        massScaleHit = true;
     }
 
     void updateRaycastHitInfoEvent(Vector3 value1, GameObject value2)
@@ -163,60 +147,47 @@ public class propertiesMenu : MonoBehaviour
         _raycastHitObject = value2;
     }
 
-    void triggerUnclicked(object sender, ClickedEventArgs e)
+    public void updatePhysicsInfo()
     {
-        massScaleHit = false;
+        //TODO: move this to a slider class mutate, these properties and animations will probably have to go through the state
 
+        //--TODO: needs to be a public method for the trigger unclick of the slider
         if(_selectedObject != null)
         {
-            if (sliderMoving)
-            {
-                if (sliderUnit < 6)
-                {
-                    if (!_selectedObject.GetComponent<Rigidbody>())
-                    {
-                        _selectedObject.AddComponent<Rigidbody>();
-                    }
-                    _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
-                    _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
-                    physicsText.text = "#grabbable #throwable";
+            sliderUnit = slider.transform.localPosition.z;
 
-                }
-                else if (sliderUnit > 6 && sliderUnit < 9)
-                {
-                    if (!_selectedObject.GetComponent<Rigidbody>())
-                    {
-                        _selectedObject.AddComponent<Rigidbody>();
-                        selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
-                    }
-                    _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
-                    _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
-                    physicsText.text = "#heavy #non-grabbable";
-                }
-                else
-                {
-                    if (_selectedObject.GetComponent<Rigidbody>())
-                    {
-                        Destroy(_selectedObject.GetComponent<Rigidbody>());
-                    }
-                    physicsText.text = "#non-moveable";
-                }
-                sliderMoving = false;
-            }
-        }
-    }
-
-    void Update()
-    {
-        if (massScaleHit)
-        {
-            if (_raycastHitObject == massScale)
+            if (sliderUnit < 6)
             {
-                slider.transform.position = _raycastHitPoint;
-                slider.transform.localPosition = new Vector3(0, 0, slider.transform.localPosition.z);
-                sliderUnit = slider.transform.localPosition.z;
-                sliderMoving = true;
+                if (!_selectedObject.GetComponent<Rigidbody>())
+                {
+                    _selectedObject.AddComponent<Rigidbody>();
+                }
+                _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
+                _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
+                physicsText.text = "#grabbable #throwable";
+
             }
+            else if (sliderUnit > 6 && sliderUnit < 9)
+            {
+                if (!_selectedObject.GetComponent<Rigidbody>())
+                {
+                    _selectedObject.AddComponent<Rigidbody>();
+                    selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
+                }
+                _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
+                _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
+                physicsText.text = "#heavy #non-grabbable";
+            }
+            else
+            {
+                if (_selectedObject.GetComponent<Rigidbody>())
+                {
+                    Destroy(_selectedObject.GetComponent<Rigidbody>());
+                }
+                physicsText.text = "#non-moveable";
+            }
+            sliderMoving = false;
+            
         }
     }
 
