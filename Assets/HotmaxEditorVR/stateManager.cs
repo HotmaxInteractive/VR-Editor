@@ -44,11 +44,6 @@ public class stateManager : MonoBehaviour
     public delegate void playerIsLocomotingHandler(bool value);
     public static event playerIsLocomotingHandler playerIsLocomotingEvent;
 
-    public static Vector3 raycastHitPoint;
-    public static GameObject raycastHitGameObject;
-    public delegate void raycastHitInfoHandler(Vector3 value1, GameObject value2);
-    public static event raycastHitInfoHandler raycastHitInfoEvent;
-
     //------------------MUTATORS------------------\\
 
     public void SET_EDITOR_MODE_UNIVERSAL()
@@ -146,14 +141,6 @@ public class stateManager : MonoBehaviour
         if (playerIsLocomotingEvent != null)
         {
             playerIsLocomotingEvent(value);
-        }
-    }
-
-    public void SET_RAYCAST_HIT_INFO(Vector3 value1, GameObject value2)
-    {
-        if (raycastHitInfoEvent != null)
-        {
-            raycastHitInfoEvent(value1, value2);
         }
     }
 }

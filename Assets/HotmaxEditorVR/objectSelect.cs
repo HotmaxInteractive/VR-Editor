@@ -90,8 +90,6 @@ public class objectSelect : MonoBehaviour
         if (Physics.Raycast(ray, out hit, length))
         {
             laserEndPosition = hit.point;
-            //TODO: this should go somewhere more explicit
-            _stateManagerMutatorRef.SET_RAYCAST_HIT_INFO(hit.point, hit.collider.gameObject);
         }
 
         laserLineRenderer.SetPosition(0, targetPosition);

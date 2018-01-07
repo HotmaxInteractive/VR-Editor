@@ -13,8 +13,6 @@ public class propertiesMenu : MonoBehaviour
     //--local refs
     private GameObject _selectedObject = stateManager.selectedObject;
     private stateManager.editorModes _editorMode = stateManager.editorMode;
-    private Vector3 _raycastHitPoint;
-    private GameObject _raycastHitObject;
 
 
     //--add all materials in object to list
@@ -38,13 +36,11 @@ public class propertiesMenu : MonoBehaviour
     void Start()
     {
         stateManager.selectedObjectEvent += updateSelectedObject;
-        stateManager.raycastHitInfoEvent += updateRaycastHitInfoEvent;
     }
 
     private void OnApplicationQuit()
     {
         stateManager.selectedObjectEvent -= updateSelectedObject;
-        stateManager.raycastHitInfoEvent -= updateRaycastHitInfoEvent;
     }
 
     void updateSelectedObject(GameObject value)
@@ -139,12 +135,6 @@ public class propertiesMenu : MonoBehaviour
             removeLastMaterialPage();
             showMaterialPage(currentMaterialsPage);
         }
-    }
-
-    void updateRaycastHitInfoEvent(Vector3 value1, GameObject value2)
-    {
-        _raycastHitPoint = value1;
-        _raycastHitObject = value2;
     }
 
     public void updatePhysicsInfo()
