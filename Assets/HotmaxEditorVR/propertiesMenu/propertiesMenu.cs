@@ -7,8 +7,6 @@ public class propertiesMenu : MonoBehaviour
 {
     //-----DEPENDENCIES-----\\
     //--All materials must be in a Materials folder in the "Resources"
-    //--prefab called "lightSource" must be in the Resources folder
-    //--All imported textures must be read/writable
 
     //--local refs
     private GameObject _selectedObject = stateManager.selectedObject;
@@ -21,17 +19,14 @@ public class propertiesMenu : MonoBehaviour
     private int currentMaterialsPage = 0;
 
     //--refs to children objects
+    [SerializeField]
     public GameObject materialListHolder;
+    [SerializeField]
     public GameObject slider;
+    [SerializeField]
     public TextMesh physicsText;
 
     private Rigidbody selectedObjectRb;
-
-    //--slider stuff
-    private bool sliderMoving = false;
-    float sliderUnit;
-
-    private bool massScaleHit = false;
 
     void Start()
     {
@@ -49,63 +44,8 @@ public class propertiesMenu : MonoBehaviour
 
         if (_selectedObject != null)
         {
-            currentMaterialsPage = 0;
-
-            //--------------------------------------MATERIALS--------------------------------------\\
-            //before we add new materials clear out the list
-            materialNames.Clear();
-
-            //if the hit object has a renderer, get the material
-            if (_selectedObject.GetComponent<Renderer>())
-            {
-                //if there is more than one material loop and add
-                for (int i = 0; i < _selectedObject.GetComponent<Renderer>().materials.Length; i++)
-                {
-                    materialNames.Add(_selectedObject.GetComponent<Renderer>().materials[i].name);
-                }
-            }
-
-            //get all the materials in the children
-            //--TODO: Do this on GLTF serialization
-            Renderer[] renderers = _selectedObject.GetComponentsInChildren<Renderer>();
-            foreach (Renderer renderer in renderers)
-            {
-                materialNames.Add(renderer.material.name);
-            }
-
-            removeLastMaterialPage();
-
-            //get only unique instances of the material names
-            materialNames = materialNames.Distinct().ToList();
-
-            //create "chunks" groups of 4 to display the object
-            chunkedMaterialList = ListExtensions.ChunkBy(materialNames, 4);
-            showMaterialPage(0);
-
-            //--------------------------------------MASS--------------------------------------\\
-
-            //--GETTING
-            //if it has a Rb it should be under 90 mass units
-            if (_selectedObject.GetComponent<Rigidbody>())
-            {
-                selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
-
-                if (selectedObjectRb.mass < 60)
-                {
-                    physicsText.text = "#grabbable #throwable";
-                }
-                else if (selectedObjectRb.mass > 60 && selectedObjectRb.mass < 90)
-                {
-                    physicsText.text = "#heavy #non-grabbable";
-                }
-
-                slider.transform.localPosition = new Vector3(0, 0, selectedObjectRb.mass / 10);
-            }
-            else
-            {
-                slider.transform.localPosition = new Vector3(0, 0, 10);
-                physicsText.text = "#non-moveable";
-            }
+            handleMassProperties();
+            handleMaterialProperties();
         }
     }
 
@@ -137,34 +77,31 @@ public class propertiesMenu : MonoBehaviour
         }
     }
 
-    public void updatePhysicsInfo()
+    public void updatePhysicsInfo(float sliderZPosition)
     {
-        //TODO: move this to a slider class mutate, these properties and animations will probably have to go through the state
-
-        //--TODO: needs to be a public method for the trigger unclick of the slider
-        if(_selectedObject != null)
+        if (_selectedObject != null)
         {
-            sliderUnit = slider.transform.localPosition.z;
+            sliderZPosition = slider.transform.localPosition.z;
 
-            if (sliderUnit < 6)
+            if (sliderZPosition <= 6)
             {
                 if (!_selectedObject.GetComponent<Rigidbody>())
                 {
                     _selectedObject.AddComponent<Rigidbody>();
                 }
-                _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
+                _selectedObject.GetComponent<Rigidbody>().mass = sliderZPosition * 10;
                 _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
                 physicsText.text = "#grabbable #throwable";
 
             }
-            else if (sliderUnit > 6 && sliderUnit < 9)
+            else if (sliderZPosition > 6 && sliderZPosition < 9)
             {
                 if (!_selectedObject.GetComponent<Rigidbody>())
                 {
                     _selectedObject.AddComponent<Rigidbody>();
                     selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
                 }
-                _selectedObject.GetComponent<Rigidbody>().mass = sliderUnit * 10;
+                _selectedObject.GetComponent<Rigidbody>().mass = sliderZPosition * 10;
                 _selectedObject.GetComponent<Rigidbody>().isKinematic = true;
                 physicsText.text = "#heavy #non-grabbable";
             }
@@ -176,8 +113,6 @@ public class propertiesMenu : MonoBehaviour
                 }
                 physicsText.text = "#non-moveable";
             }
-            sliderMoving = false;
-            
         }
     }
 
@@ -202,6 +137,66 @@ public class propertiesMenu : MonoBehaviour
         for (int i = 0; i < materialListHolder.transform.childCount; i++)
         {
             Destroy(materialListHolder.transform.GetChild(i).gameObject);
+        }
+    }
+
+    void handleMaterialProperties()
+    {
+        currentMaterialsPage = 0;
+
+        //before we add new materials clear out the list
+        materialNames.Clear();
+
+        //if the hit object has a renderer, get the material
+        if (_selectedObject.GetComponent<Renderer>())
+        {
+            //if there is more than one material loop and add
+            for (int i = 0; i < _selectedObject.GetComponent<Renderer>().materials.Length; i++)
+            {
+                materialNames.Add(_selectedObject.GetComponent<Renderer>().materials[i].name);
+            }
+        }
+
+        //get all the materials in the children
+        //--TODO: Do this on GLTF serialization
+        Renderer[] renderers = _selectedObject.GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in renderers)
+        {
+            materialNames.Add(renderer.material.name);
+        }
+
+        removeLastMaterialPage();
+
+        //get only unique instances of the material names
+        materialNames = materialNames.Distinct().ToList();
+
+        //create "chunks" groups of 4 to display the object
+        chunkedMaterialList = ListExtensions.ChunkBy(materialNames, 4);
+        showMaterialPage(0);
+    }
+
+    void handleMassProperties()
+    {
+        //if it has a Rb it should be under 90 mass units
+        if (_selectedObject.GetComponent<Rigidbody>())
+        {
+            selectedObjectRb = _selectedObject.GetComponent<Rigidbody>();
+
+            if (selectedObjectRb.mass < 60)
+            {
+                physicsText.text = "#grabbable #throwable";
+            }
+            else if (selectedObjectRb.mass > 60 && selectedObjectRb.mass < 90)
+            {
+                physicsText.text = "#heavy #non-grabbable";
+            }
+
+            slider.transform.localPosition = new Vector3(0, 0, selectedObjectRb.mass / 10);
+        }
+        else
+        {
+            slider.transform.localPosition = new Vector3(0, 0, 10);
+            physicsText.text = "#non-moveable";
         }
     }
 }

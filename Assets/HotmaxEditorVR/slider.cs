@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[System.Serializable]
+public class SliderEvent : UnityEvent<float>{ }
+
 public class slider : MonoBehaviour {
 
     private bool triggerDown = false;
+    [SerializeField]
     public GameObject sliderCollider;
 
-    public UnityEvent sliderUnclicked;
+    public SliderEvent sliderUnclicked;
 
     private void OnEnable()
     {
@@ -30,7 +34,7 @@ public class slider : MonoBehaviour {
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
         triggerDown = false;
-        sliderUnclicked.Invoke();
+        sliderUnclicked.Invoke(transform.localPosition.z);
     }
 
     void Update ()

@@ -7,16 +7,16 @@ public class propTile : MonoBehaviour, IHittable
     //--local refs
     private stateManager _stateManagerMutatorRef;
 
-    public int currentPage;
-
+    //--Note: FAUX CONSTRUCTOR - properties passed on prefab instantiation
     public GameObject spawnableProp;
     public TextMesh propTileText;
+
     private GameObject boundingScaleBox;
 
     void Start()
     {
         _stateManagerMutatorRef = init._stateManagerMutatorRef;
-        displayPropInMenu(spawnableProp, currentPage);
+        displayPropInMenu(spawnableProp);
     }
 
     public void receiveHit(RaycastHit hit)
@@ -30,21 +30,19 @@ public class propTile : MonoBehaviour, IHittable
         //set the spawned object to the new selected object
         _stateManagerMutatorRef.SET_SELECTED_OBJECT(newProp);
         newProp.transform.position = hit.point;
-        //check for prop -some objects are loaded with props, some aren't. 
-        if (!newProp.GetComponent<prop>())
-        {
-            newProp.AddComponent<prop>();
-        }
+
         newProp.AddComponent<activeProp>();
         _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(true);
     }
 
     //show the prop model on the tile and rotate it around
-    void displayPropInMenu(GameObject menuProp, int page)
+    void displayPropInMenu(GameObject menuProp)
     {
         float biggestPropSide;
 
         GameObject menuPropDisplay = Instantiate(menuProp);
+        Vector3 menuPropDimension = Vector3.zero;
+
         menuPropDisplay.name = menuProp.name + " (visual)";
 
         //create a bounding box so the prop can be scaled proportionally
@@ -53,13 +51,11 @@ public class propTile : MonoBehaviour, IHittable
         boundingScaleBox.GetComponent<BoxCollider>().enabled = false;
         boundingScaleBox.transform.position = transform.position;
 
-        Vector3 menuPropDimension = Vector3.zero;
-
         //if the model has children, calculate the total bounds of all the children
-        if (menuProp.transform.childCount > 0)
+        if (menuPropDisplay.transform.childCount > 0)
         {
             Bounds bounds = new Bounds(menuPropDisplay.transform.position, Vector3.zero);
-            foreach (Renderer renderer in menuProp.GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in menuPropDisplay.GetComponentsInChildren<Renderer>())
             {
                 bounds.Encapsulate(renderer.bounds);
             }
@@ -78,14 +74,12 @@ public class propTile : MonoBehaviour, IHittable
             biggestPropSide = menuPropDimension.x;
             boundingScaleBox.transform.localScale = new Vector3(biggestPropSide, biggestPropSide, biggestPropSide);
         }
-
-        if (menuPropDimension.y >= menuPropDimension.x && menuPropDimension.y >= menuPropDimension.z)
+        else if (menuPropDimension.y >= menuPropDimension.x && menuPropDimension.y >= menuPropDimension.z)
         {
             biggestPropSide = menuPropDimension.y;
             boundingScaleBox.transform.localScale = new Vector3(biggestPropSide, biggestPropSide, biggestPropSide);
         }
-
-        if (menuPropDimension.z >= menuPropDimension.x && menuPropDimension.z >= menuPropDimension.y)
+        else
         {
             biggestPropSide = menuPropDimension.z;
             boundingScaleBox.transform.localScale = new Vector3(biggestPropSide, biggestPropSide, biggestPropSide);
