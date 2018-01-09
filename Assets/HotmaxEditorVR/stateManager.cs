@@ -40,6 +40,9 @@ public class stateManager : MonoBehaviour
     public delegate void objectCollidedWithHandHandler(GameObject value);
     public static event objectCollidedWithHandHandler objectCollidedWithHandEvent;
 
+    public static bool playerIsLocomoting;
+    public delegate void playerIsLocomotingHandler(bool value);
+    public static event playerIsLocomotingHandler playerIsLocomotingEvent;
 
     //------------------MUTATORS------------------\\
 
@@ -59,6 +62,7 @@ public class stateManager : MonoBehaviour
             editorModeEvent(editorModes.cloneDeleteMode);
         }
     }
+
     public void SET_EDITOR_MODE_OPEN_MENU()
     {
         editorMode = editorModes.openMenuMode;
@@ -67,6 +71,7 @@ public class stateManager : MonoBehaviour
             editorModeEvent(editorModes.openMenuMode);
         }
     }
+
     public void SET_SELECTED_OBJECT(GameObject value)
     {
         selectedObject = value;
@@ -127,6 +132,15 @@ public class stateManager : MonoBehaviour
         if (objectCollidedWithHandEvent != null)
         {
             objectCollidedWithHandEvent(value);
+        }
+    }
+
+    public void SET_PLAYER_IS_LOCOMOTING(bool value)
+    {
+        playerIsLocomoting = value;
+        if (playerIsLocomotingEvent != null)
+        {
+            playerIsLocomotingEvent(value);
         }
     }
 }

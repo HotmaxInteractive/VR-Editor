@@ -94,7 +94,10 @@ public class activeProp : MonoBehaviour
                 }
                 break;
             case stateManager.editorModes.openMenuMode:
-                decorators["scaleControl"].enabled = true;
+                if (_selectedObjectIsActive)
+                {
+                    decorators["telekinesisControl"].enabled = true;
+                }
                 break;
         }
     }
