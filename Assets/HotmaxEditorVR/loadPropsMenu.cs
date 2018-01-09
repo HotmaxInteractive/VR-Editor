@@ -12,8 +12,8 @@ public class loadPropsMenu : MonoBehaviour
 
     //--child gameObject refs
     [SerializeField]
-    public GameObject propTiles;
-    
+    public GameObject propTilesContainer;
+
     private List<List<GameObject>> chunkedList = new List<List<GameObject>>();
 
     private int currentSpawnPage;
@@ -58,9 +58,9 @@ public class loadPropsMenu : MonoBehaviour
     {
         currentSpawnPage = page;
         //remove old tiles before loading new ones
-        for (int i = 0; i < propTiles.transform.childCount; i++)
+        for (int i = 0; i < propTilesContainer.transform.childCount; i++)
         {
-           Destroy(propTiles.transform.GetChild(i).gameObject);
+           Destroy(propTilesContainer.transform.GetChild(i).gameObject);
         }
 
         //load and arrange "chunks", 4 objects from the propObject List 
@@ -72,10 +72,10 @@ public class loadPropsMenu : MonoBehaviour
             propTile.GetComponent<propTile>().spawnableProp = chunkedList[page][i];
             propTile.GetComponent<propTile>().propTileText.text = chunkedList[page][i].name;
 
-            propTile.transform.parent = propTiles.transform;
+            propTile.transform.parent = propTilesContainer.transform;
             propTile.name = chunkedList[page][i].name + " tile";
             propTile.transform.localScale = new Vector3(2, 2, 2);
-            propTile.transform.rotation = propTiles.transform.rotation;
+            propTile.transform.rotation = propTilesContainer.transform.rotation;
             switch (i)
             {
                 case 0:

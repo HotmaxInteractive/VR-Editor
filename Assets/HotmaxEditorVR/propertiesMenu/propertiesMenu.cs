@@ -81,8 +81,6 @@ public class propertiesMenu : MonoBehaviour
     {
         if (_selectedObject != null)
         {
-            sliderZPosition = slider.transform.localPosition.z;
-
             if (sliderZPosition <= 6)
             {
                 if (!_selectedObject.GetComponent<Rigidbody>())
