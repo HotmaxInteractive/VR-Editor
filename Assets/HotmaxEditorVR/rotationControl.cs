@@ -55,6 +55,18 @@ public class rotationControl : MonoBehaviour
                 }
             }
         }
+
+        if (lookAtRaycast != null && stationaryLookAtRaycast != null)
+        {
+            float gizmoScale = init.rotationGizmos.transform.localScale.x * 100;
+            string rotationGage = "rotationGage";
+
+            lookAtRaycast.transform.Find(rotationGage).localPosition = new Vector3(0, 0, gizmoScale);
+            stationaryLookAtRaycast.transform.Find(rotationGage).localPosition = new Vector3(0, 0, gizmoScale);
+
+            lookAtRaycast.transform.Find(rotationGage).localScale = new Vector3(gizmoScale, gizmoScale, gizmoScale);
+            stationaryLookAtRaycast.transform.Find(rotationGage).localScale = new Vector3(gizmoScale, gizmoScale, gizmoScale);
+        }
     }
 
     void doRotation(RaycastHit hit, Vector3 faceDirection, float lockAxis)
