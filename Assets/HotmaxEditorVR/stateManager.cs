@@ -14,6 +14,17 @@ public class stateManager : MonoBehaviour
     public delegate void editorModeHandler(editorModes value);
     public static event editorModeHandler editorModeEvent;
 
+    public static activeQuadrants activeQuadrant = activeQuadrants.quarant0;
+    public enum activeQuadrants
+    {
+        quarant0,
+        quarant1,
+        quarant2,
+        quarant3
+    }
+    public delegate void activeQuadrantHandler(activeQuadrants value);
+    public static event activeQuadrantHandler activeQuadrantEvent;
+
     public static bool rotationGizmoIsSelected = false;
     public delegate void rotationGizmoIsSelectedHandler(bool value);
     public static event rotationGizmoIsSelectedHandler rotationGizmoIsSelectedEvent;
@@ -69,6 +80,42 @@ public class stateManager : MonoBehaviour
         if (editorModeEvent != null)
         {
             editorModeEvent(editorModes.openMenuMode);
+        }
+    }
+
+    public void SET_ACTIVE_QUADRANT_0()
+    {
+        activeQuadrant = activeQuadrants.quarant0;
+        if (activeQuadrantEvent != null)
+        {
+            activeQuadrantEvent(activeQuadrants.quarant0);
+        }
+    }
+
+    public void SET_ACTIVE_QUADRANT_1()
+    {
+        activeQuadrant = activeQuadrants.quarant1;
+        if (activeQuadrantEvent != null)
+        {
+            activeQuadrantEvent(activeQuadrants.quarant1);
+        }
+    }
+
+    public void SET_ACTIVE_QUADRANT_2()
+    {
+        activeQuadrant = activeQuadrants.quarant2;
+        if (activeQuadrantEvent != null)
+        {
+            activeQuadrantEvent(activeQuadrants.quarant2);
+        }
+    }
+
+    public void SET_ACTIVE_QUADRANT_3()
+    {
+        activeQuadrant = activeQuadrants.quarant3;
+        if (activeQuadrantEvent != null)
+        {
+            activeQuadrantEvent(activeQuadrants.quarant3);
         }
     }
 
