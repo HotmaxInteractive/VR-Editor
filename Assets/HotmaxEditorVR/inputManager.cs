@@ -101,19 +101,19 @@ public class inputManager : MonoBehaviour
                 {
                     if (selectorHand.GetAxis().x < 0 && selectorHand.GetAxis().y > 0)
                     {
-                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT_0();
+                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT(0);
                     }
                     if (selectorHand.GetAxis().x > 0 && selectorHand.GetAxis().y > 0)
                     {
-                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT_1();
+                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT(1);
                     }
                     if (selectorHand.GetAxis().x < 0 && selectorHand.GetAxis().y < 0)
                     {
-                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT_2();
+                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT(2);
                     }
                     if (selectorHand.GetAxis().x > 0 && selectorHand.GetAxis().y < 0)
                     {
-                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT_3();
+                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT(3);
                     }
                 }
             }
