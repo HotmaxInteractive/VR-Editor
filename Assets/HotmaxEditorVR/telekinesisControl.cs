@@ -20,10 +20,9 @@ public class telekinesisControl : MonoBehaviour
 
     private void OnEnable()
     {
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube.GetComponent<MeshRenderer>().enabled = false;
-        cube.GetComponent<BoxCollider>().enabled = false;
-        tweenToPosition = cube;
+        tweenToPosition = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        tweenToPosition.GetComponent<MeshRenderer>().enabled = false;
+        tweenToPosition.GetComponent<BoxCollider>().enabled = false;
 
         //this gets the initial offset of the object to the controller
         //the purpose being to start the object off at the same place it was in before selecting it
@@ -31,6 +30,11 @@ public class telekinesisControl : MonoBehaviour
         distToController = Vector3.Distance(transform.position, inputManager.hand2.transform.position);
         scrollDistance = 0;
         init.rotationGizmos.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        Destroy(tweenToPosition);
     }
 
     // Update is called once per frame
@@ -44,19 +48,20 @@ public class telekinesisControl : MonoBehaviour
         //--easing created by "tweenDistance" -a larger tweenDistance will make a faster tween
         transform.position = Vector3.MoveTowards(transform.position, tweenToPosition.transform.position, tweenDistance * tweenSpeed);
 
-        if (currentPadYPos > initialPadYPosition + .05f)
+        if (currentPadYPos > initialPadYPosition + .1f)
         {
             scrollDistance += scrollSpeed;
             initialPadYPosition = currentPadYPos;
         }
 
-        if (tweenToPosition.transform.position.magnitude < inputManager.hand2.transform.position.magnitude + 0.2f)
+        if (tweenToPosition.transform.position.magnitude < inputManager.hand2.transform.position.magnitude + 0.3f)
         {
+            tweenToPosition.transform.position = inputManager.hand2.transform.forward / 2;
             return;
         }
         else
         {
-            if (currentPadYPos < initialPadYPosition - .05f)
+            if (currentPadYPos < initialPadYPosition - .1f)
             {
                 scrollDistance -= scrollSpeed;
                 initialPadYPosition = currentPadYPos;
