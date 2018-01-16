@@ -49,10 +49,18 @@ public class telekinesisControl : MonoBehaviour
             scrollDistance += scrollSpeed;
             initialPadYPosition = currentPadYPos;
         }
-        if (currentPadYPos < initialPadYPosition - .05f)
+
+        if (tweenToPosition.transform.position.magnitude < inputManager.hand2.transform.position.magnitude + 0.2f)
         {
-            scrollDistance -= scrollSpeed;
-            initialPadYPosition = currentPadYPos;
+            return;
+        }
+        else
+        {
+            if (currentPadYPos < initialPadYPosition - .05f)
+            {
+                scrollDistance -= scrollSpeed;
+                initialPadYPosition = currentPadYPos;
+            }
         }
     }
 }
