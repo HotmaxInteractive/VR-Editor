@@ -34,6 +34,7 @@ public class editorModeUI : MonoBehaviour
         foreach (Transform child in transform)
         {
             Destroy(child.gameObject.GetComponent<cakeslice.Outline>());
+            child.gameObject.SetActive(false);
         }
 
         if (!_selectedObjectIsActive)
