@@ -16,7 +16,7 @@ public class editorModeUI : MonoBehaviour
 
         foreach (Transform child in transform)
         {
-            child.gameObject.SetActive(false);
+            Destroy(child.gameObject.GetComponent<cakeslice.Outline>());
         }
     }
 
@@ -33,7 +33,7 @@ public class editorModeUI : MonoBehaviour
 
         foreach (Transform child in transform)
         {
-            child.gameObject.SetActive(false);
+            Destroy(child.gameObject.GetComponent<cakeslice.Outline>());
         }
 
         if (!_selectedObjectIsActive)
@@ -41,16 +41,16 @@ public class editorModeUI : MonoBehaviour
             switch (_activeQuadrant)
             {
                 case stateManager.activeQuadrants.quarant0:
-                    transform.GetChild(0).gameObject.SetActive(true);
+                    transform.GetChild(0).gameObject.AddComponent<cakeslice.Outline>();
                     break;
                 case stateManager.activeQuadrants.quarant1:
-                    transform.GetChild(1).gameObject.SetActive(true);
+                    transform.GetChild(1).gameObject.AddComponent<cakeslice.Outline>();
                     break;
                 case stateManager.activeQuadrants.quarant2:
-                    transform.GetChild(2).gameObject.SetActive(true);
+                    transform.GetChild(2).gameObject.AddComponent<cakeslice.Outline>();
                     break;
                 case stateManager.activeQuadrants.quarant3:
-                    transform.GetChild(3).gameObject.SetActive(true);
+                    transform.GetChild(3).gameObject.AddComponent<cakeslice.Outline>();
                     break;
             }
         }
@@ -64,7 +64,7 @@ public class editorModeUI : MonoBehaviour
     //--TODO: maybe this should go somewhere more explicit like a modeManager
     void padUntouched(object sender, ClickedEventArgs e)
     {
-        if(!_selectedObjectIsActive)
+        if (!_selectedObjectIsActive)
         {
             switch (_activeQuadrant)
             {
