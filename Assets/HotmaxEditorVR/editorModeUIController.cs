@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class editorModeUIController : MonoBehaviour
 {
+    //--local refs
+    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
+
     [SerializeField]
     public GameObject editorModeUI;
 
@@ -14,21 +17,33 @@ public class editorModeUIController : MonoBehaviour
 
         inputManager.trackedController2.PadTouched += padTouched;
         inputManager.trackedController2.PadUntouched += padUntouched;
+
+        stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
     }
 
     private void OnApplicationQuit()
     {
         inputManager.trackedController2.PadTouched -= padTouched;
         inputManager.trackedController2.PadUntouched -= padUntouched;
+
+        stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
     }
 
     void padTouched(object sender, ClickedEventArgs e)
     {
-        editorModeUI.SetActive(true);
+        if (!_selectedObjectIsActive)
+        {
+            editorModeUI.SetActive(true);
+        }
     }
 
     void padUntouched(object sender, ClickedEventArgs e)
     {
         editorModeUI.SetActive(false);
+    }
+
+    void updateSelectedObjectIsActive(bool value)
+    {
+        _selectedObjectIsActive = value;
     }
 }

@@ -6,13 +6,11 @@ public class editorModeUI : MonoBehaviour
 {
     //--local refs
     private stateManager.activeQuadrants _activeQuadrant = stateManager.activeQuadrant;
-    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
 
     private void OnEnable()
     {
         stateManager.activeQuadrantEvent += updateactiveQuadrant;
         inputManager.trackedController2.PadUntouched += padUntouched;
-        stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
 
         foreach (Transform child in transform)
         {
@@ -24,7 +22,6 @@ public class editorModeUI : MonoBehaviour
     {
         stateManager.activeQuadrantEvent -= updateactiveQuadrant;
         inputManager.trackedController2.PadUntouched -= padUntouched;
-        stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
     }
 
     void updateactiveQuadrant(stateManager.activeQuadrants value)
@@ -34,54 +31,42 @@ public class editorModeUI : MonoBehaviour
         foreach (Transform child in transform)
         {
             Destroy(child.gameObject.GetComponent<cakeslice.Outline>());
-            child.gameObject.SetActive(false);
         }
 
-        if (!_selectedObjectIsActive)
+        switch (_activeQuadrant)
         {
-            switch (_activeQuadrant)
-            {
-                case stateManager.activeQuadrants.quarant0:
-                    transform.GetChild(0).gameObject.AddComponent<cakeslice.Outline>();
-                    break;
-                case stateManager.activeQuadrants.quarant1:
-                    transform.GetChild(1).gameObject.AddComponent<cakeslice.Outline>();
-                    break;
-                case stateManager.activeQuadrants.quarant2:
-                    transform.GetChild(2).gameObject.AddComponent<cakeslice.Outline>();
-                    break;
-                case stateManager.activeQuadrants.quarant3:
-                    transform.GetChild(3).gameObject.AddComponent<cakeslice.Outline>();
-                    break;
-            }
-        }
+            case stateManager.activeQuadrants.quarant0:
+                transform.GetChild(0).gameObject.AddComponent<cakeslice.Outline>();
+                break;
+            case stateManager.activeQuadrants.quarant1:
+                transform.GetChild(1).gameObject.AddComponent<cakeslice.Outline>();
+                break;
+            case stateManager.activeQuadrants.quarant2:
+                transform.GetChild(2).gameObject.AddComponent<cakeslice.Outline>();
+                break;
+            case stateManager.activeQuadrants.quarant3:
+                transform.GetChild(3).gameObject.AddComponent<cakeslice.Outline>();
+                break;
+        }      
     }
-
-    void updateSelectedObjectIsActive(bool value)
-    {
-        _selectedObjectIsActive = value;
-    }
-
+    
     //--TODO: maybe this should go somewhere more explicit like a modeManager
     void padUntouched(object sender, ClickedEventArgs e)
     {
-        if (!_selectedObjectIsActive)
+        switch (_activeQuadrant)
         {
-            switch (_activeQuadrant)
-            {
-                case stateManager.activeQuadrants.quarant0:
-                    init._stateManagerMutatorRef.SET_EDITOR_MODE_UNIVERSAL();
-                    break;
-                case stateManager.activeQuadrants.quarant1:
-                    init._stateManagerMutatorRef.SET_EDITOR_MODE_CLONE_DELETE();
-                    break;
-                case stateManager.activeQuadrants.quarant2:
-                    init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
-                    break;
-                case stateManager.activeQuadrants.quarant3:
-                    init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
-                    break;
-            }
-        }
+            case stateManager.activeQuadrants.quarant0:
+                init._stateManagerMutatorRef.SET_EDITOR_MODE_UNIVERSAL();
+                break;
+            case stateManager.activeQuadrants.quarant1:
+                init._stateManagerMutatorRef.SET_EDITOR_MODE_CLONE_DELETE();
+                break;
+            case stateManager.activeQuadrants.quarant2:
+                init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
+                break;
+            case stateManager.activeQuadrants.quarant3:
+                init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
+                break;
+        }       
     }
 }
