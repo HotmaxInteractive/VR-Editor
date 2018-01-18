@@ -78,6 +78,7 @@ public class activeProp : MonoBehaviour
                 else
                 {
                     decorators["rotationControl"].enabled = true;
+                    decorators["scaleControl"].enabled = true;
                 }
                 break;
             case stateManager.editorModes.cloneDeleteMode:
