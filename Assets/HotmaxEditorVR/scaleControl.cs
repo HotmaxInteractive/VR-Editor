@@ -5,10 +5,12 @@ using UnityEngine;
 public class scaleControl : MonoBehaviour
 {
     public float scaleSize = .5f;
-    private float rate = .1f;
+    private float rate = .01f;
     private Vector3 growRate;
 
-    private stateManager.editorModes _editorMode = stateManager.editorMode;
+    private float initialYPos;
+    private float currentYPos;
+
 
     private void Start()
     {
@@ -17,35 +19,70 @@ public class scaleControl : MonoBehaviour
 
     private void OnEnable()
     {
-        stateManager.editorModeEvent += updateEditorMode;
+        inputManager.trackedController2.TriggerClicked += triggerClicked;
+
+        init.scaleController.SetActive(true);
     }
 
     private void OnDisable()
     {
-        stateManager.editorModeEvent -= updateEditorMode;
+        inputManager.trackedController2.TriggerClicked -= triggerClicked;
+
+        init.scaleController.SetActive(false);
     }
 
-    void updateEditorMode(stateManager.editorModes value)
+    void triggerClicked(object sender, ClickedEventArgs e)
     {
-        _editorMode = value;
+        RaycastHit hit;
+        Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Gizmo Layer")))
+        {
+            if (hit.collider.gameObject == init.scaleController)
+            {
+                initialYPos = hit.point.y;
+            }
+        }
     }
 
     void Update()
     {
-        if(_editorMode == stateManager.editorModes.openMenuMode)
+        setScaleControllerToFacePlayer();
+
+        if (inputManager.trackedController2.triggerPressed)
         {
-            //TODO: how is the touchPad controlling the Scale here?
-            if (inputManager.selectorHand.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
+            RaycastHit hit;
+            Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Gizmo Layer")))
             {
-                if (inputManager.selectorHand.GetAxis().y > .3f)
+                if (hit.collider.gameObject == init.scaleController)
                 {
-                    transform.localScale += growRate;
-                }
-                if (inputManager.selectorHand.GetAxis().y < -.3f)
-                {
-                    transform.localScale -= growRate;
+                    currentYPos = hit.point.y;
+
+                    if (currentYPos > initialYPos + .1f)
+                    {
+                        transform.localScale += growRate;
+                        initialYPos = currentYPos;
+                    }
+
+                    if (transform.localScale.x > growRate.x && transform.localScale.y > growRate.x && transform.localScale.z > growRate.x)
+                    {
+                        if (currentYPos < initialYPos - .1f)
+                        {
+                            transform.localScale -= growRate;
+                            initialYPos = currentYPos;
+                        }
+                    }
                 }
             }
         }
+    }
+
+    void setScaleControllerToFacePlayer()
+    {
+        Transform scaleControllerHolder = init.scaleController.transform.parent.transform;
+
+        scaleControllerHolder.position = init.rotationGizmos.transform.position;
+        scaleControllerHolder.LookAt(init.vrCamera.transform);
+        scaleControllerHolder.eulerAngles = new Vector3(0, scaleControllerHolder.eulerAngles.y, 0);
     }
 }

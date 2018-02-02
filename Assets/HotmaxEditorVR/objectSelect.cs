@@ -13,6 +13,7 @@ public class objectSelect : MonoBehaviour
     [SerializeField]
     private float laserMaxLength = 5f;
     private Transform initialPropParent;
+    private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
 
     //--local refs
     GameObject _objectCollidedWithHand;
@@ -35,6 +36,7 @@ public class objectSelect : MonoBehaviour
         inputManager.trackedController2.TriggerClicked += triggerClicked;
         inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
         stateManager.objectCollidedWithHandEvent += updateObjectCollidedWithHand;
+        stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
     }
 
     private void OnApplicationQuit()
@@ -42,8 +44,8 @@ public class objectSelect : MonoBehaviour
         inputManager.trackedController2.TriggerClicked -= triggerClicked;
         inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
         stateManager.objectCollidedWithHandEvent -= updateObjectCollidedWithHand;
+        stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
     }
-
 
     void triggerClicked(object sender, ClickedEventArgs e)
     {
@@ -74,6 +76,20 @@ public class objectSelect : MonoBehaviour
     void updateObjectCollidedWithHand(GameObject value)
     {
         _objectCollidedWithHand = value;
+    }
+
+    void updateSelectedObjectIsActive(bool value)
+    {
+        _selectedObjectIsActive = value;
+
+        if(_selectedObjectIsActive)
+        {
+            GetComponent<LineRenderer>().enabled = false;
+        }
+        else
+        {
+            GetComponent<LineRenderer>().enabled = true;
+        }
     }
 
     void Update()

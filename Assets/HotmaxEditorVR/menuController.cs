@@ -36,14 +36,17 @@ public class menuController : MonoBehaviour
     {
         _playerIsLocomoting = value;
 
-        if (_playerIsLocomoting)
+        if (_editorMode == stateManager.editorModes.openMenuMode)
         {
-            toggleMenuComponents(false);
+            if (_playerIsLocomoting)
+            {
+                toggleMenuComponents(false);
+            }
+            else
+            {
+                toggleMenuComponents(true);
+            }
         }
-        else
-        {
-            toggleMenuComponents(true);
-        }       
     }
 
     public void toggleMenuComponents(bool on)

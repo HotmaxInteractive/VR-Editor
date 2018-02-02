@@ -12,6 +12,7 @@ public class init : MonoBehaviour {
     public static GameObject deletedProps;
     public static GameObject handColliderFollow;
     public static GameObject vrCamera;
+    public static GameObject scaleController;
 
     public static stateManager _stateManagerMutatorRef;
 
@@ -22,6 +23,7 @@ public class init : MonoBehaviour {
         deletePanel = GameObject.Find("deletePanel");
         deletedProps = GameObject.Find("deletedProps");
         vrCamera = GameObject.Find("VRCamera");
+        scaleController = GameObject.Find("scaleController");
 
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
     }
