@@ -5,7 +5,7 @@ using UnityEngine;
 public class scaleControl : MonoBehaviour
 {
     public float scaleSize = .5f;
-    private float rate = .01f;
+    private float rate = .05f;
     private Vector3 growRate;
 
     private float initialYPos;

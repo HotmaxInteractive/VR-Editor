@@ -65,7 +65,7 @@ public class editorModeUI : MonoBehaviour
                 init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
                 break;
             case stateManager.activeQuadrants.quarant3:
-                init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
+               init._stateManagerMutatorRef.SET_EDITOR_MODE_PLAY();
                 break;
         }       
     }

@@ -34,7 +34,6 @@ public class telekinesisControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        print(distToController);
         tweenDistance = Vector3.Distance(transform.position, tweenToPosition) * Time.deltaTime;
         currentPadYPos = inputManager.selectorHand.GetAxis().y;
 

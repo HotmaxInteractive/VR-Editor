@@ -9,7 +9,8 @@ public class stateManager : MonoBehaviour
     {
         universalTransformMode,
         cloneDeleteMode,
-        openMenuMode
+        openMenuMode,
+        playMode
     }
     public delegate void editorModeHandler(editorModes value);
     public static event editorModeHandler editorModeEvent;
@@ -80,6 +81,15 @@ public class stateManager : MonoBehaviour
         if (editorModeEvent != null)
         {
             editorModeEvent(editorModes.openMenuMode);
+        }
+    }
+
+    public void SET_EDITOR_MODE_PLAY()
+    {
+        editorMode = editorModes.playMode;
+        if (editorModeEvent != null)
+        {
+            editorModeEvent(editorModes.playMode);
         }
     }
 
