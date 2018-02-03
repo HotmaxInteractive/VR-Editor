@@ -6,10 +6,12 @@ public class energyDrinkExplode : MonoBehaviour
 {
 
     public GameObject fizzyPS;
+    private AudioSource audioSource;
 
     void Start()
     {
         inputManager.trackedController2.Gripped += gripped;
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnApplicationQuit()
@@ -20,8 +22,14 @@ public class energyDrinkExplode : MonoBehaviour
 
     void gripped(object sender, ClickedEventArgs e)
     {
+        audioSource.Play();
+        Invoke("setFizzActive", 1);
+    }
+
+    void setFizzActive()
+    {
         fizzyPS.SetActive(true);
-        Invoke("setFizzInactive", 4);
+        Invoke("setFizzInactive", 6);
     }
 
     void setFizzInactive()
