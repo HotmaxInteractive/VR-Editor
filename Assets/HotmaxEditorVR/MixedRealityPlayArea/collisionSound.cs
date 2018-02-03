@@ -5,11 +5,20 @@ using UnityEngine;
 public class collisionSound : MonoBehaviour
 {
 
+    AudioSource audioSource;
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
     private void OnCollisionEnter(Collision collision)
     {
-        if(GetComponent<AudioSource>())
+        if(audioSource)
         {
-            GetComponent<AudioSource>().Play();
+            if(collision.relativeVelocity.magnitude > 2)
+            {
+                audioSource.Play();
+            }
         }
     }
 }
