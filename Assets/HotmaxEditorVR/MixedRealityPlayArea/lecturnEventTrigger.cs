@@ -4,39 +4,55 @@ using UnityEngine;
 
 public class lecturnEventTrigger : MonoBehaviour
 {
-    private bool moveScreen = false;
-    private bool screenIsInDownPosition = false;
+    private bool moveObjects = false;
+    private bool objectsAreInDownPosition = false;
+
     public Transform screen;
     private Vector3 upScreenPosition;
     private Vector3 downScreenPosition;
+    public Transform screenMoveToPosition;
 
-    public Transform moveToPosition;
+    public Transform displayCases;
+    private Vector3 upDisplayCasesPosition;
+    private Vector3 downDisplayCasesPosition;
+    public Transform displayCasesMoveToPosition;
+
     public float steps = 1f;
+
+    public GameObject mainLights;
 
     private void Start()
     {
         upScreenPosition = screen.transform.position;
-        downScreenPosition = moveToPosition.position;
+        downScreenPosition = screenMoveToPosition.position;
+
+        upDisplayCasesPosition = displayCases.transform.position;
+        downDisplayCasesPosition = displayCasesMoveToPosition.position;
     }
 
     void Update()
     {
-        if(moveScreen)
+        if(moveObjects)
         {
-            float tweenDistance = Vector3.Distance(transform.position, moveToPosition.position) * Time.deltaTime;
-            screen.position = Vector3.MoveTowards(screen.position, moveToPosition.position, steps * tweenDistance);
+            float tweenDistance = Vector3.Distance(transform.position, screenMoveToPosition.position) * Time.deltaTime;
+            screen.position = Vector3.MoveTowards(screen.position, screenMoveToPosition.position, steps * tweenDistance);
+            displayCases.position = Vector3.MoveTowards(displayCases.position, displayCasesMoveToPosition.position, steps * tweenDistance);
 
-            if (Vector3.Distance(screen.position, moveToPosition.position) < .01f)
+            if (Vector3.Distance(screen.position, screenMoveToPosition.position) < .01f)
             {
-                moveScreen = false;
-                screenIsInDownPosition = !screenIsInDownPosition;
-                if (screenIsInDownPosition)
+                moveObjects = false;
+                objectsAreInDownPosition = !objectsAreInDownPosition;
+                if (objectsAreInDownPosition)
                 {
-                    moveToPosition.position = upScreenPosition;
+                    screenMoveToPosition.position = upScreenPosition;
+                    displayCasesMoveToPosition.position = upDisplayCasesPosition;
+                    mainLights.SetActive(false);
                 }
                 else
                 {
-                    moveToPosition.position = downScreenPosition;
+                    screenMoveToPosition.position = downScreenPosition;
+                    displayCasesMoveToPosition.position = downDisplayCasesPosition;
+                    mainLights.SetActive(true);
                 }
             }
         }
@@ -44,6 +60,6 @@ public class lecturnEventTrigger : MonoBehaviour
 
     public void videoScreenDown()
     {
-        moveScreen = true;
+        moveObjects = true;
     }
 }

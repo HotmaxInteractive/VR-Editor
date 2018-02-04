@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using DG.Tweening;
 
 public class menuController : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class menuController : MonoBehaviour
 
     private void Start()
     {
+        DOTween.Init();
+
         stateManager.editorModeEvent += updateEditorMode;
         stateManager.playerIsLocomotingEvent += updatePlayerIsLocomoting;
     }
@@ -50,30 +53,30 @@ public class menuController : MonoBehaviour
     }
 
     public void toggleMenuComponents(bool on)
-    {
-        foreach (Transform child in transform)
-        {
-            child.gameObject.SetActive(on);
-        }
-
+    {   
         if (on)
         {
             setMenuToFacePlayer();
+        }
+        else
+        {
+            transform.DOScale(0, .5f);
         }
     }
 
     void setMenuToFacePlayer()
     {
         //--make menu face the HMD
-        GameObject menu = gameObject;
         GameObject vrCam = init.vrCamera;
 
         Vector3 forwardAmount = vrCam.transform.position + (vrCam.transform.forward * 2.15f);
         Quaternion rotationAmount = vrCam.transform.rotation;
 
-        menu.transform.position = new Vector3(forwardAmount.x, vrCam.transform.position.y - 1, forwardAmount.z);
+        transform.position = new Vector3(forwardAmount.x, vrCam.transform.position.y - 1, forwardAmount.z);
 
-        menu.transform.rotation = rotationAmount;
-        menu.transform.localEulerAngles = new Vector3(0, menu.transform.localEulerAngles.y + 180, 0);
+        transform.rotation = rotationAmount;
+        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y + 180, 0);
+
+        transform.DOScale(1, 1);
     }
 }

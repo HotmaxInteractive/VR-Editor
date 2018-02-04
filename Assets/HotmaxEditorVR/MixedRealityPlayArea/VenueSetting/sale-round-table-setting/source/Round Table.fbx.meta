@@ -1,0 +1,228 @@
+fileFormatVersion: 2
+guid: 6834964d7bd3e1842bae7df6a1f90802
+timeCreated: 1517688168
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: ground
+    100002: //RootNode
+    100004: Round_Table
+    100006: SM_chair_round_1
+    100008: SM_chair_round_10
+    100010: SM_chair_round_2
+    100012: SM_chair_round_3
+    100014: SM_chair_round_4
+    100016: SM_chair_round_5
+    100018: SM_chair_round_6
+    100020: SM_chair_round_7
+    100022: SM_chair_round_8
+    100024: SM_chair_round_9
+    100026: SM_Table
+    100028: SM_Table_items
+    100030: SM_Table_legs
+    400000: ground
+    400002: //RootNode
+    400004: Round_Table
+    400006: SM_chair_round_1
+    400008: SM_chair_round_10
+    400010: SM_chair_round_2
+    400012: SM_chair_round_3
+    400014: SM_chair_round_4
+    400016: SM_chair_round_5
+    400018: SM_chair_round_6
+    400020: SM_chair_round_7
+    400022: SM_chair_round_8
+    400024: SM_chair_round_9
+    400026: SM_Table
+    400028: SM_Table_items
+    400030: SM_Table_legs
+    2100000: M_Chair
+    2100002: stainless_steel
+    2100004: metal
+    2100006: plate
+    2100008: Glasses
+    2100010: Table_items
+    2100012: flowers_green
+    2100014: flowers_orange
+    2100016: Table_legs
+    2100018: table_Cloth
+    2100020: ground1
+    2300000: ground
+    2300002: SM_chair_round_1
+    2300004: SM_chair_round_10
+    2300006: SM_chair_round_2
+    2300008: SM_chair_round_3
+    2300010: SM_chair_round_4
+    2300012: SM_chair_round_5
+    2300014: SM_chair_round_6
+    2300016: SM_chair_round_7
+    2300018: SM_chair_round_8
+    2300020: SM_chair_round_9
+    2300022: SM_Table
+    2300024: SM_Table_items
+    2300026: SM_Table_legs
+    3300000: ground
+    3300002: SM_chair_round_1
+    3300004: SM_chair_round_10
+    3300006: SM_chair_round_2
+    3300008: SM_chair_round_3
+    3300010: SM_chair_round_4
+    3300012: SM_chair_round_5
+    3300014: SM_chair_round_6
+    3300016: SM_chair_round_7
+    3300018: SM_chair_round_8
+    3300020: SM_chair_round_9
+    3300022: SM_Table
+    3300024: SM_Table_items
+    3300026: SM_Table_legs
+    4300000: SM_chair_round_1
+    4300002: SM_chair_round_2
+    4300004: SM_chair_round_3
+    4300006: SM_chair_round_4
+    4300008: SM_chair_round_5
+    4300010: SM_chair_round_6
+    4300012: SM_chair_round_7
+    4300014: SM_chair_round_8
+    4300016: SM_chair_round_9
+    4300018: SM_chair_round_10
+    4300020: SM_Table_items
+    4300022: SM_Table_legs
+    4300024: SM_Table
+    4300026: ground
+    9500000: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glasses
+    second: {fileID: 2100000, guid: 7158db839afa74747a2b9cd8212ecc5a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Chair
+    second: {fileID: 2100000, guid: 552f98f642f4ebc499f0808543e76bd7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Table_items
+    second: {fileID: 2100000, guid: 4896d91c7bb296b42875df24fe834ccb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Table_legs
+    second: {fileID: 2100000, guid: 23e4c969c7bb30d418306df9b2644eeb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flowers_green
+    second: {fileID: 2100000, guid: 6088b3b086152b94c9dfa21691e88e24, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flowers_orange
+    second: {fileID: 2100000, guid: 51398c447f8a82644a736462fe655a81, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ground1
+    second: {fileID: 2100000, guid: f75816b666ae5ab4ba4f43bb9af49da7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: metal
+    second: {fileID: 2100000, guid: 3360ea44d112d624498837c7b27a682c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: plate
+    second: {fileID: 2100000, guid: 16dabe8991f2e5644af9710adb135c34, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: stainless_steel
+    second: {fileID: 2100000, guid: ea3c94a56cfb83142914ae51aac6fd23, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: table_Cloth
+    second: {fileID: 2100000, guid: 38f399a6d6954844792b91fec4329f0b, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

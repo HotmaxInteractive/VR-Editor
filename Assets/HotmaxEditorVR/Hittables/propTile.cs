@@ -16,7 +16,7 @@ public class propTile : MonoBehaviour, IHittable
     void Start()
     {
         _stateManagerMutatorRef = init._stateManagerMutatorRef;
-        displayPropInMenu(spawnableProp);
+        //displayPropInMenu(spawnableProp);
     }
 
     public void receiveHit(RaycastHit hit)
@@ -101,6 +101,6 @@ public class propTile : MonoBehaviour, IHittable
 
     private void Update()
     {
-        boundingScaleBox.transform.Rotate(0, 1 * Time.deltaTime * 30, 0);
+        //boundingScaleBox.transform.Rotate(0, 1 * Time.deltaTime * 30, 0);
     }
 }
