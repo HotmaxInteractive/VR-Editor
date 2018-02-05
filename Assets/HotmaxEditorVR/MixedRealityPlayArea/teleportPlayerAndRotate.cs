@@ -41,9 +41,16 @@ public class teleportPlayerAndRotate : MonoBehaviour
 
     private void Update()
     {
-        if(_rotationGizmoIsSelected && _selectedObject.name.Contains("pad"))
+        if(!_rotationGizmoIsSelected)
         {
-            init.player.transform.eulerAngles = new Vector3(0, _selectedObject.transform.eulerAngles.y, 0);
+            return;
+        }
+        else
+        {
+            if (_selectedObject.name.Contains("pad"))
+            {
+                init.player.transform.eulerAngles = new Vector3(0, _selectedObject.transform.eulerAngles.y, 0);
+            }
         }
     }
 }
