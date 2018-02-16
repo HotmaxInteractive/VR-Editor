@@ -40,10 +40,34 @@ public class handColliderFollow : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.GetComponent<activeProp>() && _selectedObjectIsActive)
+        if(other.gameObject.GetComponent<prop>())
         {
-            _stateManagerMutatorRef.SET_EDITOR_MODE_FREE_GRAB();
-        }
+            if (other.gameObject.GetComponent<activeProp>())
+            {
+                if (_selectedObjectIsActive)
+                {
+                    _stateManagerMutatorRef.SET_EDITOR_MODE_FREE_GRAB();
+                }
+            }
 
+            if (!isCurrentlyColliding && !_selectedObjectIsActive)
+            {
+                collidedWithHand = other.gameObject;
+                _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(other.gameObject);
+                isCurrentlyColliding = true;
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.GetComponent<MonoBehaviour>() is prop)
+        {
+            if (collidedWithHand == other.gameObject)
+            {
+                _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(null);
+                isCurrentlyColliding = false;
+            }
+        }
     }
 }

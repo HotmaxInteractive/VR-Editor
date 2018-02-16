@@ -49,14 +49,28 @@ public class objectSelect : MonoBehaviour
 
     void triggerClicked(object sender, ClickedEventArgs e)
     {
-
+        if (_objectCollidedWithHand == null)
+        {
             select(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
-        
+        }
+        else
+        {
+            _stateManagerMutatorRef.SET_SELECTED_OBJECT(null);
+            initialPropParent = _objectCollidedWithHand.transform.parent;
+            _objectCollidedWithHand.transform.parent = inputManager.hand2.transform;
+        }
     }
 
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
         _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(false);
+
+        if (_objectCollidedWithHand != null)
+        {
+            _objectCollidedWithHand.transform.parent = initialPropParent;
+            _stateManagerMutatorRef.SET_SELECTED_OBJECT(_objectCollidedWithHand);
+            _objectCollidedWithHand.AddComponent<activeProp>();
+        }
     }
 
     void updateObjectCollidedWithHand(GameObject value)
