@@ -9,7 +9,8 @@ public class stateManager : MonoBehaviour
     {
         universalTransformMode,
         cloneDeleteMode,
-        openMenuMode
+        openMenuMode,
+        freeGrabMode
     }
     public delegate void editorModeHandler(editorModes value);
     public static event editorModeHandler editorModeEvent;
@@ -80,6 +81,15 @@ public class stateManager : MonoBehaviour
         if (editorModeEvent != null)
         {
             editorModeEvent(editorModes.openMenuMode);
+        }
+    }
+
+    public void SET_EDITOR_MODE_FREE_GRAB()
+    {
+        editorMode = editorModes.freeGrabMode;
+        if (editorModeEvent != null)
+        {
+            editorModeEvent(editorModes.freeGrabMode);
         }
     }
 

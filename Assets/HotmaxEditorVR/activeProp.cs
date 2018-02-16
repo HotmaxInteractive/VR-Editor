@@ -100,6 +100,12 @@ public class activeProp : MonoBehaviour
                     decorators["telekinesisControl"].enabled = true;
                 }
                 break;
+            case stateManager.editorModes.freeGrabMode:
+                if (_selectedObjectIsActive)
+                {
+                    decorators["freeGrabControl"].enabled = true;
+                }
+                break;
         }
     }
 
@@ -130,6 +136,8 @@ public class activeProp : MonoBehaviour
         this.gameObject.AddComponent<rotationControl>();
         this.gameObject.AddComponent<telekinesisControl>();
         this.gameObject.AddComponent<scaleControl>();
+        this.gameObject.AddComponent<freeGrabControl>();
+
         //Add the "selectable outline"
         this.gameObject.AddComponent<cakeslice.Outline>();
 
@@ -137,6 +145,7 @@ public class activeProp : MonoBehaviour
         decorators.Add("rotationControl", GetComponent<rotationControl>());
         decorators.Add("telekinesisControl", GetComponent<telekinesisControl>());
         decorators.Add("scaleControl", GetComponent<scaleControl>());
+        decorators.Add("freeGrabControl", GetComponent<freeGrabControl>());
 
         //disable all of them and check editor mode to set active
         checkEnabledDecorator();
@@ -147,6 +156,7 @@ public class activeProp : MonoBehaviour
         Destroy(GetComponent<rotationControl>());
         Destroy(GetComponent<telekinesisControl>());
         Destroy(GetComponent<scaleControl>());
+        Destroy(GetComponent<freeGrabControl>());
         Destroy(GetComponent<cakeslice.Outline>());
     }
 

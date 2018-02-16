@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//--TODO: change this class name to "handSelector" or "grabSelect"
 public class handColliderFollow : MonoBehaviour
 {
     //--local refs
@@ -39,28 +40,10 @@ public class handColliderFollow : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.GetComponent<MonoBehaviour>() is prop)
+        if (other.gameObject.GetComponent<activeProp>() && _selectedObjectIsActive)
         {
-            //TODO: if you bring object in from telekinesis mode, and unclick, 
-            //you have to still leave and enter object to free grab
-            if (!isCurrentlyColliding && !_selectedObjectIsActive)
-            {
-                collidedWithHand = other.gameObject;
-                _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(other.gameObject);
-                isCurrentlyColliding = true;
-            }
+            _stateManagerMutatorRef.SET_EDITOR_MODE_FREE_GRAB();
         }
-    }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.GetComponent<MonoBehaviour>() is prop)
-        {
-            if(collidedWithHand == other.gameObject)
-            {
-                _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(null);
-                isCurrentlyColliding = false;
-            }
-        }
     }
 }
