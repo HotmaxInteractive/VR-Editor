@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//--TODO: change this class name to "handSelector" or "grabSelect"
-public class handColliderFollow : MonoBehaviour
+public class grabSelect : MonoBehaviour
 {
     //--local refs
     private stateManager _stateManagerMutatorRef;
@@ -14,13 +13,13 @@ public class handColliderFollow : MonoBehaviour
     private bool isCurrentlyColliding = false;
 
     //--hand for collider to follow
-    private Transform selectorHand;
+    private Transform grabberHand;
 
-    private void Awake()
+    private void Start()
     {
-        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
+        _stateManagerMutatorRef = init._stateManagerMutatorRef;
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
-        selectorHand = inputManager.hand2.gameObject.transform;
+        grabberHand = inputManager.hand2.gameObject.transform;
     }
 
     private void OnApplicationQuit()
@@ -35,12 +34,12 @@ public class handColliderFollow : MonoBehaviour
 
     void Update()
     {
-        transform.position = selectorHand.position;
+        transform.position = grabberHand.position;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.GetComponent<prop>())
+        if (other.gameObject.GetComponent<prop>())
         {
             if (other.gameObject.GetComponent<activeProp>())
             {

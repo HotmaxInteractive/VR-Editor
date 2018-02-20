@@ -12,6 +12,7 @@ public class editorModeUIController : MonoBehaviour
 
     void Start()
     {
+        //--Gets reparented in the selector hand and set to the hands position
         transform.parent = inputManager.hand2.transform;
         transform.localPosition = Vector3.zero;
 
@@ -31,6 +32,7 @@ public class editorModeUIController : MonoBehaviour
 
     void padTouched(object sender, ClickedEventArgs e)
     {
+        //--we don't want the ui to pop out when the we are using telekinesis
         if (!_selectedObjectIsActive)
         {
             editorModeUI.SetActive(true);

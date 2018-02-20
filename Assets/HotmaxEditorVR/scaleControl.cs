@@ -11,6 +11,8 @@ public class scaleControl : MonoBehaviour
     private float initialYPos;
     private float currentYPos;
 
+    private Vector3 rayOrigin;
+    private Vector3 rayDirection;
 
     private void Start()
     {
@@ -34,7 +36,10 @@ public class scaleControl : MonoBehaviour
     void triggerClicked(object sender, ClickedEventArgs e)
     {
         RaycastHit hit;
-        Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
+        rayOrigin = inputManager.hand2.gameObject.transform.position;
+        rayDirection = inputManager.hand2.gameObject.transform.forward;
+        Ray ray = new Ray(rayOrigin, rayDirection);
+        //--ray will just interact with the "Gizmo Layer"
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Gizmo Layer")))
         {
             if (hit.collider.gameObject == init.scaleController)
@@ -51,7 +56,10 @@ public class scaleControl : MonoBehaviour
         if (inputManager.trackedController2.triggerPressed)
         {
             RaycastHit hit;
-            Ray ray = new Ray(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
+            rayOrigin = inputManager.hand2.gameObject.transform.position;
+            rayDirection = inputManager.hand2.gameObject.transform.forward;
+            Ray ray = new Ray(rayOrigin, rayDirection);
+            //--ray will just interact with the "Gizmo Layer"
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Gizmo Layer")))
             {
                 if (hit.collider.gameObject == init.scaleController)

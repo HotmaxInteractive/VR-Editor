@@ -8,7 +8,6 @@ public class loadPropsMenu : MonoBehaviour
     //--local refs
     private stateManager _stateManagerMutatorRef;
     private stateManager.editorModes _editorMode = stateManager.editorMode;
-    private bool _playerIsLocomoting = stateManager.playerIsLocomoting;
 
     //--child gameObject refs
     [SerializeField]

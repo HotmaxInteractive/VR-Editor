@@ -52,10 +52,6 @@ public class stateManager : MonoBehaviour
     public delegate void objectCollidedWithHandHandler(GameObject value);
     public static event objectCollidedWithHandHandler objectCollidedWithHandEvent;
 
-    public static bool playerIsLocomoting;
-    public delegate void playerIsLocomotingHandler(bool value);
-    public static event playerIsLocomotingHandler playerIsLocomotingEvent;
-
     //------------------MUTATORS------------------\\
 
     public void SET_EDITOR_MODE_UNIVERSAL()
@@ -162,15 +158,6 @@ public class stateManager : MonoBehaviour
         if (objectCollidedWithHandEvent != null)
         {
             objectCollidedWithHandEvent(value);
-        }
-    }
-
-    public void SET_PLAYER_IS_LOCOMOTING(bool value)
-    {
-        playerIsLocomoting = value;
-        if (playerIsLocomotingEvent != null)
-        {
-            playerIsLocomotingEvent(value);
         }
     }
 }

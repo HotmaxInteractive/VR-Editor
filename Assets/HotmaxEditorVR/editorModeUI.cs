@@ -50,7 +50,7 @@ public class editorModeUI : MonoBehaviour
         }      
     }
     
-    //--TODO: maybe this should go somewhere more explicit like a modeManager
+    //--TODO: maybe this should go somewhere more explicit like a modeManager? it is a little strange that the UI is controlling modes
     void padUntouched(object sender, ClickedEventArgs e)
     {
         switch (_activeQuadrant)

@@ -4,18 +4,15 @@ public class menuController : MonoBehaviour
 {
     //--local refs
     private stateManager.editorModes _editorMode = stateManager.editorMode;
-    private bool _playerIsLocomoting = stateManager.playerIsLocomoting;
 
     private void Start()
     {
         stateManager.editorModeEvent += updateEditorMode;
-        stateManager.playerIsLocomotingEvent += updatePlayerIsLocomoting;
     }
 
     private void OnApplicationQuit()
     {
         stateManager.editorModeEvent -= updateEditorMode;
-        stateManager.playerIsLocomotingEvent -= updatePlayerIsLocomoting;
     }
 
     void updateEditorMode(stateManager.editorModes value)
@@ -29,23 +26,6 @@ public class menuController : MonoBehaviour
         else
         {
             toggleMenuComponents(false);
-        }
-    }
-
-    void updatePlayerIsLocomoting(bool value)
-    {
-        _playerIsLocomoting = value;
-
-        if (_editorMode == stateManager.editorModes.openMenuMode)
-        {
-            if (_playerIsLocomoting)
-            {
-                toggleMenuComponents(false);
-            }
-            else
-            {
-                toggleMenuComponents(true);
-            }
         }
     }
 
