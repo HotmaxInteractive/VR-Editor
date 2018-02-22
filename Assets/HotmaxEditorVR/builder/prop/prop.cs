@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class prop : MonoBehaviour, IHittable
 {
-
     //--local refs
     private stateManager _stateManagerMutatorRef;
     private GameObject _selectedObject;
@@ -25,6 +24,7 @@ public class prop : MonoBehaviour, IHittable
         _selectedObject = value;
     }
 
+    //--This is the raycast way to select this object
     public void receiveHit(RaycastHit hit)
     {
         // selected object selection

@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Valve.VR;
 
-public class objectSelect : MonoBehaviour
+public class raycastSelect : MonoBehaviour
 {
     //--laser stuff
     private Vector3 laserEndPosition;
@@ -12,7 +11,6 @@ public class objectSelect : MonoBehaviour
     private float laserWidth = 0.01f;
     [SerializeField]
     private float laserMaxLength = 5f;
-    private Transform initialPropParent;
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
 
     //--local refs
@@ -53,23 +51,13 @@ public class objectSelect : MonoBehaviour
         {
             select(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
         }
-        else
-        {
-            _stateManagerMutatorRef.SET_SELECTED_OBJECT(null);
-            initialPropParent = _objectCollidedWithHand.transform.parent;
-            _objectCollidedWithHand.transform.parent = inputManager.hand2.transform;
-        }
     }
 
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
-        _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(false);
-
-        if (_objectCollidedWithHand != null)
+        if (_objectCollidedWithHand == null)
         {
-            _objectCollidedWithHand.transform.parent = initialPropParent;
-            _stateManagerMutatorRef.SET_SELECTED_OBJECT(_objectCollidedWithHand);
-            _objectCollidedWithHand.AddComponent<activeProp>();
+            _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(false);
         }
     }
 
@@ -82,7 +70,7 @@ public class objectSelect : MonoBehaviour
     {
         _selectedObjectIsActive = value;
 
-        if(_selectedObjectIsActive)
+        if (_selectedObjectIsActive)
         {
             GetComponent<LineRenderer>().enabled = false;
         }
@@ -118,16 +106,11 @@ public class objectSelect : MonoBehaviour
         Ray ray = new Ray(targetPosition, direction);
         if (Physics.Raycast(ray, out hit))
         {
-            if(hit.collider.gameObject.GetComponent<MonoBehaviour>() is IHittable)
+            if (hit.collider.gameObject.GetComponent<MonoBehaviour>() is IHittable)
             {
                 //have hit instance fire receiveHit function
                 hit.collider.gameObject.GetComponent<IHittable>().receiveHit(hit);
-            }   
+            }
         }
     }
-}
-
-public interface IHittable
-{
-    void receiveHit(RaycastHit hit);
 }
