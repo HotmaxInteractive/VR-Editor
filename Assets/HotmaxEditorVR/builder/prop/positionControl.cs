@@ -7,7 +7,7 @@ public class positionControl : MonoBehaviour
     private float initialScrollYPosition;
     private float currentScrollYPos;
 
-    private float distToController;
+    private float initialDistanceToController;
     private float scrollDistance = 0;
 
     [SerializeField]
@@ -23,58 +23,48 @@ public class positionControl : MonoBehaviour
 
     private void OnEnable()
     {
-        stateManager.objectCollidedWithHandEvent += updateObjectCollidedwithHand;
+        stateManager.objectCollidedWithHandEvent += updateObjectCollidedWithHand;
 
         initialScrollYPosition = inputManager.selectorHand.GetAxis().y;
-        distToController = Vector3.Distance(transform.position, inputManager.hand2.transform.position);
+        initialDistanceToController = Vector3.Distance(transform.position, inputManager.hand2.transform.position);
         scrollDistance = 0;
         init.rotationGizmos.SetActive(false);
 
-        //--the updateObjectCollidedwithhand event wont fire on this class during its lifetime
+        //--the updateObjectCollidedWithHand event wont fire on this class during its lifetime
         _objectCollidedWithHand = stateManager.objectCollidedWithHand;
     }
 
     private void OnDisable()
     {
-        stateManager.objectCollidedWithHandEvent -= updateObjectCollidedwithHand;
+        stateManager.objectCollidedWithHandEvent -= updateObjectCollidedWithHand;
         transform.parent = init.props.transform;
     }
 
-    void updateObjectCollidedwithHand(GameObject value)
+    void updateObjectCollidedWithHand(GameObject value)
     {
         _objectCollidedWithHand = value;
     }
 
     void Update()
     {
+        currentScrollYPos = inputManager.selectorHand.GetAxis().y;
+
         if (_objectCollidedWithHand == gameObject)
         {
-            //handle grab movement
-            parentPropInHand();
+            if(inputManager.trackedController2.padTouched)
+            {
+                reparentPropInProps();
+                propOffsetController(true);
+            }
+            else
+            {
+                parentPropInHand();
+            }
             return;
         }
         else
         {
-            tweenDistance = Vector3.Distance(transform.position, tweenToPosition) * Time.deltaTime;
-            currentScrollYPos = inputManager.selectorHand.GetAxis().y;
-
-            //--Creates a local controller forward distance vector
-            Vector3 forwardOffsetPosition = inputManager.hand2.transform.forward * (distToController + scrollDistance);
-            tweenToPosition = inputManager.hand2.transform.position + forwardOffsetPosition;
-            //--easing created by "tweenDistance" -a larger tweenDistance will make a faster tween
-            transform.position = Vector3.MoveTowards(transform.position, tweenToPosition, tweenDistance * tweenSpeed);
-
-            if (currentScrollYPos > initialScrollYPosition + .1f)
-            {
-                scrollDistance += scrollSpeed;
-                initialScrollYPosition = currentScrollYPos;
-            }
-
-            if (currentScrollYPos < initialScrollYPosition - .1f)
-            {
-                scrollDistance -= scrollSpeed;
-                initialScrollYPosition = currentScrollYPos;
-            }
+            propOffsetController(false);
         }
     }
 
@@ -84,5 +74,40 @@ public class positionControl : MonoBehaviour
         {
             transform.parent = inputManager.hand2.transform;
         }
+    }
+
+    void reparentPropInProps()
+    {
+        transform.parent = init.props.transform;
+    }
+
+    void propOffsetController(bool currentlyInHand)
+    {   
+        //previous frame
+        float propDistanceToController = initialDistanceToController + scrollDistance;
+        if (currentScrollYPos > initialScrollYPosition + .1f)
+        {
+            scrollDistance += scrollSpeed;
+            initialScrollYPosition = currentScrollYPos;
+        }
+
+        if(propDistanceToController >= 0)
+        {
+            if (currentScrollYPos < initialScrollYPosition - .1f)
+            {
+                scrollDistance -= scrollSpeed;
+                initialScrollYPosition = currentScrollYPos;
+            }
+        }
+
+        //after updated scrollDistance
+        propDistanceToController = initialDistanceToController + scrollDistance;
+        //--Creates a local controller forward distance vector
+        Vector3 forwardOffsetPosition = inputManager.hand2.transform.forward * (propDistanceToController);
+
+        tweenToPosition = inputManager.hand2.transform.position + forwardOffsetPosition;
+        tweenDistance = Vector3.Distance(transform.position, tweenToPosition) * Time.deltaTime;
+        //--easing created by "tweenDistance" -a larger tweenDistance will make a faster tween
+        transform.position = Vector3.MoveTowards(transform.position, tweenToPosition, tweenDistance * tweenSpeed);
     }
 }
