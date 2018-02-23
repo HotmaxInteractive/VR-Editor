@@ -14,7 +14,7 @@ public class raycastSelect : MonoBehaviour
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
 
     //--local refs
-    GameObject _objectCollidedWithHand;
+    private GameObject _objectCollidedWithHand;
 
     private stateManager _stateManagerMutatorRef;
 

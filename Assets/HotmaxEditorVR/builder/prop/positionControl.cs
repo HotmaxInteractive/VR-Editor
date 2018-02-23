@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//TODO: name positionControl
-public class telekinesisControl : MonoBehaviour
+public class positionControl : MonoBehaviour
 {
     private float initialScrollYPosition;
     private float currentScrollYPos;
@@ -19,32 +18,29 @@ public class telekinesisControl : MonoBehaviour
 
     private Vector3 tweenToPosition;
 
-    private GameObject _objectCollidedWithHand = stateManager.objectCollidedWithHand;
+    private GameObject _objectCollidedWithHand;
     private Transform initialParent;
 
     private void OnEnable()
     {
-        if (_objectCollidedWithHand == gameObject)
-        {
-            //handle grab movement
-            print(_objectCollidedWithHand);
-        }
-
-        stateManager.objectCollidedWithHandEvent += updateObjectCollidedwithhand;
+        stateManager.objectCollidedWithHandEvent += updateObjectCollidedwithHand;
 
         initialScrollYPosition = inputManager.selectorHand.GetAxis().y;
         distToController = Vector3.Distance(transform.position, inputManager.hand2.transform.position);
         scrollDistance = 0;
         init.rotationGizmos.SetActive(false);
+
+        //--the updateObjectCollidedwithhand event wont fire on this class during its lifetime
+        _objectCollidedWithHand = stateManager.objectCollidedWithHand;
     }
 
     private void OnDisable()
     {
-        stateManager.objectCollidedWithHandEvent -= updateObjectCollidedwithhand;
+        stateManager.objectCollidedWithHandEvent -= updateObjectCollidedwithHand;
         transform.parent = init.props.transform;
     }
 
-    void updateObjectCollidedwithhand(GameObject value)
+    void updateObjectCollidedwithHand(GameObject value)
     {
         _objectCollidedWithHand = value;
     }

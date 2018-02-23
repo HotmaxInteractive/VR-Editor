@@ -72,7 +72,7 @@ public class activeProp : MonoBehaviour
             case stateManager.editorModes.universalTransformMode:
                 if (_selectedObjectIsActive)
                 {
-                    decorators["telekinesisControl"].enabled = true;
+                    decorators["positionControl"].enabled = true;
                 }
                 else
                 {
@@ -86,7 +86,7 @@ public class activeProp : MonoBehaviour
                 {
                     //turn on the cloning behaviour
                     cloneSelectedObject();
-                    decorators["telekinesisControl"].enabled = true;
+                    decorators["positionControl"].enabled = true;
                 }
                 else
                 {
@@ -96,7 +96,7 @@ public class activeProp : MonoBehaviour
             case stateManager.editorModes.openMenuMode:
                 if (_selectedObjectIsActive)
                 {
-                    decorators["telekinesisControl"].enabled = true;
+                    decorators["positionControl"].enabled = true;
                 }
                 break;
         }
@@ -127,7 +127,7 @@ public class activeProp : MonoBehaviour
     {
         //Add object controllers and reference this class
         this.gameObject.AddComponent<rotationControl>();
-        this.gameObject.AddComponent<telekinesisControl>();
+        this.gameObject.AddComponent<positionControl>();
         this.gameObject.AddComponent<scaleControl>();
 
         //Add the "selectable outline"
@@ -135,7 +135,7 @@ public class activeProp : MonoBehaviour
 
         //adding the 
         decorators.Add("rotationControl", GetComponent<rotationControl>());
-        decorators.Add("telekinesisControl", GetComponent<telekinesisControl>());
+        decorators.Add("positionControl", GetComponent<positionControl>());
         decorators.Add("scaleControl", GetComponent<scaleControl>());
 
         //disable all of them and check editor mode to set active
@@ -145,7 +145,7 @@ public class activeProp : MonoBehaviour
     void removeDecorators()
     {
         Destroy(GetComponent<rotationControl>());
-        Destroy(GetComponent<telekinesisControl>());
+        Destroy(GetComponent<positionControl>());
         Destroy(GetComponent<scaleControl>());
         Destroy(GetComponent<cakeslice.Outline>());
     }

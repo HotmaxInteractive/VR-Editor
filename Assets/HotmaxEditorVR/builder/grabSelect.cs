@@ -8,10 +8,7 @@ public class grabSelect : MonoBehaviour
     private stateManager _stateManagerMutatorRef;
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
     private GameObject _objectCollidedWithHand;
-
-    //--save collided prop
-    private GameObject collidedWithHand;
-    private bool isCurrentlyColliding = false;
+    private GameObject _selectedObject;
 
     //--hand for collider to follow
     private Transform grabberHand;
@@ -26,6 +23,7 @@ public class grabSelect : MonoBehaviour
         inputManager.trackedController2.TriggerClicked += triggerClicked;
         inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
         stateManager.objectCollidedWithHandEvent += updateObjectCollidedWithHand;
+        stateManager.selectedObjectEvent += updateSelectedObject;
 
         grabberHand = inputManager.hand2.gameObject.transform;
     }
@@ -36,6 +34,7 @@ public class grabSelect : MonoBehaviour
         inputManager.trackedController2.TriggerClicked -= triggerClicked;
         inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
         stateManager.objectCollidedWithHandEvent -= updateObjectCollidedWithHand;
+        stateManager.selectedObjectEvent -= updateSelectedObject;
     }
 
     void updateSelectedObjectIsActive(bool value)
@@ -48,15 +47,24 @@ public class grabSelect : MonoBehaviour
         _objectCollidedWithHand = value;
     }
 
+    void updateSelectedObject(GameObject value)
+    {
+        _selectedObject = value;
+    }
+
     void triggerClicked(object sender, ClickedEventArgs e)
     {
         if (_objectCollidedWithHand != null)
         {
-            _stateManagerMutatorRef.SET_SELECTED_OBJECT(_objectCollidedWithHand);
-            if(!_objectCollidedWithHand.GetComponent<activeProp>())
+
+
+            // selected object selection
+            if (_objectCollidedWithHand != _selectedObject)
             {
+                _stateManagerMutatorRef.SET_SELECTED_OBJECT(_objectCollidedWithHand);
                 _objectCollidedWithHand.AddComponent<activeProp>();
             }
+
             _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(true);
         }
     }
@@ -78,43 +86,18 @@ public class grabSelect : MonoBehaviour
     {
         if (other.gameObject.GetComponent<prop>())
         {
-            //--isCurrentlyColliding fires once
-            if (!isCurrentlyColliding)
+            if (_objectCollidedWithHand == null)
             {
-                setObjectCollidedWithHand(other.gameObject, true);
+                _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(other.gameObject);
             }
-            ////--handle telekinesis
-            //if (other.gameObject.GetComponent<activeProp>())
-            //{
-            //    if (_selectedObjectIsActive)
-            //    {
-            //        _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(other.gameObject);
-            //        //_stateManagerMutatorRef.SET_EDITOR_MODE_FREE_GRAB();
-            //    }
-            //}
-
-            ////--handle new prop grabbed
-            //if (!isCurrentlyColliding && !_selectedObjectIsActive)
-            //{
-            //    collidedWithHand = other.gameObject;
-            //    _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(other.gameObject);
-            //    isCurrentlyColliding = true;
-            //}
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (collidedWithHand == other.gameObject)
+        if (_objectCollidedWithHand == other.gameObject)
         {
-            setObjectCollidedWithHand(null, false);
-        }       
-    }
-
-    void setObjectCollidedWithHand(GameObject prop, bool currentlyColliding)
-    {
-        _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(prop);
-        collidedWithHand = prop;
-        isCurrentlyColliding = currentlyColliding;
+            _stateManagerMutatorRef.SET_OBJECT_COLLIDED_WITH_HAND(null);
+        }
     }
 }
