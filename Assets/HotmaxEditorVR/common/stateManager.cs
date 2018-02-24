@@ -14,13 +14,13 @@ public class stateManager : MonoBehaviour
     public delegate void editorModeHandler(editorModes value);
     public static event editorModeHandler editorModeEvent;
 
-    public static activeQuadrants activeQuadrant = activeQuadrants.quarant0;
+    public static activeQuadrants activeQuadrant = activeQuadrants.topLeft;
     public enum activeQuadrants
     {
-        quarant0,
-        quarant1,
-        quarant2,
-        quarant3
+        topLeft,
+        topRight,
+        bottomRight,
+        bottomLeft
     }
     public delegate void activeQuadrantHandler(activeQuadrants value);
     public static event activeQuadrantHandler activeQuadrantEvent;

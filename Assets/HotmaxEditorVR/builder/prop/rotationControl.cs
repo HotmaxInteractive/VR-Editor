@@ -13,11 +13,12 @@ public class rotationControl : MonoBehaviour
     private Transform initialParent;
     private GameObject lookAtRaycast;
     private GameObject stationaryLookAtRaycast;
+    private GameObject propRotationHolder;
     private Vector3 lookPos;
     private Quaternion rotation;
 
     //--Handles turning off and on Gizmo axis
-    private List<Transform> transforms = new List<Transform>();
+    private List<Transform> rotationAxis = new List<Transform>();
     private enum visibleRotation
     {
         X,
@@ -55,18 +56,6 @@ public class rotationControl : MonoBehaviour
                 }
             }
         }
-
-        if (lookAtRaycast != null && stationaryLookAtRaycast != null)
-        {
-            float gizmoScale = init.rotationGizmos.transform.localScale.x * 100;
-            string rotationGage = "rotationGage";
-
-            lookAtRaycast.transform.Find(rotationGage).localPosition = new Vector3(0, 0, gizmoScale);
-            stationaryLookAtRaycast.transform.Find(rotationGage).localPosition = new Vector3(0, 0, gizmoScale);
-
-            lookAtRaycast.transform.Find(rotationGage).localScale = new Vector3(gizmoScale, gizmoScale, gizmoScale);
-            stationaryLookAtRaycast.transform.Find(rotationGage).localScale = new Vector3(gizmoScale, gizmoScale, gizmoScale);
-        }
     }
 
     void doRotation(RaycastHit hit, Vector3 faceDirection, float lockAxis)
@@ -74,10 +63,13 @@ public class rotationControl : MonoBehaviour
         //on raycast + click trigger preserve this objects original rotation by parenting other object
         if (initialHit)
         {
+
             //do lookAt so the the perpendicular face to the locked axis faces the hit.point
             lookAtRaycast.transform.LookAt(hit.point, faceDirection);
             stationaryLookAtRaycast.transform.LookAt(hit.point, faceDirection);
-            transform.parent = lookAtRaycast.transform;
+            propRotationHolder.transform.LookAt(hit.point, faceDirection);
+
+            transform.parent = propRotationHolder.transform;
             initialHit = false;
         }
         lookPos = hit.point - lookAtRaycast.transform.position;
@@ -85,33 +77,45 @@ public class rotationControl : MonoBehaviour
         lockAxis = 0;
         //lookAtRaycast follows the hit.point with locked axis
         rotation = Quaternion.LookRotation(lookPos, faceDirection);
+
         lookAtRaycast.transform.rotation = Quaternion.Slerp(lookAtRaycast.transform.rotation, rotation, Time.deltaTime * 3);
+        propRotationHolder.transform.rotation = Quaternion.Slerp(lookAtRaycast.transform.rotation, rotation, Time.deltaTime * 3);
+
+    }
+
+    private void Start()
+    {
+        propRotationHolder = Instantiate(Resources.Load("propRotationHolder", typeof(GameObject))) as GameObject;
+        //set up the container for our object to rotate
+        lookAtRaycast = Instantiate(Resources.Load("lookAtRaycast", typeof(GameObject))) as GameObject;
+        //This should have a different apearance than the "lookAtRaycast object"
+        stationaryLookAtRaycast = Instantiate(Resources.Load("lookAtRaycast", typeof(GameObject))) as GameObject;
+
     }
 
     private void OnEnable()
     {
+       
         stateManager.rotationGizmoIsSelectedEvent += updateRotationGizmoIsSelected;
         stateManager.rotationModeEvent += updateRotationModeEvent;
+        inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
 
         //handle the visual representation of the rotation gizmo
         init.rotationGizmos.SetActive(true);
         init.rotationGizmos.transform.position = transform.position;
-
-        inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
     }
 
     protected virtual void OnDisable()
     {
         stateManager.rotationGizmoIsSelectedEvent -= updateRotationGizmoIsSelected;
         stateManager.rotationModeEvent -= updateRotationModeEvent;
+        inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
 
         //throws error when the app quits if we don't check if it is not null
-        if(init.rotationGizmos != null)
+        if (init.rotationGizmos != null)
         {
             init.rotationGizmos.SetActive(false);
         }
-
-        inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
 
     void updateRotationGizmoIsSelected(bool value)
@@ -121,23 +125,23 @@ public class rotationControl : MonoBehaviour
 
         if (_rotationGizmoIsSelected)
         {
-            //set up the container for our object to rotate
-            lookAtRaycast = Instantiate(Resources.Load("lookAtRaycast", typeof(GameObject))) as GameObject;
-            //This should have a different apearance than the "lookAtRaycast object"
-            stationaryLookAtRaycast = Instantiate(Resources.Load("lookAtRaycast", typeof(GameObject))) as GameObject;
+            lookAtRaycast.SetActive(true);
+            stationaryLookAtRaycast.SetActive(true);
             lookAtRaycast.transform.position = transform.position;
             stationaryLookAtRaycast.transform.position = transform.position;
 
+            propRotationHolder.transform.position = transform.position;
+
+
             //save current parent
-            initialParent = transform.parent;
             initialHit = true;
         }
         else
         {
             //unparent object before destroying
-            transform.parent = initialParent;
-            Destroy(lookAtRaycast);
-            Destroy(stationaryLookAtRaycast);
+            transform.parent = init.props.transform;
+            lookAtRaycast.SetActive(false);
+            stationaryLookAtRaycast.SetActive(false);
         }
     }
 
@@ -178,47 +182,32 @@ public class rotationControl : MonoBehaviour
         Transform yGizmo = init.rotationGizmos.transform.Find("yRotationGizmo");
         Transform zGizmo = init.rotationGizmos.transform.Find("zRotationGizmo");
 
-        transforms.Add(xGizmo);
-        transforms.Add(yGizmo);
-        transforms.Add(zGizmo);
+        rotationAxis.Add(xGizmo);
+        rotationAxis.Add(yGizmo);
+        rotationAxis.Add(zGizmo);
+
+        for (int i = 0; i < rotationAxis.Count; i++)
+        {
+            rotationAxis[i].gameObject.SetActive(false);
+        }
 
         switch (visibleRotation)
         {
             case visibleRotation.X:
-                for (int i = 0; i < transforms.Count; i++)
-                {
-                    transforms[i].gameObject.SetActive(false);
-                }
-                transforms[0].gameObject.SetActive(true);
+                rotationAxis[0].gameObject.SetActive(true);
                 break;
 
             case visibleRotation.Y:
-                for (int i = 0; i < transforms.Count; i++)
-                {
-                    transforms[i].gameObject.SetActive(false);
-                }
-                transforms[1].gameObject.SetActive(true);
+                rotationAxis[1].gameObject.SetActive(true);
                 break;
 
             case visibleRotation.Z:
-                for (int i = 0; i < transforms.Count; i++)
-                {
-                    transforms[i].gameObject.SetActive(false);
-                }
-                transforms[2].gameObject.SetActive(true);
+                rotationAxis[2].gameObject.SetActive(true);
                 break;
-
-            case visibleRotation.NONE:
-                for (int i = 0; i < transforms.Count; i++)
-                {
-                    transforms[i].gameObject.SetActive(false);
-                }
-                break;
-
             case visibleRotation.ALL:
-                for (int i = 0; i < transforms.Count; i++)
+                for (int i = 0; i < rotationAxis.Count; i++)
                 {
-                    transforms[i].gameObject.SetActive(true);
+                    rotationAxis[i].gameObject.SetActive(true);
                 }
                 break;
         }

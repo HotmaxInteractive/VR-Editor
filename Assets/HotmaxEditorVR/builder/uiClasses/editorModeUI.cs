@@ -35,16 +35,16 @@ public class editorModeUI : MonoBehaviour
 
         switch (_activeQuadrant)
         {
-            case stateManager.activeQuadrants.quarant0:
+            case stateManager.activeQuadrants.topLeft:
                 transform.GetChild(0).gameObject.AddComponent<cakeslice.Outline>();
                 break;
-            case stateManager.activeQuadrants.quarant1:
+            case stateManager.activeQuadrants.topRight:
                 transform.GetChild(1).gameObject.AddComponent<cakeslice.Outline>();
                 break;
-            case stateManager.activeQuadrants.quarant2:
+            case stateManager.activeQuadrants.bottomRight:
                 transform.GetChild(2).gameObject.AddComponent<cakeslice.Outline>();
                 break;
-            case stateManager.activeQuadrants.quarant3:
+            case stateManager.activeQuadrants.bottomLeft:
                 transform.GetChild(3).gameObject.AddComponent<cakeslice.Outline>();
                 break;
         }      
@@ -55,16 +55,16 @@ public class editorModeUI : MonoBehaviour
     {
         switch (_activeQuadrant)
         {
-            case stateManager.activeQuadrants.quarant0:
+            case stateManager.activeQuadrants.topLeft:
                 init._stateManagerMutatorRef.SET_EDITOR_MODE_UNIVERSAL();
                 break;
-            case stateManager.activeQuadrants.quarant1:
+            case stateManager.activeQuadrants.topRight:
                 init._stateManagerMutatorRef.SET_EDITOR_MODE_CLONE_DELETE();
                 break;
-            case stateManager.activeQuadrants.quarant2:
+            case stateManager.activeQuadrants.bottomRight:
                 init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
                 break;
-            case stateManager.activeQuadrants.quarant3:
+            case stateManager.activeQuadrants.bottomLeft:
                 init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
                 break;
         }       

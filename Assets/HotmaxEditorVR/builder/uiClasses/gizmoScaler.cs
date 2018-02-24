@@ -8,7 +8,8 @@ public class gizmoScaler : MonoBehaviour
 
 	void Update ()
     {
-        float distanceToHead = Vector3.Distance(transform.position, init.vrCamera.transform.position) / sizeScaler;
-        transform.localScale = new Vector3(distanceToHead, distanceToHead, distanceToHead);
+        float distanceToHead = Vector3.Distance(transform.position, init.vrCamera.transform.position);
+        float scaleRatio = distanceToHead / sizeScaler;
+        transform.localScale = new Vector3(scaleRatio, scaleRatio, scaleRatio);
     }
 }
