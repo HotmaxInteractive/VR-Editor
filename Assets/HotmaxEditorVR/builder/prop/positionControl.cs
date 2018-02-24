@@ -16,10 +16,13 @@ public class positionControl : MonoBehaviour
     private float tweenSpeed = 4;
     private float tweenDistance;
 
+    private Vector3 forwardOffsetPosition;
     private Vector3 tweenToPosition;
 
     private GameObject _objectCollidedWithHand;
     private Transform initialParent;
+
+    private Transform raycastPoint;
 
     private void OnEnable()
     {
@@ -32,6 +35,13 @@ public class positionControl : MonoBehaviour
 
         //--the updateObjectCollidedWithHand event wont fire on this class during its lifetime
         _objectCollidedWithHand = stateManager.objectCollidedWithHand;
+
+        raycastPoint = init.raycastBallPoint.transform;
+
+        //--initialize raycastPoint
+        forwardOffsetPosition = inputManager.hand2.transform.forward * (initialDistanceToController + scrollDistance);
+        tweenToPosition = inputManager.hand2.transform.position + forwardOffsetPosition;
+        raycastPoint.position = tweenToPosition;
     }
 
     private void OnDisable()
@@ -53,32 +63,44 @@ public class positionControl : MonoBehaviour
         {
             if(inputManager.trackedController2.padTouched)
             {
-                reparentPropInProps();
                 propOffsetController(true);
+                parentPropInBall();
+                unparentBall();
             }
             else
             {
-                parentPropInHand();
+                parentBallInHand();
+                parentPropInBall();
             }
             return;
         }
         else
         {
             propOffsetController(false);
+            parentPropInBall();
+            unparentBall();
         }
     }
 
-    void parentPropInHand()
+    void parentBallInHand()
     {
-        if (transform.parent != inputManager.hand2.transform)
+        if (raycastPoint.parent != inputManager.hand2.transform)
         {
-            transform.parent = inputManager.hand2.transform;
+            raycastPoint.parent = inputManager.hand2.transform;
         }
     }
 
-    void reparentPropInProps()
+    void parentPropInBall()
     {
-        transform.parent = init.props.transform;
+        if (transform.parent != raycastPoint)
+        {
+            transform.parent = raycastPoint;
+        }
+    }
+
+    void unparentBall()
+    {
+        raycastPoint.parent = null;
     }
 
     void propOffsetController(bool currentlyInHand)
@@ -103,11 +125,12 @@ public class positionControl : MonoBehaviour
         //after updated scrollDistance
         propDistanceToController = initialDistanceToController + scrollDistance;
         //--Creates a local controller forward distance vector
-        Vector3 forwardOffsetPosition = inputManager.hand2.transform.forward * (propDistanceToController);
+        forwardOffsetPosition = inputManager.hand2.transform.forward * (propDistanceToController);
 
         tweenToPosition = inputManager.hand2.transform.position + forwardOffsetPosition;
-        tweenDistance = Vector3.Distance(transform.position, tweenToPosition) * Time.deltaTime;
+        tweenDistance = Vector3.Distance(raycastPoint.position, tweenToPosition) * Time.deltaTime;
+
         //--easing created by "tweenDistance" -a larger tweenDistance will make a faster tween
-        transform.position = Vector3.MoveTowards(transform.position, tweenToPosition, tweenDistance * tweenSpeed);
+        raycastPoint.position = Vector3.MoveTowards(raycastPoint.position, tweenToPosition, tweenDistance * tweenSpeed);
     }
 }
