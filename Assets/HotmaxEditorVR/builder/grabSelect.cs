@@ -56,8 +56,6 @@ public class grabSelect : MonoBehaviour
     {
         if (_objectCollidedWithHand != null)
         {
-
-
             // selected object selection
             if (_objectCollidedWithHand != _selectedObject)
             {
