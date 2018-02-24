@@ -36,7 +36,7 @@ public class positionControl : MonoBehaviour
         //--the updateObjectCollidedWithHand event wont fire on this class during its lifetime
         _objectCollidedWithHand = stateManager.objectCollidedWithHand;
 
-        raycastPoint = init.raycastBallPoint.transform;
+        raycastPoint = init.raycastPoint.transform;
 
         //--initialize raycastPoint
         forwardOffsetPosition = inputManager.hand2.transform.forward * (initialDistanceToController + scrollDistance);
