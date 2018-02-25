@@ -49,7 +49,10 @@ public class editorModeUIManager : MonoBehaviour
 
     void padUntouched(object sender, ClickedEventArgs e)
     {
-        setEditorMode();
+        if (!_selectedObjectIsActive)
+        {
+            setEditorMode();
+        }
         editorModeUI.SetActive(false);
     }
 
