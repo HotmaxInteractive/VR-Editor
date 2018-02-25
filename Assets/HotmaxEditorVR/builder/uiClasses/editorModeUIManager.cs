@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class editorModeUIController : MonoBehaviour
+public class editorModeUIManager : MonoBehaviour
 {
     //--local refs
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;

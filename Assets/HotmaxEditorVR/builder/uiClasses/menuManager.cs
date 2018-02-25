@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class menuController : MonoBehaviour
+public class menuManager : MonoBehaviour
 {
     //--local refs
     private stateManager.editorModes _editorMode = stateManager.editorMode;
@@ -57,3 +59,4 @@ public class menuController : MonoBehaviour
         menu.transform.localEulerAngles = new Vector3(0, menu.transform.localEulerAngles.y + 180, 0);
     }
 }
+

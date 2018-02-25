@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class propController : MonoBehaviour
+public class propManager : MonoBehaviour
 {
     //--Lists to handle getting unique props in menu
     private List<string> propNames = new List<string>();
@@ -33,3 +33,4 @@ public class propController : MonoBehaviour
         }
     }
 }
+

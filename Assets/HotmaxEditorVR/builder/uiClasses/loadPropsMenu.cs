@@ -23,7 +23,7 @@ public class loadPropsMenu : MonoBehaviour
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
 
         //create "chunks" groups of 4 to display the object
-        chunkedList = ListExtensions.ChunkBy(propController.propObjects, 4);
+        chunkedList = ListExtensions.ChunkBy(propManager.propObjects, 4);
         showPropObjectPage(0);
     }
 
