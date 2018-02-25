@@ -72,7 +72,8 @@ public class scaleControl : MonoBehaviour
                         initialYPos = currentYPos;
                     }
 
-                    if (transform.localScale.x > growRate.x && transform.localScale.y > growRate.x && transform.localScale.z > growRate.x)
+                    //--gaurding from going into negative scale
+                    if (transform.localScale.x > .01f)
                     {
                         if (currentYPos < initialYPos - .1f)
                         {
