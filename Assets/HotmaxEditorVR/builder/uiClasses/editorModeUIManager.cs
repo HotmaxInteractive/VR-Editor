@@ -6,9 +6,15 @@ public class editorModeUIManager : MonoBehaviour
 {
     //--local refs
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
+    private stateManager.activeQuadrants _activeQuadrant = stateManager.activeQuadrant;
 
     [SerializeField]
     public GameObject editorModeUI;
+
+    private void OnEnable()
+    {
+        removeHighlight();
+    }
 
     void Start()
     {
@@ -19,6 +25,7 @@ public class editorModeUIManager : MonoBehaviour
         inputManager.trackedController2.PadTouched += padTouched;
         inputManager.trackedController2.PadUntouched += padUntouched;
 
+        stateManager.activeQuadrantEvent += updateActiveQuadrant;
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
     }
 
@@ -27,12 +34,13 @@ public class editorModeUIManager : MonoBehaviour
         inputManager.trackedController2.PadTouched -= padTouched;
         inputManager.trackedController2.PadUntouched -= padUntouched;
 
+        stateManager.activeQuadrantEvent -= updateActiveQuadrant;
         stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
     }
 
     void padTouched(object sender, ClickedEventArgs e)
     {
-        //--we don't want the ui to pop out when the we are using telekinesis
+        //--don't show ui when prop is active
         if (!_selectedObjectIsActive)
         {
             editorModeUI.SetActive(true);
@@ -41,11 +49,62 @@ public class editorModeUIManager : MonoBehaviour
 
     void padUntouched(object sender, ClickedEventArgs e)
     {
+        setEditorMode();
         editorModeUI.SetActive(false);
     }
 
     void updateSelectedObjectIsActive(bool value)
     {
         _selectedObjectIsActive = value;
+    }
+
+    void updateActiveQuadrant(stateManager.activeQuadrants value)
+    {
+        _activeQuadrant = value;
+
+        removeHighlight();
+
+        switch (_activeQuadrant)
+        {
+            case stateManager.activeQuadrants.topLeft:
+                editorModeUI.transform.GetChild(0).gameObject.AddComponent<cakeslice.Outline>();
+                break;
+            case stateManager.activeQuadrants.topRight:
+                editorModeUI.transform.GetChild(1).gameObject.AddComponent<cakeslice.Outline>();
+                break;
+            case stateManager.activeQuadrants.bottomRight:
+                editorModeUI.transform.GetChild(2).gameObject.AddComponent<cakeslice.Outline>();
+                break;
+            case stateManager.activeQuadrants.bottomLeft:
+                editorModeUI.transform.GetChild(3).gameObject.AddComponent<cakeslice.Outline>();
+                break;
+        }
+    }
+
+    void setEditorMode()
+    {
+        switch (_activeQuadrant)
+        {
+            case stateManager.activeQuadrants.topLeft:
+                init._stateManagerMutatorRef.SET_EDITOR_MODE_UNIVERSAL();
+                break;
+            case stateManager.activeQuadrants.topRight:
+                init._stateManagerMutatorRef.SET_EDITOR_MODE_CLONE_DELETE();
+                break;
+            case stateManager.activeQuadrants.bottomRight:
+                init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
+                break;
+            case stateManager.activeQuadrants.bottomLeft:
+                init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
+                break;
+        }
+    }
+
+    void removeHighlight()
+    {
+        foreach (Transform child in editorModeUI.transform)
+        {
+            Destroy(child.gameObject.GetComponent<cakeslice.Outline>());
+        }
     }
 }
