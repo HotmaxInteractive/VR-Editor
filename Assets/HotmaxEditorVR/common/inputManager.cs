@@ -16,15 +16,12 @@ public class inputManager : MonoBehaviour
     private SteamVR_TrackedObject trackedObject2;
     public static SteamVR_Controller.Device selectorHand;
 
-
     private stateManager _stateManagerMutatorRef;
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;    
 
 
     private void Awake()
     {
-        stateManager.rotationGizmoIsSelectedEvent += updateRotationGizmoIsSelected;
-
         //Match up the hardware index with the "steamVR Hand2"
         //So the Hand2 is always the starting rightmost hand reletive to the HMD
         //Not sure why steamVR's select hand option doesn't do this, let me know if you figure it out
@@ -40,24 +37,6 @@ public class inputManager : MonoBehaviour
         Invoke("setControllerIndecies", 1.2f);
 
         _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
-        stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
-    }
-
-    protected virtual void OnApplicationQuit()
-    {
-        stateManager.rotationGizmoIsSelectedEvent -= updateRotationGizmoIsSelected;
-
-        stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
-    }
-
-    void updateSelectedObjectIsActive(bool value)
-    {
-        _selectedObjectIsActive = value;
-    }
-
-    void updateRotationGizmoIsSelected(bool value)
-    {
-        _rotationGizmoIsSelected = value;
     }
 
     //TODO: this should probably be an event that broadcasts in steamVR Hand, but this seems to be working for now
@@ -82,41 +61,5 @@ public class inputManager : MonoBehaviour
         hand2.gameObject.GetComponent<SteamVR_TrackedObject>().SetDeviceIndex((int)hand2ControllerIndex);
 
         selectorHand = SteamVR_Controller.Input((int)trackedObject2.index);
-    }
-
-    void Update()
-    {
-        //------------------------using the pad------------------------\\
-
-        if(selectorHand != null)
-        {
-            if(_selectedObjectIsActive || _rotationGizmoIsSelected)
-            {
-                return;
-            }
-            else
-            {
-                //TODO: move to menu handler
-                if (selectorHand.GetAxis().x != 0 || selectorHand.GetAxis().y != 0)
-                {
-                    if (selectorHand.GetAxis().x < 0 && selectorHand.GetAxis().y > 0)
-                    {
-                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT(0);
-                    }
-                    if (selectorHand.GetAxis().x > 0 && selectorHand.GetAxis().y > 0)
-                    {
-                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT(1);
-                    }
-                    if (selectorHand.GetAxis().x < 0 && selectorHand.GetAxis().y < 0)
-                    {
-                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT(2);
-                    }
-                    if (selectorHand.GetAxis().x > 0 && selectorHand.GetAxis().y < 0)
-                    {
-                        _stateManagerMutatorRef.SET_ACTIVE_QUADRANT(3);
-                    }
-                }
-            }
-        }
     }
 }

@@ -14,17 +14,6 @@ public class stateManager : MonoBehaviour
     public delegate void editorModeHandler(editorModes value);
     public static event editorModeHandler editorModeEvent;
 
-    public static activeQuadrants activeQuadrant = activeQuadrants.topLeft;
-    public enum activeQuadrants
-    {
-        topLeft,
-        topRight,
-        bottomRight,
-        bottomLeft
-    }
-    public delegate void activeQuadrantHandler(activeQuadrants value);
-    public static event activeQuadrantHandler activeQuadrantEvent;
-
     public static bool rotationGizmoIsSelected = false;
     public delegate void rotationGizmoIsSelectedHandler(bool value);
     public static event rotationGizmoIsSelectedHandler rotationGizmoIsSelectedEvent;
@@ -76,15 +65,6 @@ public class stateManager : MonoBehaviour
         if (editorModeEvent != null)
         {
             editorModeEvent(editorModes.openMenuMode);
-        }
-    }
-
-    public void SET_ACTIVE_QUADRANT(int value)
-    {
-        activeQuadrant = (activeQuadrants)value;
-        if (activeQuadrantEvent != null)
-        {
-            activeQuadrantEvent(activeQuadrant);
         }
     }
 
