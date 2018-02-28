@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class loadPropsMenu : MonoBehaviour
 {
@@ -20,7 +19,7 @@ public class loadPropsMenu : MonoBehaviour
 
     void Start()
     {
-        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
+        _stateManagerMutatorRef = init._stateManagerMutatorRef;
 
         //create "chunks" groups of 4 to display the object
         chunkedList = ListExtensions.ChunkBy(propManager.propObjects, 4);
