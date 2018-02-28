@@ -13,17 +13,16 @@ public class grabSelect : MonoBehaviour
     //--hand for collider to follow
     private Transform grabberHand;
 
-    private Transform initialPropParent;
-
     private void Start()
     {
         _stateManagerMutatorRef = init._stateManagerMutatorRef;
 
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
-        inputManager.trackedController2.TriggerClicked += triggerClicked;
-        inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
         stateManager.objectCollidedWithHandEvent += updateObjectCollidedWithHand;
         stateManager.selectedObjectEvent += updateSelectedObject;
+
+        inputManager.trackedController2.TriggerClicked += triggerClicked;
+        inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
 
         grabberHand = inputManager.hand2.gameObject.transform;
     }
@@ -31,10 +30,11 @@ public class grabSelect : MonoBehaviour
     private void OnApplicationQuit()
     {
         stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
-        inputManager.trackedController2.TriggerClicked -= triggerClicked;
-        inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
         stateManager.objectCollidedWithHandEvent -= updateObjectCollidedWithHand;
         stateManager.selectedObjectEvent -= updateSelectedObject;
+
+        inputManager.trackedController2.TriggerClicked -= triggerClicked;
+        inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
 
     void updateSelectedObjectIsActive(bool value)
@@ -56,7 +56,6 @@ public class grabSelect : MonoBehaviour
     {
         if (_objectCollidedWithHand != null)
         {
-            // selected object selection
             if (_objectCollidedWithHand != _selectedObject)
             {
                 _stateManagerMutatorRef.SET_SELECTED_OBJECT(_objectCollidedWithHand);
