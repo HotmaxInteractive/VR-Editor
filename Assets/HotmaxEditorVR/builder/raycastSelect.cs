@@ -6,7 +6,7 @@ public class raycastSelect : MonoBehaviour
 {
     //--laser stuff
     private Vector3 laserEndPosition;
-    public LineRenderer laserLineRenderer;
+    private LineRenderer laserLineRenderer;
     [SerializeField]
     private float laserWidth = 0.01f;
     [SerializeField]
@@ -15,26 +15,30 @@ public class raycastSelect : MonoBehaviour
 
     //--local refs
     private GameObject _objectCollidedWithHand;
-
     private stateManager _stateManagerMutatorRef;
+    private Transform _hand2;
 
     private void Awake()
     {
-        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
+        _stateManagerMutatorRef = FindObjectOfType(typeof(stateManager)) as stateManager;
+
+        laserLineRenderer = GetComponent<LineRenderer>();
     }
 
     void Start()
     {
-        //The helper laser for the selection tool. 
-        Vector3[] initLaserPositions = new Vector3[2] { Vector3.zero, Vector3.zero };
-        laserLineRenderer.SetPositions(initLaserPositions);
-        laserLineRenderer.startWidth = laserWidth;
-        laserLineRenderer.endWidth = laserWidth;
-
         inputManager.trackedController2.TriggerClicked += triggerClicked;
         inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
         stateManager.objectCollidedWithHandEvent += updateObjectCollidedWithHand;
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
+
+        _hand2 = inputManager.hand2.gameObject.transform;
+
+        //Initializing the helper laser for the selection tool. 
+        Vector3[] initLaserPositions = new Vector3[2] { Vector3.zero, Vector3.zero };
+        laserLineRenderer.SetPositions(initLaserPositions);
+        laserLineRenderer.startWidth = laserWidth;
+        laserLineRenderer.endWidth = laserWidth;
     }
 
     private void OnApplicationQuit()
@@ -49,7 +53,7 @@ public class raycastSelect : MonoBehaviour
     {
         if (_objectCollidedWithHand == null)
         {
-            select(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward);
+            select(_hand2.position, _hand2.forward);
         }
     }
 
@@ -72,17 +76,17 @@ public class raycastSelect : MonoBehaviour
 
         if (_selectedObjectIsActive)
         {
-            GetComponent<LineRenderer>().enabled = false;
+            laserLineRenderer.enabled = false;
         }
         else
         {
-            GetComponent<LineRenderer>().enabled = true;
+            laserLineRenderer.enabled = true;
         }
     }
 
     void Update()
     {
-        ShootLaserFromTargetPosition(inputManager.hand2.gameObject.transform.position, inputManager.hand2.gameObject.transform.forward, laserMaxLength);
+        ShootLaserFromTargetPosition(_hand2.position, _hand2.forward, laserMaxLength);
     }
 
     void ShootLaserFromTargetPosition(Vector3 targetPosition, Vector3 direction, float length)
@@ -108,7 +112,7 @@ public class raycastSelect : MonoBehaviour
         {
             if (hit.collider.gameObject.GetComponent<MonoBehaviour>() is IHittable)
             {
-                //have hit instance fire receiveHit function
+                //have hit "prop" instance fire receiveHit function
                 hit.collider.gameObject.GetComponent<IHittable>().receiveHit(hit);
             }
         }
