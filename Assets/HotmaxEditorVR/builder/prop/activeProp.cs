@@ -29,13 +29,6 @@ public class activeProp : MonoBehaviour
         removeDecorators();
     }
 
-    //destroy this component (and all decorators) when selected object changes
-    void updateSelectedObject(GameObject value)
-    {
-        _selectedObject = value;
-        Destroy(this);
-    }
-
     private void Awake()
     {
         //--This is a check for if the instantiated object is a clone
@@ -45,17 +38,24 @@ public class activeProp : MonoBehaviour
         }
     }
 
-    // -- RUN STATE MACHINE : this object is selected
-    void updateSelectedObjectIsActive(bool value)
+    //destroy this component (and all decorators) when selected object changes
+    void updateSelectedObject(GameObject value)
     {
-        _selectedObjectIsActive = value;
-        runPropStateMachine();
+        _selectedObject = value;
+        Destroy(this);
     }
 
     // -- RUN STATE MACHINE : editor mode has changed
     void updateEditorMode(stateManager.editorModes value)
     {
         _editorMode = value;
+        runPropStateMachine();
+    }
+
+    // -- RUN STATE MACHINE : is active or made in-active
+    void updateSelectedObjectIsActive(bool value)
+    {
+        _selectedObjectIsActive = value;
         runPropStateMachine();
     }
 
