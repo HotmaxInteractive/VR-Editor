@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class positionControl : MonoBehaviour
 {
+    //--local refs
+    private GameObject _objectCollidedWithHand;
+    private Transform _raycastPoint;
+    private Transform _hand2;
+
     private float initialScrollYPosition;
     private float currentScrollYPos;
 
@@ -19,13 +24,12 @@ public class positionControl : MonoBehaviour
     private Vector3 forwardOffsetPosition;
     private Vector3 tweenToPosition;
 
-    private GameObject _objectCollidedWithHand;
-    private Transform initialParent;
-
-    private Transform raycastPoint;
-
     private void OnEnable()
     {
+        _objectCollidedWithHand = stateManager.objectCollidedWithHand;
+        _raycastPoint = init.raycastPoint.transform;
+        _hand2 = inputManager.hand2.transform;
+
         stateManager.objectCollidedWithHandEvent += updateObjectCollidedWithHand;
 
         initialScrollYPosition = inputManager.selectorHand.GetAxis().y;
@@ -33,15 +37,10 @@ public class positionControl : MonoBehaviour
         scrollDistance = 0;
         init.rotationGizmos.SetActive(false);
 
-        //--the updateObjectCollidedWithHand event wont fire on this class during its lifetime
-        _objectCollidedWithHand = stateManager.objectCollidedWithHand;
-
-        raycastPoint = init.raycastPoint.transform;
-
         //--initialize raycastPoint
-        forwardOffsetPosition = inputManager.hand2.transform.forward * (initialDistanceToController + scrollDistance);
-        tweenToPosition = inputManager.hand2.transform.position + forwardOffsetPosition;
-        raycastPoint.position = tweenToPosition;
+        forwardOffsetPosition = _hand2.forward * (initialDistanceToController + scrollDistance);
+        tweenToPosition = _hand2.position + forwardOffsetPosition;
+        _raycastPoint.position = tweenToPosition;
     }
 
     private void OnDisable()
@@ -84,23 +83,23 @@ public class positionControl : MonoBehaviour
 
     void parentBallInHand()
     {
-        if (raycastPoint.parent != inputManager.hand2.transform)
+        if (_raycastPoint.parent != _hand2)
         {
-            raycastPoint.parent = inputManager.hand2.transform;
+            _raycastPoint.parent = _hand2;
         }
     }
 
     void parentPropInBall()
     {
-        if (transform.parent != raycastPoint)
+        if (transform.parent != _raycastPoint)
         {
-            transform.parent = raycastPoint;
+            transform.parent = _raycastPoint;
         }
     }
 
     void unparentBall()
     {
-        raycastPoint.parent = null;
+        _raycastPoint.parent = null;
     }
 
     void propOffsetController(bool currentlyInHand)
@@ -125,12 +124,12 @@ public class positionControl : MonoBehaviour
         //after updated scrollDistance
         propDistanceToController = initialDistanceToController + scrollDistance;
         //--Creates a local controller forward distance vector
-        forwardOffsetPosition = inputManager.hand2.transform.forward * (propDistanceToController);
+        forwardOffsetPosition = _hand2.forward * (propDistanceToController);
 
-        tweenToPosition = inputManager.hand2.transform.position + forwardOffsetPosition;
-        tweenDistance = Vector3.Distance(raycastPoint.position, tweenToPosition) * Time.deltaTime;
+        tweenToPosition = _hand2.position + forwardOffsetPosition;
+        tweenDistance = Vector3.Distance(_raycastPoint.position, tweenToPosition) * Time.deltaTime;
 
         //--easing created by "tweenDistance" -a larger tweenDistance will make a faster tween
-        raycastPoint.position = Vector3.MoveTowards(raycastPoint.position, tweenToPosition, tweenDistance * tweenSpeed);
+        _raycastPoint.position = Vector3.MoveTowards(_raycastPoint.position, tweenToPosition, tweenDistance * tweenSpeed);
     }
 }
