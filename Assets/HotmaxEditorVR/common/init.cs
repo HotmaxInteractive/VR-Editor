@@ -26,6 +26,6 @@ public class init : MonoBehaviour {
         scaleController = GameObject.Find("scaleController");
         raycastPoint = GameObject.Find("raycastPoint");
 
-        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
+        _stateManagerMutatorRef = FindObjectOfType(typeof(stateManager)) as stateManager;
     }
 }
