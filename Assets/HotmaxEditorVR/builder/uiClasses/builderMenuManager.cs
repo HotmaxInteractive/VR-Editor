@@ -5,6 +5,7 @@ using UnityEngine;
 public class builderMenuManager : MonoBehaviour
 {
     //--local refs
+    private stateManager _stateManagerMutatorRef;
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
     private bool _rotationGizmoIsSelected = stateManager.rotationGizmoIsSelected;
     private float _padX;
@@ -15,6 +16,8 @@ public class builderMenuManager : MonoBehaviour
 
     void Start()
     {
+        _stateManagerMutatorRef = init._stateManagerMutatorRef;
+
         //--Gets reparented in the selector hand and set to the hands position
         transform.parent = inputManager.hand2.transform;
         transform.localPosition = Vector3.zero;
@@ -91,19 +94,19 @@ public class builderMenuManager : MonoBehaviour
     {
         if (_padX < 0 && _padY > 0)
         {
-            init._stateManagerMutatorRef.SET_EDITOR_MODE_UNIVERSAL();
+            _stateManagerMutatorRef.SET_EDITOR_MODE_UNIVERSAL();
         }
         if (_padX > 0 && _padY > 0)
         {
-            init._stateManagerMutatorRef.SET_EDITOR_MODE_CLONE_DELETE();
+            _stateManagerMutatorRef.SET_EDITOR_MODE_CLONE_DELETE();
         }
         if (_padX < 0 && _padY < 0)
         {
-            init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
+            _stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
         }
         if (_padX > 0 && _padY < 0)
         {
-            init._stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
+            _stateManagerMutatorRef.SET_EDITOR_MODE_OPEN_MENU();
         }
     }
 }
