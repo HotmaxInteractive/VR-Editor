@@ -16,7 +16,6 @@ public class inputManager : MonoBehaviour
     private SteamVR_TrackedObject trackedObject2;
     public static SteamVR_Controller.Device selectorHand;
 
-    private stateManager _stateManagerMutatorRef;
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;    
 
 
@@ -35,8 +34,6 @@ public class inputManager : MonoBehaviour
         //This method depends on another steamVR method which fires 1s after the app starts.
         //The steamVR method finds the hardware indecies of the controllers
         Invoke("setControllerIndecies", 1.2f);
-
-        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
     }
 
     //TODO: this should probably be an event that broadcasts in steamVR Hand, but this seems to be working for now
