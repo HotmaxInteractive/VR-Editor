@@ -10,7 +10,7 @@ public class prop : MonoBehaviour, IHittable
 
     private void Awake()
     {
-        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
+        _stateManagerMutatorRef = FindObjectOfType(typeof(stateManager)) as stateManager;
         stateManager.selectedObjectEvent += updateSelectedObject;
     }
 
@@ -28,7 +28,7 @@ public class prop : MonoBehaviour, IHittable
     public void receiveHit(RaycastHit hit)
     {
         // selected object selection
-        if (this.gameObject == _selectedObject)
+        if (gameObject == _selectedObject)
         {
             _stateManagerMutatorRef.SET_SELECTED_OBJECT_IS_ACTIVE(true);
         }
@@ -37,7 +37,7 @@ public class prop : MonoBehaviour, IHittable
         else
         {
             _stateManagerMutatorRef.SET_SELECTED_OBJECT(hit.collider.gameObject);
-            this.gameObject.AddComponent<activeProp>();
+            gameObject.AddComponent<activeProp>();
         }
     }
 }
