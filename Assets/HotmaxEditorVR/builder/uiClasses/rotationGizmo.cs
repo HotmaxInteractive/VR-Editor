@@ -10,9 +10,9 @@ public class rotationGizmo : MonoBehaviour, IHittable
     //--local refs
     private stateManager _stateManagerMutatorRef;
 
-    private void Awake()
+    private void Start()
     {
-        _stateManagerMutatorRef = GameObject.FindObjectOfType(typeof(stateManager)) as stateManager;
+        _stateManagerMutatorRef = init._stateManagerMutatorRef;
     }
     
     public void receiveHit(RaycastHit hit)

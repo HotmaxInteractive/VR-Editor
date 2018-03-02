@@ -8,6 +8,10 @@ public class positionControl : MonoBehaviour
     private GameObject _objectCollidedWithHand;
     private Transform _raycastPoint;
     private Transform _hand2;
+    private GameObject _rotationGizmos;
+    private GameObject _props;
+    private SteamVR_TrackedController _trackedController2;
+    private SteamVR_Controller.Device _selectorHand;
 
     private float initialScrollYPosition;
     private float currentScrollYPos;
@@ -29,13 +33,17 @@ public class positionControl : MonoBehaviour
         _objectCollidedWithHand = stateManager.objectCollidedWithHand;
         _raycastPoint = init.raycastPoint.transform;
         _hand2 = inputManager.hand2.transform;
+        _rotationGizmos = init.rotationGizmos;
+        _props = init.props;
+        _trackedController2 = inputManager.trackedController2;
+        _selectorHand = inputManager.selectorHand;
 
         stateManager.objectCollidedWithHandEvent += updateObjectCollidedWithHand;
 
-        initialScrollYPosition = inputManager.selectorHand.GetAxis().y;
-        initialDistanceToController = Vector3.Distance(transform.position, inputManager.hand2.transform.position);
+        initialScrollYPosition = _selectorHand.GetAxis().y;
+        initialDistanceToController = Vector3.Distance(transform.position, _hand2.transform.position);
         scrollDistance = 0;
-        init.rotationGizmos.SetActive(false);
+        _rotationGizmos.SetActive(false);
 
         //--initialize raycastPoint
         forwardOffsetPosition = _hand2.forward * (initialDistanceToController + scrollDistance);
@@ -46,7 +54,7 @@ public class positionControl : MonoBehaviour
     private void OnDisable()
     {
         stateManager.objectCollidedWithHandEvent -= updateObjectCollidedWithHand;
-        transform.parent = init.props.transform;
+        transform.parent = _props.transform;
     }
 
     void updateObjectCollidedWithHand(GameObject value)
@@ -56,11 +64,11 @@ public class positionControl : MonoBehaviour
 
     void Update()
     {
-        currentScrollYPos = inputManager.selectorHand.GetAxis().y;
+        currentScrollYPos = _selectorHand.GetAxis().y;
 
         if (_objectCollidedWithHand == gameObject)
         {
-            if(inputManager.trackedController2.padTouched)
+            if(_trackedController2.padTouched)
             {
                 propOffsetController(true);
                 parentPropInBall();

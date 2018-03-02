@@ -9,22 +9,22 @@ public class grabSelect : MonoBehaviour
     private bool _selectedObjectIsActive = stateManager.selectedObjectIsActive;
     private GameObject _objectCollidedWithHand;
     private GameObject _selectedObject;
-
     //--hand for collider to follow
-    private Transform grabberHand;
+    private Transform _grabberHand;
+    private SteamVR_TrackedController _trackedController2;
 
     private void Start()
     {
         _stateManagerMutatorRef = init._stateManagerMutatorRef;
+        _grabberHand = inputManager.hand2.transform;
+        _trackedController2 = inputManager.trackedController2;
 
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
         stateManager.objectCollidedWithHandEvent += updateObjectCollidedWithHand;
         stateManager.selectedObjectEvent += updateSelectedObject;
 
-        inputManager.trackedController2.TriggerClicked += triggerClicked;
-        inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
-
-        grabberHand = inputManager.hand2.gameObject.transform;
+        _trackedController2.TriggerClicked += triggerClicked;
+        _trackedController2.TriggerUnclicked += triggerUnclicked;
     }
 
     private void OnApplicationQuit()
@@ -33,8 +33,8 @@ public class grabSelect : MonoBehaviour
         stateManager.objectCollidedWithHandEvent -= updateObjectCollidedWithHand;
         stateManager.selectedObjectEvent -= updateSelectedObject;
 
-        inputManager.trackedController2.TriggerClicked -= triggerClicked;
-        inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
+        _trackedController2.TriggerClicked -= triggerClicked;
+        _trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
 
     void updateSelectedObjectIsActive(bool value)
@@ -76,7 +76,7 @@ public class grabSelect : MonoBehaviour
 
     void Update()
     {
-        transform.position = grabberHand.position;
+        transform.position = _grabberHand.position;
     }
 
     private void OnTriggerEnter(Collider other)

@@ -8,6 +8,10 @@ public class rotationControl : MonoBehaviour
     private bool _rotationGizmoIsSelected = stateManager.rotationGizmoIsSelected;
     private stateManager.rotationModes _rotationMode = stateManager.rotationMode;
     private Transform _hand2;
+    private stateManager _stateManagerMutatorRef;
+    private GameObject _rotationGizmos;
+    private GameObject _props;
+    private SteamVR_TrackedController _trackedController2;
 
     //--vars used during rotation
     private bool initialHit = false;
@@ -30,8 +34,6 @@ public class rotationControl : MonoBehaviour
 
     private void Start()
     {
-        _hand2 = inputManager.hand2.transform;
-
         //holder for prop during rotation
         propRotationHolder = Instantiate(Resources.Load("propRotationHolder", typeof(GameObject))) as GameObject;
         //--rotation offset gages
@@ -41,23 +43,29 @@ public class rotationControl : MonoBehaviour
 
     private void OnEnable()
     {
+        _hand2 = inputManager.hand2.transform;
+        _stateManagerMutatorRef = init._stateManagerMutatorRef;
+        _rotationGizmos = init.rotationGizmos;
+        _props = init.props;
+        _trackedController2 = inputManager.trackedController2;
+
         stateManager.rotationGizmoIsSelectedEvent += updateRotationGizmoIsSelected;
         stateManager.rotationModeEvent += updateRotationModeEvent;
-        inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
+        _trackedController2.TriggerUnclicked += triggerUnclicked;
 
-        init.rotationGizmos.SetActive(true);
-        init.rotationGizmos.transform.position = transform.position;
+        _rotationGizmos.SetActive(true);
+        _rotationGizmos.transform.position = transform.position;
     }
 
     protected virtual void OnDisable()
     {
         stateManager.rotationGizmoIsSelectedEvent -= updateRotationGizmoIsSelected;
         stateManager.rotationModeEvent -= updateRotationModeEvent;
-        inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
+        _trackedController2.TriggerUnclicked -= triggerUnclicked;
 
-        if (init.rotationGizmos != null)
+        if (_rotationGizmos != null)
         {
-            init.rotationGizmos.SetActive(false);
+            _rotationGizmos.SetActive(false);
         }
     }
 
@@ -76,7 +84,7 @@ public class rotationControl : MonoBehaviour
         else
         {
             //re-parent back in props
-            transform.parent = init.props.transform;
+            transform.parent = _props.transform;
             rotationGage.SetActive(false);
             stationaryRotationGage.SetActive(false);
         }
@@ -104,7 +112,7 @@ public class rotationControl : MonoBehaviour
 
     void triggerUnclicked(object sender, ClickedEventArgs e)
     {
-        init._stateManagerMutatorRef.SET_ROTATION_GIZMO_IS_SELECTED(false);
+        _stateManagerMutatorRef.SET_ROTATION_GIZMO_IS_SELECTED(false);
         setAxisColliderActive("x", false);
         setAxisColliderActive("y", false);
         setAxisColliderActive("z", false);
@@ -165,9 +173,9 @@ public class rotationControl : MonoBehaviour
 
     void setRotationGizmoVisible(visibleRotation visibleRotation)
     {
-        Transform xGizmo = init.rotationGizmos.transform.Find("x" + rotationGizmo);
-        Transform yGizmo = init.rotationGizmos.transform.Find("y" + rotationGizmo);
-        Transform zGizmo = init.rotationGizmos.transform.Find("z" + rotationGizmo);
+        Transform xGizmo = _rotationGizmos.transform.Find("x" + rotationGizmo);
+        Transform yGizmo = _rotationGizmos.transform.Find("y" + rotationGizmo);
+        Transform zGizmo = _rotationGizmos.transform.Find("z" + rotationGizmo);
 
         rotationAxis.Add(xGizmo);
         rotationAxis.Add(yGizmo);
@@ -203,7 +211,7 @@ public class rotationControl : MonoBehaviour
 
     void setAxisColliderActive(string axis, bool active)
     {
-        init.rotationGizmos.transform.Find(axis + rotationGizmo).transform.Find(rotationAxisCollider).gameObject.SetActive(active);
+        _rotationGizmos.transform.Find(axis + rotationGizmo).transform.Find(rotationAxisCollider).gameObject.SetActive(active);
     }
 
     void setUpRotationGages()

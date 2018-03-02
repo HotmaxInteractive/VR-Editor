@@ -4,24 +4,40 @@ using UnityEngine;
 
 public class scaleControl : MonoBehaviour
 {
+    //--local refs
+    private GameObject _scaleController;
+    private SteamVR_TrackedController _trackedController2;
+    private GameObject _rotationGizmos;
+    private GameObject _vrCamera;
+    private Valve.VR.InteractionSystem.Hand _hand2;
+
+    [SerializeField]
     private Vector3 growRate = new Vector3(.01f, .01f, .01f);
 
     private float initialYPos;
     private float currentYPos;
+    [SerializeField]
+    private float rayMoveUnit = .1f;
 
     private Vector3 rayOrigin;
     private Vector3 rayDirection;
 
     private void OnEnable()
     {
-        inputManager.trackedController2.TriggerClicked += triggerClicked;
-        init.scaleController.SetActive(true);
+        _scaleController = init.scaleController;
+        _trackedController2 = inputManager.trackedController2;
+        _rotationGizmos = init.rotationGizmos;
+        _vrCamera = init.vrCamera;
+        _hand2 = inputManager.hand2;
+
+        _trackedController2.TriggerClicked += triggerClicked;
+        _scaleController.SetActive(true);
     }
 
     private void OnDisable()
     {
-        inputManager.trackedController2.TriggerClicked -= triggerClicked;
-        init.scaleController.SetActive(false);
+        _trackedController2.TriggerClicked -= triggerClicked;
+        _scaleController.SetActive(false);
     }
 
     void triggerClicked(object sender, ClickedEventArgs e)
@@ -33,7 +49,7 @@ public class scaleControl : MonoBehaviour
     {
         setScaleControllerToFacePlayer();
 
-        if (inputManager.trackedController2.triggerPressed)
+        if (_trackedController2.triggerPressed)
         {
             scaleObject();
         }
@@ -41,23 +57,23 @@ public class scaleControl : MonoBehaviour
 
     void setScaleControllerToFacePlayer()
     {
-        Transform scaleControllerHolder = init.scaleController.transform.parent.transform;
+        Transform scaleControllerHolder = _scaleController.transform.parent.transform;
 
-        scaleControllerHolder.position = init.rotationGizmos.transform.position;
-        scaleControllerHolder.LookAt(init.vrCamera.transform);
+        scaleControllerHolder.position = _rotationGizmos.transform.position;
+        scaleControllerHolder.LookAt(_vrCamera.transform);
         scaleControllerHolder.eulerAngles = new Vector3(0, scaleControllerHolder.eulerAngles.y, 0);
     }
 
     void getInitialHitYPosition()
     {
         RaycastHit hit;
-        rayOrigin = inputManager.hand2.gameObject.transform.position;
-        rayDirection = inputManager.hand2.gameObject.transform.forward;
+        rayOrigin = _hand2.gameObject.transform.position;
+        rayDirection = _hand2.gameObject.transform.forward;
         Ray ray = new Ray(rayOrigin, rayDirection);
         //--ray will just interact with the "Gizmo Layer"
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Gizmo Layer")))
         {
-            if (hit.collider.gameObject == init.scaleController)
+            if (hit.collider.gameObject == _scaleController)
             {
                 initialYPos = hit.point.y;
             }
@@ -67,26 +83,26 @@ public class scaleControl : MonoBehaviour
     void scaleObject()
     {
         RaycastHit hit;
-        rayOrigin = inputManager.hand2.gameObject.transform.position;
-        rayDirection = inputManager.hand2.gameObject.transform.forward;
+        rayOrigin = _hand2.transform.position;
+        rayDirection = _hand2.transform.forward;
         Ray ray = new Ray(rayOrigin, rayDirection);
         //--ray will just interact with the "Gizmo Layer"
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Gizmo Layer")))
         {
-            if (hit.collider.gameObject == init.scaleController)
+            if (hit.collider.gameObject == _scaleController)
             {
                 currentYPos = hit.point.y;
 
-                if (currentYPos > initialYPos + .1f)
+                if (currentYPos > initialYPos + rayMoveUnit)
                 {
                     transform.localScale += growRate;
                     initialYPos = currentYPos;
                 }
 
-                //--gaurding from going into negative scale
+                //--guarding from going into negative scale
                 if (transform.localScale.x > .01f)
                 {
-                    if (currentYPos < initialYPos - .1f)
+                    if (currentYPos < initialYPos - rayMoveUnit)
                     {
                         transform.localScale -= growRate;
                         initialYPos = currentYPos;

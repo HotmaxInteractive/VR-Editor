@@ -6,6 +6,7 @@ public class propTile : MonoBehaviour, IHittable
 {
     //--local refs
     private stateManager _stateManagerMutatorRef;
+    private GameObject _props;
 
     //--Note: FAUX CONSTRUCTOR - properties passed on prefab instantiation
     public GameObject spawnableProp;
@@ -16,6 +17,8 @@ public class propTile : MonoBehaviour, IHittable
     void Start()
     {
         _stateManagerMutatorRef = init._stateManagerMutatorRef;
+        _props = init.props;
+
         displayPropInMenu(spawnableProp);
     }
 
@@ -24,7 +27,7 @@ public class propTile : MonoBehaviour, IHittable
         //get the correct object from the current chunk
         GameObject newProp = Instantiate(spawnableProp);
         newProp.name = spawnableProp.name;
-        newProp.transform.parent = init.props.transform;
+        newProp.transform.parent = _props.transform;
         newProp.SetActive(true);
 
         //set the spawned object to the new selected object

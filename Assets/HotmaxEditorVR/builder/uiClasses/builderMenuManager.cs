@@ -10,6 +10,9 @@ public class builderMenuManager : MonoBehaviour
     private bool _rotationGizmoIsSelected = stateManager.rotationGizmoIsSelected;
     private float _padX;
     private float _padY;
+    private SteamVR_TrackedController _trackedController2;
+    private Valve.VR.InteractionSystem.Hand _hand2;
+    private SteamVR_Controller.Device _selectorHand;
 
     [SerializeField]
     public GameObject builderMenuUI;
@@ -17,13 +20,15 @@ public class builderMenuManager : MonoBehaviour
     void Start()
     {
         _stateManagerMutatorRef = init._stateManagerMutatorRef;
+        _trackedController2 = inputManager.trackedController2;
+        _hand2 = inputManager.hand2;
 
         //--Gets reparented in the selector hand and set to the hands position
-        transform.parent = inputManager.hand2.transform;
+        transform.parent = _hand2.transform;
         transform.localPosition = Vector3.zero;
 
-        inputManager.trackedController2.PadTouched += padTouched;
-        inputManager.trackedController2.PadUntouched += padUntouched;
+        _trackedController2.PadTouched += padTouched;
+        _trackedController2.PadUntouched += padUntouched;
 
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
         stateManager.rotationGizmoIsSelectedEvent += updateRotationGizmoIsSelected;
@@ -31,8 +36,8 @@ public class builderMenuManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        inputManager.trackedController2.PadTouched -= padTouched;
-        inputManager.trackedController2.PadUntouched -= padUntouched;
+        _trackedController2.PadTouched -= padTouched;
+        _trackedController2.PadUntouched -= padUntouched;
 
         stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
         stateManager.rotationGizmoIsSelectedEvent -= updateRotationGizmoIsSelected;
@@ -73,7 +78,9 @@ public class builderMenuManager : MonoBehaviour
 
     void updatePadCoords()
     {
-        if (inputManager.selectorHand != null)
+        _selectorHand = inputManager.selectorHand;
+
+        if (_selectorHand != null)
         {
             if (_selectedObjectIsActive || _rotationGizmoIsSelected)
             {
@@ -81,10 +88,10 @@ public class builderMenuManager : MonoBehaviour
             }
             else
             {
-                if (inputManager.selectorHand.GetAxis().x != 0 || inputManager.selectorHand.GetAxis().y != 0)
+                if (_selectorHand.GetAxis().x != 0 || _selectorHand.GetAxis().y != 0)
                 {
-                    _padX = inputManager.selectorHand.GetAxis().x;
-                    _padY = inputManager.selectorHand.GetAxis().y;
+                    _padX = _selectorHand.GetAxis().x;
+                    _padY = _selectorHand.GetAxis().y;
                 }
             }
         }

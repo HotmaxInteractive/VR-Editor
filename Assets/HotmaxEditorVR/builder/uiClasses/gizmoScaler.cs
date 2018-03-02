@@ -4,11 +4,19 @@ using UnityEngine;
 
 public class gizmoScaler : MonoBehaviour
 {
+    //--local refs
+    private GameObject _vrCamera;
+
     public float sizeScaler;
 
-	void Update ()
+    private void Start()
     {
-        float distanceToHead = Vector3.Distance(transform.position, init.vrCamera.transform.position);
+        _vrCamera = init.vrCamera;
+    }
+
+    void Update ()
+    {
+        float distanceToHead = Vector3.Distance(transform.position, _vrCamera.transform.position);
         float scaleRatio = distanceToHead / sizeScaler;
         transform.localScale = new Vector3(scaleRatio, scaleRatio, scaleRatio);
     }

@@ -17,22 +17,23 @@ public class raycastSelect : MonoBehaviour
     private GameObject _objectCollidedWithHand;
     private stateManager _stateManagerMutatorRef;
     private Transform _hand2;
+    private SteamVR_TrackedController _trackedController2;
 
     private void Awake()
     {
-        _stateManagerMutatorRef = FindObjectOfType(typeof(stateManager)) as stateManager;
+        _stateManagerMutatorRef = init._stateManagerMutatorRef;
+        _hand2 = inputManager.hand2.gameObject.transform;
+        _trackedController2 = inputManager.trackedController2;
 
         laserLineRenderer = GetComponent<LineRenderer>();
     }
 
     void Start()
     {
-        inputManager.trackedController2.TriggerClicked += triggerClicked;
-        inputManager.trackedController2.TriggerUnclicked += triggerUnclicked;
+        _trackedController2.TriggerClicked += triggerClicked;
+        _trackedController2.TriggerUnclicked += triggerUnclicked;
         stateManager.objectCollidedWithHandEvent += updateObjectCollidedWithHand;
         stateManager.selectedObjectIsActiveEvent += updateSelectedObjectIsActive;
-
-        _hand2 = inputManager.hand2.gameObject.transform;
 
         //Initializing the helper laser for the selection tool. 
         Vector3[] initLaserPositions = new Vector3[2] { Vector3.zero, Vector3.zero };
@@ -43,8 +44,8 @@ public class raycastSelect : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        inputManager.trackedController2.TriggerClicked -= triggerClicked;
-        inputManager.trackedController2.TriggerUnclicked -= triggerUnclicked;
+        _trackedController2.TriggerClicked -= triggerClicked;
+        _trackedController2.TriggerUnclicked -= triggerUnclicked;
         stateManager.objectCollidedWithHandEvent -= updateObjectCollidedWithHand;
         stateManager.selectedObjectIsActiveEvent -= updateSelectedObjectIsActive;
     }

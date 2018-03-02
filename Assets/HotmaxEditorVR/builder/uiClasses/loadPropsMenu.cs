@@ -5,7 +5,6 @@ using UnityEngine;
 public class loadPropsMenu : MonoBehaviour
 {
     //--local refs
-    private stateManager _stateManagerMutatorRef;
     private stateManager.editorModes _editorMode = stateManager.editorMode;
 
     //--child gameObject refs
@@ -19,8 +18,6 @@ public class loadPropsMenu : MonoBehaviour
 
     void Start()
     {
-        _stateManagerMutatorRef = init._stateManagerMutatorRef;
-
         //create "chunks" groups of 4 to display the object
         chunkedList = ListExtensions.ChunkBy(propManager.propObjects, 4);
         showPropObjectPage(0);

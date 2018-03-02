@@ -6,10 +6,12 @@ public class menuManager : MonoBehaviour
 {
     //--local refs
     private stateManager.editorModes _editorMode = stateManager.editorMode;
+    private GameObject _vrCamera;
 
     private void Start()
     {
         stateManager.editorModeEvent += updateEditorMode;
+        _vrCamera = init.vrCamera;
     }
 
     private void OnApplicationQuit()
@@ -47,16 +49,13 @@ public class menuManager : MonoBehaviour
     void setMenuToFacePlayer()
     {
         //--make menu face the HMD
-        GameObject menu = gameObject;
-        GameObject vrCam = init.vrCamera;
+        Vector3 forwardAmount = _vrCamera.transform.position + (_vrCamera.transform.forward * 2.15f);
+        Quaternion rotationAmount = _vrCamera.transform.rotation;
 
-        Vector3 forwardAmount = vrCam.transform.position + (vrCam.transform.forward * 2.15f);
-        Quaternion rotationAmount = vrCam.transform.rotation;
+        transform.position = new Vector3(forwardAmount.x, _vrCamera.transform.position.y - 1, forwardAmount.z);
 
-        menu.transform.position = new Vector3(forwardAmount.x, vrCam.transform.position.y - 1, forwardAmount.z);
-
-        menu.transform.rotation = rotationAmount;
-        menu.transform.localEulerAngles = new Vector3(0, menu.transform.localEulerAngles.y + 180, 0);
+        transform.rotation = rotationAmount;
+        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y + 180, 0);
     }
 }
 
