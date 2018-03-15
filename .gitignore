@@ -3,12 +3,14 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
-/Assets/AssetStoreTools*
 /ProjectSettings
-/Assets/Dependencies
-/Assets/Dependencies.meta
+/Assets/*
 
+# Whitelisted from gitignore
+!Assets/[Hh]otmax*
 
+# ignore all generated meta files
+/Assets/*.meta
 
 # Visual Studio 2015 cache directory
 /.vs/
@@ -27,6 +29,7 @@ ExportedObj/
 *.svd
 *.pdb
 *.cfg
+
 
 # Unity3D generated meta files
 *.pidb.meta
