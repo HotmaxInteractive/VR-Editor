@@ -7,6 +7,8 @@ public class raycastSelect : MonoBehaviour
     //--laser stuff
     private Vector3 laserEndPosition;
     private LineRenderer laserLineRenderer;
+    public static RaycastHit raycastHit;
+
     [SerializeField]
     private float laserWidth = 0.01f;
     [SerializeField]
@@ -87,18 +89,17 @@ public class raycastSelect : MonoBehaviour
 
     void Update()
     {
-        ShootLaserFromTargetPosition(_hand2.position, _hand2.forward, laserMaxLength);
+        controllerLaserPointer(_hand2.position, _hand2.forward, laserMaxLength);
     }
 
-    void ShootLaserFromTargetPosition(Vector3 targetPosition, Vector3 direction, float length)
+    void controllerLaserPointer(Vector3 targetPosition, Vector3 direction, float length)
     {
         Ray ray = new Ray(targetPosition, direction);
-        RaycastHit hit;
         laserEndPosition = targetPosition + (length * direction);
 
-        if (Physics.Raycast(ray, out hit, length))
+        if (Physics.Raycast(ray, out raycastHit, length))
         {
-            laserEndPosition = hit.point;
+            laserEndPosition = raycastHit.point;
         }
 
         laserLineRenderer.SetPosition(0, targetPosition);
