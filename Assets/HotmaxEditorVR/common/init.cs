@@ -13,7 +13,6 @@ public class init : MonoBehaviour {
     public static GameObject vrCamera;
     public static GameObject scaleController;
     public static GameObject raycastPoint;
-    public static GameObject player;
 
     public static stateManager _stateManagerMutatorRef;
 
@@ -26,7 +25,6 @@ public class init : MonoBehaviour {
         vrCamera = GameObject.Find("VRCamera");
         scaleController = GameObject.Find("scaleController");
         raycastPoint = GameObject.Find("raycastPoint");
-        player = GameObject.Find("Player");
 
         _stateManagerMutatorRef = FindObjectOfType(typeof(stateManager)) as stateManager;
     }
