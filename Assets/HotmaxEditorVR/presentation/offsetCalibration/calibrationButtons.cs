@@ -17,6 +17,8 @@ public class calibrationButtons : MonoBehaviour
 
     public ZEDPointCloudManager pointCloudManager;
 
+    public Transform testCameraPos;
+
     private void Start()
     {
         _trackedController2 = inputManager.trackedController2;
@@ -35,7 +37,7 @@ public class calibrationButtons : MonoBehaviour
         //on second click apply the difference in before and after to Zed Greenscreen
         initialTriggerClick = !initialTriggerClick;
 
-        if(initialTriggerClick)
+        if (initialTriggerClick)
         {
             initialControllerPosition = _trackedController2.transform.position;
             initialControllerRotation = _trackedController2.transform.eulerAngles;
@@ -52,8 +54,11 @@ public class calibrationButtons : MonoBehaviour
             Zed_Greenscreen.transform.position += positionOffset;
 
             //--rotate the Zed greenscreen towards the applied offset
-            Zed_Greenscreen.transform.eulerAngles = Vector3.RotateTowards(Zed_Greenscreen.transform.eulerAngles, appliedRotationoffset, 0.01f, 0);
+            //Zed_Greenscreen.transform.eulerAngles = Vector3.RotateTowards(Zed_Greenscreen.transform.eulerAngles, appliedRotationoffset, 0.05f, 0);
             pointCloudManager.update = true;
+
+            testCameraPos.position = Zed_Greenscreen.transform.position;
+            testCameraPos.rotation = Zed_Greenscreen.transform.rotation;
         }
     }
 
