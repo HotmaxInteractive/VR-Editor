@@ -10,13 +10,13 @@ public class saveOffsetCalibrationData : MonoBehaviour
 
     void Start()
     {
-        zedSteamVRControllerManager = GetComponent<ZEDSteamVRControllerManager>();
-        zedOffsetController = GetComponent<ZEDOffsetController>();
-        Invoke("saveCalibrationData", 10);
+        zedSteamVRControllerManager = FindObjectOfType<ZEDSteamVRControllerManager>();
+        zedOffsetController = zedSteamVRControllerManager.GetComponent<ZEDOffsetController>();
+        Invoke("setTrackerDeviceIndex", 10);
     }
 
-    //-Todo: Also, check if there is no value at controllerIndexZEDHolder, if not show a screen that says "put on you VR headset"
-    void saveCalibrationData()
+    //-Todo: Also, check if there is no value at controllerIndexZEDHolder, if not show a screen that says "turn on controllers and tracker"
+    void setTrackerDeviceIndex()
     {
         zedSteamVRControllerManager.controllerIndexZEDHolder = (int)tracker.index;
         zedOffsetController.SaveZEDPos();
