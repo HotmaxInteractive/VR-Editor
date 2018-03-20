@@ -8,12 +8,14 @@ public class presentationToolsManager : MonoBehaviour
     private GameObject keyingTool;
     private GameObject actorMonitor;
     private GameObject offsetCalibrator;
+    private GameObject preprocessing;
 
     void Start()
     {
         actorMonitor = transform.Find("actorMonitor").gameObject;
         keyingTool = transform.Find("keyingTool").gameObject;
         offsetCalibrator = transform.Find("offsetCalibrator").gameObject;
+        preprocessing = transform.Find("preprocessing").gameObject;
 
         presentationTools.Add(keyingTool);
         presentationTools.Add(actorMonitor);
@@ -22,7 +24,7 @@ public class presentationToolsManager : MonoBehaviour
 
     public void activateTool(string activeTool)
     {
-        foreach(GameObject keyingTool in presentationTools)
+        foreach (GameObject keyingTool in presentationTools)
         {
             keyingTool.SetActive(false);
         }
@@ -38,6 +40,10 @@ public class presentationToolsManager : MonoBehaviour
                 break;
             case "offsetCalibrator":
                 offsetCalibrator.SetActive(true);
+                break;
+            case "preprocessing":
+                actorMonitor.SetActive(true);
+                preprocessing.SetActive(true);
                 break;
         }
     }
