@@ -20,6 +20,7 @@ public class presentationToolsManager : MonoBehaviour
         presentationTools.Add(keyingTool);
         presentationTools.Add(actorMonitor);
         presentationTools.Add(offsetCalibrator);
+        presentationTools.Add(preprocessing);
     }
 
     public void activateTool(string activeTool)
