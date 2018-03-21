@@ -2,32 +2,38 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class calibrationButtons : MonoBehaviour
+public class fastCalibrationSetup : MonoBehaviour
 {
     public Transform Zed_Greenscreen;
-    private bool isRotation = true;
-    public GameObject rotationText;
-    public GameObject positionText;
 
     private SteamVR_TrackedController _trackedController2;
     private Vector3 initialControllerPosition;
     private Vector3 initialControllerRotation;
 
-    private bool initialTriggerClick = false;
+    private bool wasClickedInCube = false;
+    private bool inCalibrationCycle = false;
 
     public ZEDPointCloudManager pointCloudManager;
 
-    public Transform testCameraPos;
+    public Transform calibrationCube;
 
     private void Start()
     {
         _trackedController2 = inputManager.trackedController2;
-        _trackedController2.TriggerClicked += triggerClicked;
     }
 
-    private void OnApplicationQuit()
+    private void OnEnable()
+    {
+        //--TODO: initial toggled on mode doesn't work... debug this...maybe gettings next frame after enable will work
+        _trackedController2.TriggerClicked += triggerClicked;
+        _trackedController2.TriggerUnclicked += triggerUnclicked;
+
+    }
+
+    private void OnDisable()
     {
         _trackedController2.TriggerClicked -= triggerClicked;
+        _trackedController2.TriggerUnclicked -= triggerUnclicked;
     }
 
     void triggerClicked(object sender, ClickedEventArgs e)
@@ -35,15 +41,23 @@ public class calibrationButtons : MonoBehaviour
         //save position and rotation on initial click
         //...move controller...
         //on second click apply the difference in before and after to Zed Greenscreen
-        initialTriggerClick = !initialTriggerClick;
 
-        if (initialTriggerClick)
+        //--TODO : wrap this is a boolean check that checks if the calibration cube and are a certain, close distance
+
+        if (Vector3.Distance(_trackedController2.transform.position, calibrationCube.position) < 0.25f)
         {
+            wasClickedInCube = true;
             initialControllerPosition = _trackedController2.transform.position;
             initialControllerRotation = _trackedController2.transform.eulerAngles;
             pointCloudManager.update = false;
         }
-        else
+    }
+
+    void triggerUnclicked(object sender, ClickedEventArgs e)
+    {
+        wasClickedInCube = false;
+
+        if(!pointCloudManager.update)
         {
             Vector3 positionOffset = initialControllerPosition - _trackedController2.transform.position;
 
@@ -52,66 +66,9 @@ public class calibrationButtons : MonoBehaviour
             Vector3 appliedRotationoffset = rotationOffset + Zed_Greenscreen.transform.eulerAngles;
 
             Zed_Greenscreen.transform.position += positionOffset;
-
             //--rotate the Zed greenscreen towards the applied offset
             //Zed_Greenscreen.transform.eulerAngles = Vector3.RotateTowards(Zed_Greenscreen.transform.eulerAngles, appliedRotationoffset, 0.05f, 0);
             pointCloudManager.update = true;
-
-            testCameraPos.position = Zed_Greenscreen.transform.position;
-            testCameraPos.rotation = Zed_Greenscreen.transform.rotation;
-        }
-    }
-
-    public void toggleTransformControl()
-    {
-        isRotation = !isRotation;
-
-        rotationText.SetActive(false);
-        positionText.SetActive(false);
-
-        if (isRotation)
-        {
-            rotationText.SetActive(true);
-        }
-        else
-        {
-            positionText.SetActive(true);
-        }
-    }
-
-    public void nudgeXRot(int direction)
-    {
-        if (isRotation)
-        {
-            Zed_Greenscreen.eulerAngles += new Vector3(direction, 0, 0);
-        }
-        else
-        {
-            Zed_Greenscreen.localPosition += new Vector3(direction * 0.01f, 0, 0);
-        }
-    }
-
-    public void nudgeYRot(int direction)
-    {
-        if (isRotation)
-        {
-            Zed_Greenscreen.eulerAngles += new Vector3(0, direction, 0);
-        }
-        else
-        {
-            Zed_Greenscreen.localPosition += new Vector3(0, direction * 0.01f, 0);
-        }
-    }
-
-    public void nudgeZRot(int direction)
-    {
-        if (isRotation)
-        {
-            Zed_Greenscreen.eulerAngles += new Vector3(0, 0, direction);
-        }
-        else
-        {
-            Zed_Greenscreen.localPosition += new Vector3(0, 0, direction * 0.01f);
         }
     }
 }
