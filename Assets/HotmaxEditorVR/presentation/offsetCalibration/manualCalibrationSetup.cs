@@ -26,7 +26,7 @@ public class manualCalibrationSetup : MonoBehaviour
         }
     }
 
-    public void nudgeXRot(int direction)
+    public void nudgeX(int direction)
     {
         if (isRotation)
         {
@@ -38,7 +38,7 @@ public class manualCalibrationSetup : MonoBehaviour
         }
     }
 
-    public void nudgeYRot(int direction)
+    public void nudgeY(int direction)
     {
         if (isRotation)
         {
@@ -50,7 +50,7 @@ public class manualCalibrationSetup : MonoBehaviour
         }
     }
 
-    public void nudgeZRot(int direction)
+    public void nudgeZ(int direction)
     {
         if (isRotation)
         {

@@ -13,26 +13,34 @@ public class preprocessing : MonoBehaviour
 
     private SteamVR_TrackedController _trackedController2;
 
+    private bool autoCameraAdjust = true;
+
     private int brightnessValue;
     private int contrastValue;
     private int hueValue;
     private int saturationValue;
-    //private int whiteBalanceValue;
-    //private int gainValue;
-    //private int exposureValue;
+
+    private int whiteBalanceValue;
+    private int gainValue;
+    private int exposureValue;
 
     public TextMeshPro brightnessText;
     public TextMeshPro contrastText;
     public TextMeshPro hueText;
     public TextMeshPro saturationText;
 
+    public TextMeshPro whiteBalanceText;
+    public TextMeshPro gainText;
+    public TextMeshPro exposureText;
+
     public Transform brightnessSlider;
     public Transform contrastSlider;
     public Transform hueSlider;
     public Transform saturationSlider;
-    //public Transform whiteBalanceSlider;
-    //public Transform gainSlider;
-    //public Transform exposureSlider;
+
+    public Transform whiteBalanceSlider;
+    public Transform gainSlider;
+    public Transform exposureSlider;
 
     private void Start()
     {
@@ -56,10 +64,21 @@ public class preprocessing : MonoBehaviour
             hueValue = Mathf.RoundToInt(hueSlider.localPosition.x * 11);
             saturationValue = Mathf.RoundToInt(saturationSlider.localPosition.x * 8);
 
+            whiteBalanceValue = Mathf.RoundToInt(whiteBalanceSlider.localPosition.x * 65);
+            gainValue = Mathf.RoundToInt(gainSlider.localPosition.x * 100);
+            exposureValue = Mathf.RoundToInt(exposureSlider.localPosition.x * 100);
+
             sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, brightnessValue);
             sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, contrastValue);
             sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.HUE, hueValue);
             sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, saturationValue);
+
+            if (!autoCameraAdjust)
+            {
+                sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whiteBalanceValue);
+                sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gainValue);
+                sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, exposureValue);
+            }
         }
     }
 
@@ -69,6 +88,13 @@ public class preprocessing : MonoBehaviour
         contrastSlider.localPosition = new Vector3(contrastValue / (float)8, contrastSlider.localPosition.y, contrastSlider.localPosition.z);
         hueSlider.localPosition = new Vector3(hueValue / (float)11, hueSlider.localPosition.y, hueSlider.localPosition.z);
         saturationSlider.localPosition = new Vector3(saturationValue / (float)8, saturationSlider.localPosition.y, saturationSlider.localPosition.z);
+
+        if (!autoCameraAdjust)
+        {
+            whiteBalanceSlider.localPosition = new Vector3(whiteBalanceValue / (float)65, whiteBalanceSlider.localPosition.y, whiteBalanceSlider.localPosition.z);
+            gainSlider.localPosition = new Vector3(gainValue / (float)100, gainSlider.localPosition.y, gainSlider.localPosition.z);
+            exposureSlider.localPosition = new Vector3(exposureValue / (float)100, exposureSlider.localPosition.y, exposureSlider.localPosition.z);
+        }
     }
 
     public void savePreprocessingFX()
@@ -80,10 +106,14 @@ public class preprocessing : MonoBehaviour
             file.WriteLine("contrast=" + contrastValue.ToString());
             file.WriteLine("hue=" + hueValue.ToString());
             file.WriteLine("saturation=" + saturationValue.ToString());
-            //file.WriteLine("whiteBalance=" + cameraSettings.WhiteBalance.ToString());
-            //file.WriteLine("gain=" + cameraSettings.Gain.ToString());
-            //file.WriteLine("exposure=" + cameraSettings.Exposure.ToString());
-            file.Close();
+
+            if (!autoCameraAdjust)
+            {
+                file.WriteLine("whiteBalance=" + cameraSettings.WhiteBalance.ToString());
+                file.WriteLine("gain=" + cameraSettings.Gain.ToString());
+                file.WriteLine("exposure=" + cameraSettings.Exposure.ToString());
+                file.Close();
+            }
         }
     }
 
@@ -132,17 +162,17 @@ public class preprocessing : MonoBehaviour
                 else if (key == "whiteBalance")
                 {
                     sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, int.Parse(field));
-                    //brightnessValue = int.Parse(field);
+                    whiteBalanceValue = int.Parse(field);
                 }
                 else if (key == "gain")
                 {
                     sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, int.Parse(field));
-                    //brightnessValue = int.Parse(field);
+                    gainValue = int.Parse(field);
                 }
                 else if (key == "exposure")
                 {
                     sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, int.Parse(field));
-                    //brightnessValue = int.Parse(field);
+                    exposureValue = int.Parse(field);
                 }
             }
         }
@@ -157,5 +187,34 @@ public class preprocessing : MonoBehaviour
         contrastText.text = "Contrast : " + contrastValue.ToString();
         hueText.text = "Hue : " + hueValue.ToString();
         saturationText.text = "Saturation : " + saturationValue.ToString();
+
+        if (!autoCameraAdjust)
+        {
+            whiteBalanceText.text = "White Balance : " + whiteBalanceValue.ToString();
+            gainText.text = "Gain : " + gainValue.ToString();
+            exposureText.text = "Exposure : " + exposureValue.ToString();
+        }
+        else
+        {
+            whiteBalanceText.text = "Auto";
+            gainText.text = "Auto";
+            exposureText.text = "Auto";
+        }
+    }
+
+    public void toggleAutoCameraAdjust()
+    {
+        autoCameraAdjust = !autoCameraAdjust;
+        if (autoCameraAdjust)
+        {
+            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, -1, true);
+            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, -1, true);
+        }
+        else
+        {
+            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whiteBalanceValue, false);
+            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, exposureValue + 1, false);
+            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gainValue, false);
+        }
     }
 }
