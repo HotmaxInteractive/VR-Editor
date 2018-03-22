@@ -4,47 +4,25 @@ using UnityEngine;
 
 public class presentationToolsManager : MonoBehaviour
 {
-    private List<GameObject> presentationTools = new List<GameObject>();
-    private GameObject keyingTool;
-    private GameObject actorMonitor;
-    private GameObject offsetCalibrator;
-    private GameObject preprocessing;
+    public List<GameObject> presentationTools = new List<GameObject>();
 
-    void Start()
+    public void activateTool(GameObject activeTool)
     {
-        actorMonitor = transform.Find("actorMonitor").gameObject;
-        keyingTool = transform.Find("keyingTool").gameObject;
-        offsetCalibrator = transform.Find("offsetCalibrator").gameObject;
-        preprocessing = transform.Find("preprocessing").gameObject;
-
-        presentationTools.Add(keyingTool);
-        presentationTools.Add(actorMonitor);
-        presentationTools.Add(offsetCalibrator);
-        presentationTools.Add(preprocessing);
-    }
-
-    public void activateTool(string activeTool)
-    {
-        foreach (GameObject keyingTool in presentationTools)
+        foreach (GameObject presentationTool in presentationTools)
         {
-            keyingTool.SetActive(false);
+            presentationTool.SetActive(false);
         }
 
-        switch (activeTool)
+        switch (activeTool.name)
         {
-            case "actorMonitor":
-                actorMonitor.SetActive(true);
-                break;
             case "keyingTool":
-                actorMonitor.SetActive(true);
-                keyingTool.SetActive(true);
+                presentationTools[0].SetActive(true);
                 break;
             case "offsetCalibrator":
-                offsetCalibrator.SetActive(true);
+                presentationTools[1].SetActive(true);
                 break;
             case "preprocessing":
-                actorMonitor.SetActive(true);
-                preprocessing.SetActive(true);
+                presentationTools[2].SetActive(true);
                 break;
         }
     }
