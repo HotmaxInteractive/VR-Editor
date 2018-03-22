@@ -40,6 +40,10 @@ public class stateManager : MonoBehaviour
     public delegate void objectCollidedWithHandHandler(GameObject value);
     public static event objectCollidedWithHandHandler objectCollidedWithHandEvent;
 
+    public static bool arModeIsOn = false;
+    public delegate void arModeIsOnHandler(bool value);
+    public static event arModeIsOnHandler arModeIsOnEvent;
+
     //------------------MUTATORS------------------\\
 
     public void SET_EDITOR_MODE_UNIVERSAL()
@@ -128,6 +132,15 @@ public class stateManager : MonoBehaviour
         if (objectCollidedWithHandEvent != null)
         {
             objectCollidedWithHandEvent(value);
+        }
+    }
+
+    public void SET_AR_MODE_IS_ON(bool value)
+    {
+        arModeIsOn = value;
+        if (arModeIsOnEvent != null)
+        {
+            arModeIsOnEvent(value);
         }
     }
 }

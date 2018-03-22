@@ -6,14 +6,17 @@ using TMPro;
 
 public class preprocessing : MonoBehaviour
 {
+    //--local refs
+    private SteamVR_TrackedController _trackedController2;
+    private bool _arModeIsOn = stateManager.arModeIsOn;
+
     private string preprocessingDataFile = "ZED_Settings.conf";
 
     private ZEDCameraSettingsManager zedCameraSettingsManager = new ZEDCameraSettingsManager();
     private ZEDCameraSettingsManager.CameraSettings cameraSettings = new ZEDCameraSettingsManager.CameraSettings();
 
-    private SteamVR_TrackedController _trackedController2;
-
-    private bool autoCameraAdjust = true;
+    public GameObject arModePanel;
+    public GameObject greenScreenModePanel;
 
     private int brightnessValue;
     private int contrastValue;
@@ -44,14 +47,39 @@ public class preprocessing : MonoBehaviour
 
     private void Start()
     {
+        stateManager.arModeIsOnEvent += updateARModeIsOn;
+
         _trackedController2 = inputManager.trackedController2;
         loadPreprocessingFX();
+    }
+
+    private void OnApplicationQuit()
+    {
+        stateManager.arModeIsOnEvent -= updateARModeIsOn;
     }
 
     void Update()
     {
         setPreprocessingValues();
         updateTextValues();
+    }
+
+    void updateARModeIsOn(bool value)
+    {
+        _arModeIsOn = value;
+        handleAutoAdjustSettings();
+
+        //--show the right toggle button 
+        arModePanel.SetActive(false);
+        greenScreenModePanel.SetActive(false);
+        if (_arModeIsOn)
+        {
+            arModePanel.SetActive(true);
+        }
+        else
+        {
+            greenScreenModePanel.SetActive(true);
+        }
     }
 
     void setPreprocessingValues()
@@ -73,7 +101,7 @@ public class preprocessing : MonoBehaviour
             sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.HUE, hueValue);
             sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, saturationValue);
 
-            if (!autoCameraAdjust)
+            if (!_arModeIsOn)
             {
                 sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whiteBalanceValue);
                 sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gainValue);
@@ -89,7 +117,7 @@ public class preprocessing : MonoBehaviour
         hueSlider.localPosition = new Vector3(hueValue / (float)11, hueSlider.localPosition.y, hueSlider.localPosition.z);
         saturationSlider.localPosition = new Vector3(saturationValue / (float)8, saturationSlider.localPosition.y, saturationSlider.localPosition.z);
 
-        if (!autoCameraAdjust)
+        if (!_arModeIsOn)
         {
             whiteBalanceSlider.localPosition = new Vector3(whiteBalanceValue / (float)65, whiteBalanceSlider.localPosition.y, whiteBalanceSlider.localPosition.z);
             gainSlider.localPosition = new Vector3(gainValue / (float)100, gainSlider.localPosition.y, gainSlider.localPosition.z);
@@ -107,7 +135,7 @@ public class preprocessing : MonoBehaviour
             file.WriteLine("hue=" + hueValue.ToString());
             file.WriteLine("saturation=" + saturationValue.ToString());
 
-            if (!autoCameraAdjust)
+            if (!_arModeIsOn)
             {
                 file.WriteLine("whiteBalance=" + cameraSettings.WhiteBalance.ToString());
                 file.WriteLine("gain=" + cameraSettings.Gain.ToString());
@@ -188,7 +216,7 @@ public class preprocessing : MonoBehaviour
         hueText.text = "Hue : " + hueValue.ToString();
         saturationText.text = "Saturation : " + saturationValue.ToString();
 
-        if (!autoCameraAdjust)
+        if (!_arModeIsOn)
         {
             whiteBalanceText.text = "White Balance : " + whiteBalanceValue.ToString();
             gainText.text = "Gain : " + gainValue.ToString();
@@ -202,11 +230,11 @@ public class preprocessing : MonoBehaviour
         }
     }
 
-    public void toggleAutoCameraAdjust()
+    private void handleAutoAdjustSettings()
     {
-        autoCameraAdjust = !autoCameraAdjust;
-        if (autoCameraAdjust)
+        if (_arModeIsOn)
         {
+            //--turn on automatic camera settings adjust
             sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, -1, true);
             sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, -1, true);
         }
