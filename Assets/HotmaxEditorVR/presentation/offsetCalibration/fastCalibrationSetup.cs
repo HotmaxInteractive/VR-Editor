@@ -9,11 +9,12 @@ public class fastCalibrationSetup : MonoBehaviour
     private SteamVR_TrackedController _trackedController2;
 
     private Vector3 initialControllerPosition;
-    private Vector3 initialControllerRotation;
+    private Quaternion initialControllerRotation;
 
     public ZEDPointCloudManager pointCloudManager;
 
     public Transform calibrationCube;
+    public Transform virtualCameraPos;
 
     private void Start()
     {
@@ -32,11 +33,12 @@ public class fastCalibrationSetup : MonoBehaviour
     {
         //save position and rotation on initial click
         //...move controller...
-        //on second click apply the difference in before and after to Zed Greenscreen
-        if (Vector3.Distance(_trackedController2.transform.position, calibrationCube.position) < 0.25f)
+        //on unclick apply the difference in before and after to Zed Greenscreen
+        if (Vector3.Distance(_trackedController2.transform.position, calibrationCube.position) < 0.25f && calibrationCube.gameObject.activeInHierarchy)
         {
             initialControllerPosition = _trackedController2.transform.position;
-            initialControllerRotation = _trackedController2.transform.eulerAngles;
+            initialControllerRotation = _trackedController2.transform.rotation;
+
             pointCloudManager.update = false;
         }
     }
@@ -45,15 +47,33 @@ public class fastCalibrationSetup : MonoBehaviour
     {
         if(!pointCloudManager.update)
         {
+
+            //--find the difference between CONTROLLER initial pos and current pos
             Vector3 positionOffset = initialControllerPosition - _trackedController2.transform.position;
+            Zed_Greenscreen.transform.position += positionOffset * 0.2f;
 
-            //--Add the difference of rotation to the current Zed Greenscreen rotation
-            Vector3 rotationOffset = initialControllerRotation - _trackedController2.transform.eulerAngles;
-            Vector3 appliedRotationoffset = rotationOffset + Zed_Greenscreen.transform.eulerAngles;
+            //--find difference in rotation
+            Quaternion rotationOffset = initialControllerRotation * Quaternion.Inverse(_trackedController2.transform.rotation); //deltaC = A * Quaternion.Inverse(B);
+            Quaternion appliedDifference = rotationOffset * Zed_Greenscreen.transform.rotation; //add difference to D = C * D;
 
-            Zed_Greenscreen.transform.position += positionOffset;
-            //--rotate the Zed greenscreen towards the applied offset
-            //Zed_Greenscreen.transform.eulerAngles = Vector3.RotateTowards(Zed_Greenscreen.transform.eulerAngles, appliedRotationoffset, 0.05f, 0);
+            //slerp applied difference and current zed
+            Quaternion slerpedOffset = Quaternion.Slerp(appliedDifference, Zed_Greenscreen.transform.rotation, .05f);
+
+
+            //convert to euler and rotate to
+            Vector3 finalOffsetToEuler = slerpedOffset.eulerAngles;
+
+            // The step size is equal to speed times frame time.
+            float step = 1 * Time.deltaTime;
+
+            virtualCameraPos.eulerAngles = appliedDifference.eulerAngles;
+            virtualCameraPos.position = Zed_Greenscreen.transform.position;
+
+            Vector3 newDir = Vector3.RotateTowards(Zed_Greenscreen.transform.forward, virtualCameraPos.forward, step, 0.0f);
+
+            // Move our position a step closer to the target.
+            Zed_Greenscreen.transform.rotation = Quaternion.LookRotation(newDir);
+
             pointCloudManager.update = true;
         }
     }

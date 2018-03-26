@@ -47,6 +47,10 @@ public class presentationToolsManager : MonoBehaviour
             {
                 presentationTools[0].SetActive(true);
             }
+            else
+            {
+                print("Keying tools are disabled in AR Mode");
+            }
         }
         else if(activeTool.name == presentationTools[1].name)
         {

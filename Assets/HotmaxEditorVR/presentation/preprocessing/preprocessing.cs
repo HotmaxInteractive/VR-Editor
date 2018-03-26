@@ -50,6 +50,8 @@ public class preprocessing : MonoBehaviour
         stateManager.arModeIsOnEvent += updateARModeIsOn;
 
         _trackedController2 = inputManager.trackedController2;
+
+        savePreprocessingFX();
         loadPreprocessingFX();
     }
 
@@ -135,13 +137,10 @@ public class preprocessing : MonoBehaviour
             file.WriteLine("hue=" + hueValue.ToString());
             file.WriteLine("saturation=" + saturationValue.ToString());
 
-            if (!_arModeIsOn)
-            {
-                file.WriteLine("whiteBalance=" + cameraSettings.WhiteBalance.ToString());
-                file.WriteLine("gain=" + cameraSettings.Gain.ToString());
-                file.WriteLine("exposure=" + cameraSettings.Exposure.ToString());
-                file.Close();
-            }
+            file.WriteLine("whiteBalance=" + cameraSettings.WhiteBalance.ToString());
+            file.WriteLine("gain=" + cameraSettings.Gain.ToString());
+            file.WriteLine("exposure=" + cameraSettings.Exposure.ToString());
+            file.Close();           
         }
     }
 
