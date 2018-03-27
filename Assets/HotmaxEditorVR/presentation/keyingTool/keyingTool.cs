@@ -6,6 +6,10 @@ using System.IO;
 
 public class keyingTool : MonoBehaviour
 {
+    //--local refs
+    private bool _arModeIsOn = stateManager.arModeIsOn;
+    private stateManager _stateManagerMutatorRef;
+
     private string keyingDataFile = "keying_data.json";
     private string dataFilePath;
 
@@ -32,8 +36,35 @@ public class keyingTool : MonoBehaviour
     private void Start()
     {
         dataFilePath = Path.Combine(Application.streamingAssetsPath, keyingDataFile);
+
+        stateManager.arModeIsOnEvent += updateARModeIsOn;
         greenScreenManager = FindObjectOfType<GreenScreenManager>();
+
+        if (_arModeIsOn)
+        {
+            //set range and smoothness green screen vals to 0
+            greenScreenManager.range = 0;
+            greenScreenManager.smoothness = 0;
+            greenScreenManager.UpdateShader();
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        stateManager.arModeIsOnEvent -= updateARModeIsOn;
+    }
+
+    private void OnEnable()
+    {
         loadChromaKeyData();
+
+        if (_arModeIsOn && greenScreenManager != null)
+        {
+            //set range and smoothness green screen vals to 0
+            greenScreenManager.range = 0;
+            greenScreenManager.smoothness = 0;
+            greenScreenManager.UpdateShader();
+        }
     }
 
     //--fires when keying tools toggled off as well as depthcast app shuts down
@@ -46,6 +77,19 @@ public class keyingTool : MonoBehaviour
     {
         setKeyColor();
         setChromaKeyValues();
+    }
+
+
+    void updateARModeIsOn(bool value)
+    {
+        _arModeIsOn = value;
+        if (_arModeIsOn)
+        {
+            //set range and smoothness green screen vals to 0
+            greenScreenManager.range = 0;
+            greenScreenManager.smoothness = 0;
+            greenScreenManager.UpdateShader();
+        }
     }
 
     void setKeyColor()

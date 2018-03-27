@@ -65,7 +65,7 @@ public class preprocessing : MonoBehaviour
 
     void Update()
     {
-        setPreprocessingValues();
+        setPreprocessingValuesFromSliderPositions();
         updateTextValues();
     }
 
@@ -90,43 +90,42 @@ public class preprocessing : MonoBehaviour
         }
     }
 
-    void setPreprocessingValues()
+    void setPreprocessingValuesFromSliderPositions()
     {
+        //setting preFX values
         if (_trackedController2.triggerPressed)
         {
-            //setting preFX values
-            brightnessValue = Mathf.RoundToInt(brightnessSlider.localPosition.x * 8);
-            contrastValue = Mathf.RoundToInt(contrastSlider.localPosition.x * 8);
-            hueValue = Mathf.RoundToInt(hueSlider.localPosition.x * 11);
-            saturationValue = Mathf.RoundToInt(saturationSlider.localPosition.x * 8);
-
-            whiteBalanceValue = Mathf.RoundToInt(whiteBalanceSlider.localPosition.x * 65);
-            gainValue = Mathf.RoundToInt(gainSlider.localPosition.x * 100);
-            exposureValue = Mathf.RoundToInt(exposureSlider.localPosition.x * 100);
-
-            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, brightnessValue);
-            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, contrastValue);
-            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.HUE, hueValue);
-            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, saturationValue);
-
+            //--if green screen mode
             if (!_arModeIsOn)
             {
+                contrastValue = Mathf.RoundToInt(contrastSlider.localPosition.x * 8);
+                hueValue = Mathf.RoundToInt(hueSlider.localPosition.x * 11);
+                whiteBalanceValue = Mathf.RoundToInt(whiteBalanceSlider.localPosition.x * 65);
+                gainValue = Mathf.RoundToInt(gainSlider.localPosition.x * 100);
+                exposureValue = Mathf.RoundToInt(exposureSlider.localPosition.x * 100);
+                sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, contrastValue);
+                sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.HUE, hueValue);
                 sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whiteBalanceValue);
                 sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gainValue);
                 sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, exposureValue);
             }
+
+            brightnessValue = Mathf.RoundToInt(brightnessSlider.localPosition.x * 8);
+            saturationValue = Mathf.RoundToInt(saturationSlider.localPosition.x * 8);
+            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, brightnessValue);
+            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, saturationValue);
         }
     }
 
     void updateSliderPositions()
     {
         brightnessSlider.localPosition = new Vector3(brightnessValue / (float)8, brightnessSlider.localPosition.y, brightnessSlider.localPosition.z);
-        contrastSlider.localPosition = new Vector3(contrastValue / (float)8, contrastSlider.localPosition.y, contrastSlider.localPosition.z);
-        hueSlider.localPosition = new Vector3(hueValue / (float)11, hueSlider.localPosition.y, hueSlider.localPosition.z);
         saturationSlider.localPosition = new Vector3(saturationValue / (float)8, saturationSlider.localPosition.y, saturationSlider.localPosition.z);
 
         if (!_arModeIsOn)
         {
+            contrastSlider.localPosition = new Vector3(contrastValue / (float)8, contrastSlider.localPosition.y, contrastSlider.localPosition.z);
+            hueSlider.localPosition = new Vector3(hueValue / (float)11, hueSlider.localPosition.y, hueSlider.localPosition.z);
             whiteBalanceSlider.localPosition = new Vector3(whiteBalanceValue / (float)65, whiteBalanceSlider.localPosition.y, whiteBalanceSlider.localPosition.z);
             gainSlider.localPosition = new Vector3(gainValue / (float)100, gainSlider.localPosition.y, gainSlider.localPosition.z);
             exposureSlider.localPosition = new Vector3(exposureValue / (float)100, exposureSlider.localPosition.y, exposureSlider.localPosition.z);
@@ -135,7 +134,6 @@ public class preprocessing : MonoBehaviour
 
     public void savePreprocessingFX()
     {
-
         using (StreamWriter file = new StreamWriter(preprocessingDataFile))
         {
             file.WriteLine("brightness=" + brightnessValue.ToString());
@@ -152,8 +150,7 @@ public class preprocessing : MonoBehaviour
 
     public void loadPreprocessingFX()
     {
-        //TODO: If no file, write defaults and then load
-
+        //--If no file, write defaults & load
         if (!File.Exists(preprocessingDataFile))
         {
             using (StreamWriter file = new StreamWriter(preprocessingDataFile))
@@ -169,66 +166,64 @@ public class preprocessing : MonoBehaviour
                 file.Close();
             }
         }
-        else
+
+        string[] lines = null;
+        try
         {
-            string[] lines = null;
-            try
-            {
-                lines = System.IO.File.ReadAllLines(preprocessingDataFile);
-            }
-            catch (System.Exception)
-            {
+            lines = System.IO.File.ReadAllLines(preprocessingDataFile);
+        }
+        catch (System.Exception)
+        {
 
-            }
-            if (lines == null) return;
+        }
+        if (lines == null) return;
 
-            foreach (string line in lines)
+        foreach (string line in lines)
+        {
+            string[] splittedLine = line.Split('=');
+            if (splittedLine.Length == 2)
             {
-                string[] splittedLine = line.Split('=');
-                if (splittedLine.Length == 2)
+                string key = splittedLine[0];
+                string field = splittedLine[1];
+
+                if (key == "brightness")
                 {
-                    string key = splittedLine[0];
-                    string field = splittedLine[1];
-
-                    if (key == "brightness")
-                    {
-                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, int.Parse(field));
-                        brightnessValue = int.Parse(field);
-                    }
-                    else if (key == "contrast")
-                    {
-                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, int.Parse(field));
-                        contrastValue = int.Parse(field);
-                    }
-                    else if (key == "hue")
-                    {
-                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.HUE, int.Parse(field));
-                        hueValue = int.Parse(field);
-                    }
-                    else if (key == "saturation")
-                    {
-                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, int.Parse(field));
-                        saturationValue = int.Parse(field);
-                    }
-                    else if (key == "whiteBalance")
-                    {
-                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, int.Parse(field));
-                        whiteBalanceValue = int.Parse(field);
-                    }
-                    else if (key == "gain")
-                    {
-                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, int.Parse(field));
-                        gainValue = int.Parse(field);
-                    }
-                    else if (key == "exposure")
-                    {
-                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, int.Parse(field));
-                        exposureValue = int.Parse(field);
-                    }
+                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, int.Parse(field));
+                    brightnessValue = int.Parse(field);
+                }
+                else if (key == "contrast")
+                {
+                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, int.Parse(field));
+                    contrastValue = int.Parse(field);
+                }
+                else if (key == "hue")
+                {
+                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.HUE, int.Parse(field));
+                    hueValue = int.Parse(field);
+                }
+                else if (key == "saturation")
+                {
+                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, int.Parse(field));
+                    saturationValue = int.Parse(field);
+                }
+                else if (key == "whiteBalance")
+                {
+                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, int.Parse(field));
+                    whiteBalanceValue = int.Parse(field);
+                }
+                else if (key == "gain")
+                {
+                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, int.Parse(field));
+                    gainValue = int.Parse(field);
+                }
+                else if (key == "exposure")
+                {
+                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, int.Parse(field));
+                    exposureValue = int.Parse(field);
                 }
             }
         }
-
+        
         updateSliderPositions();
         updateTextValues();
     }
@@ -236,12 +231,12 @@ public class preprocessing : MonoBehaviour
     void updateTextValues()
     {
         brightnessText.text = "Brightness : " + brightnessValue.ToString();
-        contrastText.text = "Contrast : " + contrastValue.ToString();
-        hueText.text = "Hue : " + hueValue.ToString();
         saturationText.text = "Saturation : " + saturationValue.ToString();
 
         if (!_arModeIsOn)
         {
+            contrastText.text = "Contrast : " + contrastValue.ToString();
+            hueText.text = "Hue : " + hueValue.ToString();
             whiteBalanceText.text = "White Balance : " + whiteBalanceValue.ToString();
             gainText.text = "Gain : " + gainValue.ToString();
             exposureText.text = "Exposure : " + exposureValue.ToString();
