@@ -40,7 +40,7 @@ public class stateManager : MonoBehaviour
     public delegate void objectCollidedWithHandHandler(GameObject value);
     public static event objectCollidedWithHandHandler objectCollidedWithHandEvent;
 
-    public static bool arModeIsOn = false;
+    public static bool arModeIsOn = true;
     public delegate void arModeIsOnHandler(bool value);
     public static event arModeIsOnHandler arModeIsOnEvent;
 

@@ -56,13 +56,6 @@ public class fastCalibrationSetup : MonoBehaviour
             Quaternion rotationOffset = initialControllerRotation * Quaternion.Inverse(_trackedController2.transform.rotation); //deltaC = A * Quaternion.Inverse(B);
             Quaternion appliedDifference = rotationOffset * Zed_Greenscreen.transform.rotation; //add difference to D = C * D;
 
-            //slerp applied difference and current zed
-            Quaternion slerpedOffset = Quaternion.Slerp(appliedDifference, Zed_Greenscreen.transform.rotation, .05f);
-
-
-            //convert to euler and rotate to
-            Vector3 finalOffsetToEuler = slerpedOffset.eulerAngles;
-
             // The step size is equal to speed times frame time.
             float step = 1 * Time.deltaTime;
 
@@ -73,7 +66,6 @@ public class fastCalibrationSetup : MonoBehaviour
 
             // Move our position a step closer to the target.
             Zed_Greenscreen.transform.rotation = Quaternion.LookRotation(newDir);
-
             pointCloudManager.update = true;
         }
     }

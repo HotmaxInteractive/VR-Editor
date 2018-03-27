@@ -15,6 +15,17 @@ public class presentationToolsManager : MonoBehaviour
     {
         greenScreenManager = FindObjectOfType<GreenScreenManager>();
         stateManager.arModeIsOnEvent += updateARModeIsOn;
+
+        if (_arModeIsOn)
+        {
+            //set range and smoothness green screen vals to 0
+            greenScreenManager.range = 0;
+            greenScreenManager.smoothness = 0;
+            greenScreenManager.UpdateShader();
+        }
+
+        //--tools must start on to initialize
+        deactivateAllTools();
     }
 
     private void OnApplicationQuit()
@@ -36,12 +47,9 @@ public class presentationToolsManager : MonoBehaviour
 
     public void activateTool(GameObject activeTool)
     {
-        foreach (GameObject presentationTool in presentationTools)
-        {
-            presentationTool.SetActive(false);
-        }
+        deactivateAllTools();
 
-        if(activeTool.name == presentationTools[0].name)
+        if (activeTool.name == presentationTools[0].name)
         {
             if (!_arModeIsOn)
             {
@@ -52,13 +60,21 @@ public class presentationToolsManager : MonoBehaviour
                 print("Keying tools are disabled in AR Mode");
             }
         }
-        else if(activeTool.name == presentationTools[1].name)
+        else if (activeTool.name == presentationTools[1].name)
         {
             presentationTools[1].SetActive(true);
         }
-        else if(activeTool.name == presentationTools[2].name)
+        else if (activeTool.name == presentationTools[2].name)
         {
             presentationTools[2].SetActive(true);
+        }
+    }
+
+    void deactivateAllTools()
+    {
+        foreach (GameObject presentationTool in presentationTools)
+        {
+            presentationTool.SetActive(false);
         }
     }
 }

@@ -9,6 +9,7 @@ public class preprocessing : MonoBehaviour
     //--local refs
     private SteamVR_TrackedController _trackedController2;
     private bool _arModeIsOn = stateManager.arModeIsOn;
+    private stateManager _stateManagerMutatorRef;
 
     private string preprocessingDataFile = "ZED_Settings.conf";
 
@@ -47,11 +48,13 @@ public class preprocessing : MonoBehaviour
 
     private void Start()
     {
-        stateManager.arModeIsOnEvent += updateARModeIsOn;
-
+        _stateManagerMutatorRef = init._stateManagerMutatorRef;
         _trackedController2 = inputManager.trackedController2;
 
-        savePreprocessingFX();
+        _stateManagerMutatorRef.SET_AR_MODE_IS_ON(true);
+
+        stateManager.arModeIsOnEvent += updateARModeIsOn;
+
         loadPreprocessingFX();
     }
 
@@ -77,6 +80,9 @@ public class preprocessing : MonoBehaviour
         if (_arModeIsOn)
         {
             arModePanel.SetActive(true);
+            //--set these back to the default
+            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, 0);
+            sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.HUE, 0);
         }
         else
         {
@@ -140,66 +146,85 @@ public class preprocessing : MonoBehaviour
             file.WriteLine("whiteBalance=" + cameraSettings.WhiteBalance.ToString());
             file.WriteLine("gain=" + cameraSettings.Gain.ToString());
             file.WriteLine("exposure=" + cameraSettings.Exposure.ToString());
-            file.Close();           
+            file.Close();
         }
     }
 
     public void loadPreprocessingFX()
     {
         //TODO: If no file, write defaults and then load
-        string[] lines = null;
-        try
-        {
-            lines = System.IO.File.ReadAllLines(preprocessingDataFile);
-        }
-        catch (System.Exception)
-        {
 
-        }
-        if (lines == null) return;
-
-        foreach (string line in lines)
+        if (!File.Exists(preprocessingDataFile))
         {
-            string[] splittedLine = line.Split('=');
-            if (splittedLine.Length == 2)
+            using (StreamWriter file = new StreamWriter(preprocessingDataFile))
             {
-                string key = splittedLine[0];
-                string field = splittedLine[1];
+                file.WriteLine("brightness=5");
+                file.WriteLine("contrast=0");
+                file.WriteLine("hue=0");
+                file.WriteLine("saturation=4");
 
-                if (key == "brightness")
+                file.WriteLine("whiteBalance=-1");
+                file.WriteLine("gain=-1");
+                file.WriteLine("exposure=-1");
+                file.Close();
+            }
+        }
+        else
+        {
+            string[] lines = null;
+            try
+            {
+                lines = System.IO.File.ReadAllLines(preprocessingDataFile);
+            }
+            catch (System.Exception)
+            {
+
+            }
+            if (lines == null) return;
+
+            foreach (string line in lines)
+            {
+                string[] splittedLine = line.Split('=');
+                if (splittedLine.Length == 2)
                 {
-                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, int.Parse(field));
-                    brightnessValue = int.Parse(field);
-                }
-                else if (key == "contrast")
-                {
-                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, int.Parse(field));
-                    contrastValue = int.Parse(field);
-                }
-                else if (key == "hue")
-                {
-                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.HUE, int.Parse(field));
-                    hueValue = int.Parse(field);
-                }
-                else if (key == "saturation")
-                {
-                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, int.Parse(field));
-                    saturationValue = int.Parse(field);
-                }
-                else if (key == "whiteBalance")
-                {
-                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, int.Parse(field));
-                    whiteBalanceValue = int.Parse(field);
-                }
-                else if (key == "gain")
-                {
-                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, int.Parse(field));
-                    gainValue = int.Parse(field);
-                }
-                else if (key == "exposure")
-                {
-                    sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, int.Parse(field));
-                    exposureValue = int.Parse(field);
+                    string key = splittedLine[0];
+                    string field = splittedLine[1];
+
+                    if (key == "brightness")
+                    {
+                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, int.Parse(field));
+                        brightnessValue = int.Parse(field);
+                    }
+                    else if (key == "contrast")
+                    {
+                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, int.Parse(field));
+                        contrastValue = int.Parse(field);
+                    }
+                    else if (key == "hue")
+                    {
+                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.HUE, int.Parse(field));
+                        hueValue = int.Parse(field);
+                    }
+                    else if (key == "saturation")
+                    {
+                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, int.Parse(field));
+                        saturationValue = int.Parse(field);
+                    }
+                    else if (key == "whiteBalance")
+                    {
+                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, int.Parse(field));
+                        whiteBalanceValue = int.Parse(field);
+                    }
+                    else if (key == "gain")
+                    {
+                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, int.Parse(field));
+                        gainValue = int.Parse(field);
+                    }
+                    else if (key == "exposure")
+                    {
+                        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, int.Parse(field));
+                        exposureValue = int.Parse(field);
+                    }
                 }
             }
         }
