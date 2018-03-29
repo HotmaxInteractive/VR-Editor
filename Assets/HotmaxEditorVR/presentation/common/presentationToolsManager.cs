@@ -1,48 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class presentationToolsManager : MonoBehaviour
 {
     //--local refs
-    private bool _arModeIsOn = stateManager.arModeIsOn;
+    private bool arModeIsOn = true;
 
     public List<GameObject> presentationTools = new List<GameObject>();
 
     private GreenScreenManager greenScreenManager;
 
+    public newKeyingTool keyingTool;
+
     private void Start()
     {
         greenScreenManager = FindObjectOfType<GreenScreenManager>();
-        stateManager.arModeIsOnEvent += updateARModeIsOn;
-
-        if (_arModeIsOn)
-        {
-            //set range and smoothness green screen vals to 0
-            greenScreenManager.range = 0;
-            greenScreenManager.smoothness = 0;
-            greenScreenManager.UpdateShader();
-        }
-
-        //--tools must start on to initialize
+        handleCameraSettingModes();
         deactivateAllTools();
-    }
-
-    private void OnApplicationQuit()
-    {
-        stateManager.arModeIsOnEvent -= updateARModeIsOn;
-    }
-
-    void updateARModeIsOn(bool value)
-    {
-        _arModeIsOn = value;
-        if (_arModeIsOn)
-        {
-            //set range and smoothness green screen vals to 0
-            greenScreenManager.range = 0;
-            greenScreenManager.smoothness = 0;
-            greenScreenManager.UpdateShader();
-        }
     }
 
     public void activateTool(GameObject activeTool)
@@ -51,13 +27,9 @@ public class presentationToolsManager : MonoBehaviour
 
         if (activeTool.name == presentationTools[0].name)
         {
-            if (!_arModeIsOn)
+            if (!arModeIsOn)
             {
                 presentationTools[0].SetActive(true);
-            }
-            else
-            {
-                print("Keying tools are disabled in AR Mode");
             }
         }
         else if (activeTool.name == presentationTools[1].name)
@@ -70,11 +42,58 @@ public class presentationToolsManager : MonoBehaviour
         }
     }
 
-    void deactivateAllTools()
+    public void deactivateAllTools()
     {
         foreach (GameObject presentationTool in presentationTools)
         {
             presentationTool.SetActive(false);
         }
+    }
+
+    public void toggleARandGreenScreen()
+    {
+        arModeIsOn = !arModeIsOn;
+        handleCameraSettingModes();
+        deactivateAllTools();
+    }
+
+    void setARCameraSettings()
+    {
+        //set range / smoothing to 0
+        greenScreenManager.range = 0;
+        greenScreenManager.smoothness = 0;
+
+        //--set settings to automatic whitebal and exposure
+        //--set preprocessing all to default vals 5,0,0,4,-1,-1,-1
+        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, 5);
+        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, 4);
+        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, 0);
+        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.HUE, 0);
+        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, -1, true);
+        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, -1, true);
+        sl.ZEDCamera.GetInstance().SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, -1, true);
+
+        greenScreenManager.UpdateShader();
+    }
+
+    void handleCameraSettingModes()
+    {
+        //set default
+        if (arModeIsOn)
+        {
+            setARCameraSettings();
+        }
+        else
+        {
+            //load JSON
+            loadChromaKeyData();
+        }
+    }
+
+    void loadChromaKeyData()
+    {
+        keyingTool.gameObject.SetActive(true);
+        keyingTool.loadChromaKeyData();
+        keyingTool.gameObject.SetActive(false);
     }
 }
