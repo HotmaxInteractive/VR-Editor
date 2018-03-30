@@ -7,6 +7,7 @@ public class sliderSystem : MonoBehaviour
     private GameObject sliderBackground;
     private GameObject slider;
     private bool sliderBackgroundHit = false;
+    public float moveAmount = 0.001f;
 
     private SteamVR_TrackedController _trackedController2;
 
@@ -62,7 +63,6 @@ public class sliderSystem : MonoBehaviour
 
     public void moveSliderUp()
     {
-        float moveAmount = 0.001f;
         if (slider.transform.localPosition.x + moveAmount > 1)
         {
             return;
@@ -75,7 +75,6 @@ public class sliderSystem : MonoBehaviour
 
     public void moveSliderDown()
     {
-        float moveAmount = 0.001f;
         if (slider.transform.localPosition.x - moveAmount < 0)
         {
             return;

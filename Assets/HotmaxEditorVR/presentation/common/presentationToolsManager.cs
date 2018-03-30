@@ -12,7 +12,7 @@ public class presentationToolsManager : MonoBehaviour
 
     private GreenScreenManager greenScreenManager;
 
-    public newKeyingTool keyingTool;
+    public keyingTool keyingTool;
 
     private void Start()
     {
